@@ -6,16 +6,8 @@
 
 struct Socket : uv_tcp_t {
 	std::function<void(Socket*, Connection*)> onConnection;
-
-	template<class G>
-	Socket(G&&g)
-		: onConnection(std::forward<G>(g))
-	{}
-
-	template<class G>
-	static Socket* create(G&&g) {
-		return new Socket{std::forward<G>(g)};
-	}
+  std::function<Connection*(Socket*)> createConnection;
+  std::function<void(Socket*)> onClose;
 
 	void listen(
 		char const* ip,
@@ -31,7 +23,7 @@ struct Socket : uv_tcp_t {
 			uv_listen((uv_stream_t*)tcp, 1024, [](uv_stream_t* h, int status) {
 				if(status) return;
 				Socket* server = (Socket*)h;
-				auto client = new Connection((uv_tcp_t*)server);
+				auto client = server->createConnection(server);
 				uv_tcp_init(server->loop, client);
 				server->onConnection(server, client);
 			});
@@ -39,8 +31,9 @@ struct Socket : uv_tcp_t {
 
 
 	void close() {
-		uv_close((uv_handle_t*)this, [](uv_handle_t* s){
-			delete (Socket*)s;
+		uv_close((uv_handle_t*)this, [](uv_handle_t* h){
+       auto s = (Socket*)h;
+		 	 s->onClose(s);
 		});
 	}
 };

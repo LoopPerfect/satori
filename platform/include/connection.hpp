@@ -9,8 +9,9 @@ struct Connection : uv_tcp_t {
 	uv_tcp_t* server;
 	std::function<void(Connection*, char const* b, char const* e)> onData;
 	std::function<void(Connection*)> onDataEnd;
+  std::function<void(Connection*)> onClose;
 
-	Connection(uv_tcp_t* server)
+	Connection(uv_tcp_t* server = nullptr)
 		:server{server}
 	{}
 
@@ -40,13 +41,9 @@ struct Connection : uv_tcp_t {
 	void close() {
 		uv_close((uv_handle_t*)this, [](uv_handle_t* h){
 			auto c = (Connection*)h;
-			delete (Connection*)h;
+		  c->onClose(c);
 		});
 	}
-
-  operator uv_tcp_t&(){
-    return (uv_tcp_t&)*this;
-  }
 
   static void onRead(uv_stream_t* h, ssize_t nread, uv_buf_t const* data){
 		auto c = (Connection*)h;

@@ -1,0 +1,13 @@
+{
+  "libuv/libuv": {
+    "source": {
+      "url": "https://github.com/libuv/libuv/archive/7452ef4e06a4f99ee26b694c65476401534f2725.zip",
+      "sha256": "382f7b923d1a430dca9a0ef880a7c39e6a59cec6dddcea3b6222b28dbd11ce2e",
+      "subPath": "libuv-7452ef4e06a4f99ee26b694c65476401534f2725"
+    },
+    "buck": {
+      "url": "https://raw.githubusercontent.com/nikhedonia/libuv/6f07ed97244c069e6faa8fa60bf931583485be3a/BUCK",
+      "sha256": "19c4fbf743a08c0f9f3103d688b8374d099b39087e91cfa09eb27ac6553aa1be"
+    }
+  }
+}

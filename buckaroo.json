@@ -1,3 +1,6 @@
 {
-  "name": "platform"
+  "name": "platform",
+  "dependencies": {
+    "libuv/libuv": "1.11.0"
+  }
 }

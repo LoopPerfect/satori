@@ -10,21 +10,22 @@
 #include <queue>
 #include <string.h>
 
-using namespace std;
 
 
 
 int main() {
+  using namespace std;
 
   auto loop = uv_default_loop();
-  auto writer = std::make_shared<RecyclingWriter<>>(1024);
+  auto writer = std::make_shared<WriterPool<>>(1024);
+  auto socket = std::make_shared<SocketPool>(1024);
 
-	Socket::create([=](Socket* s, Connection* con){
+  socket->create([=](Socket* s, Connection* con){
 
     //std::cout << "new connection" << std::endl;
 		con->onData = [=](auto, auto b, auto e) {
-
-      auto req = parseReq(string(b,e));
+      //std::cout << std::string(b,e) << std::endl;
+      //auto req = parseReq(string(b,e));
       //std::cout << req["path"] << std::endl;
 					//if(req["method"].size()>0)
 
@@ -40,8 +41,8 @@ int main() {
 
           writer->create((uv_stream_t*)con, [=](auto w, int s){
             //std::cout << "closing" << std::endl;
-            con->close();
             w->close();
+            con->close();
             //std::cout << "closed" << std::endl;
           })->write(res.c_str(), res.size());
 		};

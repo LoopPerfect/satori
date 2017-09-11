@@ -16,7 +16,6 @@ cxx_library(
     ('platform/include', '**/*.hpp'), # and accessible via <uv/header.h>
   ]),
   deps = BUCKAROO_DEPS,
-  exported_linker_flags = ['-luv'],
   visibility = ['PUBLIC']
 )
 
