@@ -27,7 +27,7 @@ int main() {
 
     //std::cout << "new connection" << std::endl;
 		con->onData = [=](auto, auto cstr) {
-      //std::cout << std::string(cstr) << std::endl;
+      std::cout << std::string(cstr) << std::endl;
       auto req = Satori::parseReq(cstr);
       //std::cout << req["path"] << std::endl;
 					//if(req["method"].size()>0)

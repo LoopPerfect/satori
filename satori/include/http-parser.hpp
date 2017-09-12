@@ -6,63 +6,84 @@
 
 namespace Satori {
 
-	std::map<std::string, std::string> parseReq(std::string str) {
-		std::map<std::string, std::string> obj;
+  std::map<std::string, std::string> parseReq(std::string const& str) {
 
-		std::string key;
-		std::string val;
-		int state = 0;
-		key = "method";
-		for(auto c : str) {
-			switch(state) {
+    std::map<std::string, std::string> obj;
+
+    std::string key;
+    std::string val;
+
+    int state = 0;
+
+    key = "method";
+
+		for (auto const& c : str) {
+			switch (state) {
 				case 0:
-					if(c!=' ') {
-						val+=c;
+					if (c != ' ') {
+						val += c;
 					} else {
 						obj[key] = val;
-						state=1;
+						state = 1;
 						val = "";
 						key = "path";
 					}
 					continue;
 				case 1:
-					if(c!=' ') {
-						val+=c;
+					if (c != ' ') {
+						val += c;
 					} else {
 						obj[key] = val;
-						val="";
+						val = "";
 						key = "protocol";
-						state=2;
+						state = 2;
 					}
 					continue;
 				case 2:
-					if(c!='\n' || c != '\r') {
-						val+=c;
+					if (c != '\n' || c != '\r') {
+						val += c;
 					} else {
 						obj[key] = val;
-						key="";
-						val="";
-						state=4;
+						key = "";
+						val = "";
+						state = 4;
 					}
 					continue;
 
-
 				case 3:
-					switch(c) {
-						case ' ': continue;
-						case '\r': continue;
-						case '\n': obj[key]=val; state=4; key=""; continue;
-						default: val+=c; continue;
+					switch (c) {
+						case ' ':
+						  continue;
+						case '\r':
+						  continue;
+						case '\n':
+						  obj[key] = val;
+							state = 4;
+							key = "";
+							continue;
+						default:
+						  val += c;
+							continue;
 					}
 
 				case 4:
 				case 5:
-					switch(c) {
-						case '\r' : continue;
-						case '\n' : ++state; key=""; continue;
-						case ':': state=3; continue;
-						case ' ': continue;
-						default: key += c; val=""; continue;
+					switch (c) {
+						case '\r':
+						  continue;
+						case '\n':
+						  ++state;
+							key = "";
+							continue;
+						case ':':
+						  state = 3;
+							continue;
+						case ' ':
+						  continue;
+						default:
+						  key += c;
+							val = "";
+							continue;
 					}
 
 				default:

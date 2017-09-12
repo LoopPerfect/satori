@@ -1,0 +1,9 @@
+cxx_test(
+  name = 'http-parser-tests',
+  srcs = [
+    'http-parser-tests.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)

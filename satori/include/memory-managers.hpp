@@ -1,5 +1,5 @@
-#ifndef SATORI_ALLOCATORS_HPP
-#define SATORI_ALLOCATORS_HPP
+#ifndef SATORI_MEMORY_MANAGERS_HPP
+#define SATORI_MEMORY_MANAGERS_HPP
 
 #include <memory>
 #include <vector>
@@ -41,8 +41,6 @@ namespace Satori {
       pool.push(w);
     }
   };
-
-
 
   struct BufferFactory {
     static uv_buf_t create(size_t len) {
@@ -91,8 +89,6 @@ namespace Satori {
     }
   };
 
-
-
   template<class BMM = BufferFactory>
   struct WriterPool : Recycler<Writer> {
     BMM bmm;
@@ -122,7 +118,6 @@ namespace Satori {
     };
   };
 
-
   struct ConnectionPool : Recycler<Connection> {
     ConnectionPool(size_t num=1024)
       : Recycler<Connection>(num)
@@ -137,7 +132,6 @@ namespace Satori {
       return s;
     };
   };
-
 
   struct SocketPool : Recycler<Socket> {
     ConnectionPool cp;

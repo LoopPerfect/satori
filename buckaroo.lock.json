@@ -9,5 +9,16 @@
       "url": "https://raw.githubusercontent.com/nikhedonia/libuv/6f07ed97244c069e6faa8fa60bf931583485be3a/BUCK",
       "sha256": "19c4fbf743a08c0f9f3103d688b8374d099b39087e91cfa09eb27ac6553aa1be"
     }
+  },
+  "google/gtest": {
+    "source": {
+      "url": "https://github.com/google/googletest/archive/ec44c6c1675c25b9827aacd08c02433cccde7780.zip",
+      "sha256": "bc258fff04a6511e7106a1575bb514a185935041b2c16affb799e0567393ec30",
+      "subPath": "googletest-ec44c6c1675c25b9827aacd08c02433cccde7780"
+    },
+    "buck": {
+      "url": "https://raw.githubusercontent.com/nikhedonia/googletest/665327f0141d4a4fc4f2496e781dce436d742645/BUCK",
+      "sha256": "d976069f5b47fd8fc57201f47026a70dee4e47b3141ac23567b8a0c56bf9288c"
+    }
   }
 }
