@@ -5,6 +5,11 @@
 #include <functional>
 #include <platform/writer.hpp>
 
+char* bb[1024];
+void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
+  *buf = uv_buf_init((char*)bb, 1024);
+}
+
 struct Connection : uv_tcp_t {
 	uv_tcp_t* server;
 	std::function<void(Connection*, char const* b, char const* e)> onData;
@@ -39,7 +44,7 @@ struct Connection : uv_tcp_t {
 	}
 
 	void close() {
-		uv_close((uv_handle_t*)this, [](uv_handle_t* h){
+		uv_close((uv_handle_t*)this, [](uv_handle_t* h) {
 			auto c = (Connection*)h;
 		  c->onClose(c);
 		});

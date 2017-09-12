@@ -6,11 +6,6 @@
 #include<memory>
 #include<string.h>
 
-char* bb[1024];
-void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
-  *buf = uv_buf_init((char*)bb, 1024);
-}
-
 
 
 struct Writer : uv_write_t {

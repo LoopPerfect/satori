@@ -10,13 +10,14 @@
 #include <queue>
 #include <string.h>
 
-
+#include <unistd.h>
 
 
 int main() {
   using namespace std;
 
   auto loop = uv_default_loop();
+  //fork();
   auto writer = std::make_shared<WriterPool<>>(1024);
   auto socket = std::make_shared<SocketPool>(1024);
 
@@ -25,10 +26,10 @@ int main() {
     //std::cout << "new connection" << std::endl;
 		con->onData = [=](auto, auto b, auto e) {
       //std::cout << std::string(b,e) << std::endl;
-      //auto req = parseReq(string(b,e));
+      auto req = parseReq(string(b,e));
       //std::cout << req["path"] << std::endl;
 					//if(req["method"].size()>0)
-
+      if(req.size()) {
 					std::string res =
 					  "HTTP/1.1 200 OK\r\n"
 						"Connection: keep-alive\r\n"
@@ -45,6 +46,7 @@ int main() {
             con->close();
             //std::cout << "closed" << std::endl;
           })->write(res.c_str(), res.size());
+      }
 		};
 
 		con->onDataEnd = [=](auto) {
@@ -59,7 +61,7 @@ int main() {
 			//std::cout << "wierd connection" << std::endl;
 			con->close();
 		}
-	})->listen("127.0.0.1", 8082);
+	})->listen("127.0.0.1", 8082, uv_default_loop());
 
 	uv_run(loop, UV_RUN_DEFAULT);
   uv_loop_close(loop);

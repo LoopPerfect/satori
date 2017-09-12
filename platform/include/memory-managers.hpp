@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <queue>
+#include <algorithm>
 
 #include <platform/writer.hpp>
 #include <platform/socket.hpp>
@@ -58,21 +59,24 @@ struct WriterFactory {
 
 template<class Handle>
 struct Recycler {
-  std::vector<Handle> handlers;
+  std::vector<std::unique_ptr<Handle>> handlers;
   std::queue<Handle*> pool;
 
   Recycler(size_t const num)
     : handlers(num)
   {
+    std::generate(handlers.begin(), handlers.end(), []{
+      return std::make_unique<Handle>(); //there is probably a better way to initialize ...
+    });
     for(auto& w: handlers) {
-      pool.push(&w);
+      pool.push(w.get());
     }
   }
 
   Handle* get() {
-    if(!pool.size()) {
-      handlers.emplace_back();
-      pool.push(&handlers[handlers.size()-1]);
+    if (pool.size()==0) {  //how should we grow ?
+      handlers.emplace_back(std::make_unique<Handle>());
+      pool.push( handlers[handlers.size()-1].get() );
     }
     auto w = pool.front();
     pool.pop();
@@ -124,10 +128,8 @@ struct ConnectionPool : Recycler<Connection> {
     auto s = get();
     s->server = (uv_tcp_t*)server;
     s->onClose = [this](auto s){
-      //std::cout << "releasing" << std::endl;
       release(s);
     };
-    //std::cout <<"gettinh" << std::endl;
     return s;
   };
 };
@@ -144,7 +146,9 @@ struct SocketPool : Recycler<Socket> {
     auto server = get();
     server->onConnection = f;
     server->onClose = [this](Socket* s) { release(s); };
-    server->createConnection = [this](auto s){ return cp.create((uv_stream_t*)s); };
+    server->createConnection = [this](auto s){
+      return cp.create((uv_stream_t*)s);
+    };
     return server;
   }
 };
