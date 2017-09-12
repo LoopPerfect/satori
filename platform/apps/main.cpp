@@ -24,9 +24,9 @@ int main() {
   socket->create([=](Socket* s, Connection* con){
 
     //std::cout << "new connection" << std::endl;
-		con->onData = [=](auto, auto b, auto e) {
-      //std::cout << std::string(b,e) << std::endl;
-      auto req = parseReq(string(b,e));
+		con->onData = [=](auto, auto cstr) {
+      //std::cout << std::string(cstr) << std::endl;
+      auto req = parseReq(cstr);
       //std::cout << req["path"] << std::endl;
 					//if(req["method"].size()>0)
       if(req.size()) {

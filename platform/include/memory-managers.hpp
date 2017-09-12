@@ -9,6 +9,39 @@
 #include <platform/writer.hpp>
 #include <platform/socket.hpp>
 
+template<class Handle>
+struct Recycler {
+  std::vector<std::unique_ptr<Handle>> handlers;
+  std::queue<Handle*> pool;
+
+  Recycler(size_t const num)
+    : handlers(num)
+  {
+    std::generate(handlers.begin(), handlers.end(), []{
+      return std::make_unique<Handle>(); //there is probably a better way to initialize ...
+    });
+    for(auto& w: handlers) {
+      pool.push(w.get());
+    }
+  }
+
+  Handle* get() {
+    if (pool.size()==0) {  //how should we grow ?
+      handlers.emplace_back(std::make_unique<Handle>());
+      pool.push( handlers[handlers.size()-1].get() );
+    }
+    auto w = pool.front();
+    pool.pop();
+    return w;
+  }
+
+  void release(Handle* w) {
+    pool.push(w);
+  }
+};
+
+
+
 struct BufferFactory {
   static uv_buf_t create(size_t len) {
     uv_buf_t b;
@@ -57,37 +90,6 @@ struct WriterFactory {
 };
 
 
-template<class Handle>
-struct Recycler {
-  std::vector<std::unique_ptr<Handle>> handlers;
-  std::queue<Handle*> pool;
-
-  Recycler(size_t const num)
-    : handlers(num)
-  {
-    std::generate(handlers.begin(), handlers.end(), []{
-      return std::make_unique<Handle>(); //there is probably a better way to initialize ...
-    });
-    for(auto& w: handlers) {
-      pool.push(w.get());
-    }
-  }
-
-  Handle* get() {
-    if (pool.size()==0) {  //how should we grow ?
-      handlers.emplace_back(std::make_unique<Handle>());
-      pool.push( handlers[handlers.size()-1].get() );
-    }
-    auto w = pool.front();
-    pool.pop();
-    return w;
-  }
-
-  void release(Handle* w) {
-    pool.push(w);
-  }
-};
-
 
 template<class BMM = BufferFactory>
 struct WriterPool : Recycler<Writer> {
@@ -120,7 +122,7 @@ struct WriterPool : Recycler<Writer> {
 
 
 struct ConnectionPool : Recycler<Connection> {
-  ConnectionPool(size_t num)
+  ConnectionPool(size_t num=1024)
     : Recycler<Connection>(num)
   {}
 
@@ -133,6 +135,7 @@ struct ConnectionPool : Recycler<Connection> {
     return s;
   };
 };
+
 
 struct SocketPool : Recycler<Socket> {
   ConnectionPool cp;
@@ -149,6 +152,7 @@ struct SocketPool : Recycler<Socket> {
     server->createConnection = [this](auto s){
       return cp.create((uv_stream_t*)s);
     };
+
     return server;
   }
 };

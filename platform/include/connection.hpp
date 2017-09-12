@@ -5,16 +5,15 @@
 #include <functional>
 #include <platform/writer.hpp>
 
-char* bb[1024];
-void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
-  *buf = uv_buf_init((char*)bb, 1024);
-}
+//works only on unix. On Linux reads on sockets never interleave
+thread_local static char read_buf[66536];
 
 struct Connection : uv_tcp_t {
 	uv_tcp_t* server;
-	std::function<void(Connection*, char const* b, char const* e)> onData;
+	std::function<void(Connection*, char const*)> onData;
 	std::function<void(Connection*)> onDataEnd;
   std::function<void(Connection*)> onClose;
+
 
 	Connection(uv_tcp_t* server = nullptr)
 		:server{server}
@@ -23,7 +22,7 @@ struct Connection : uv_tcp_t {
 	void read() {
 		uv_read_start(
 			(uv_stream_t*)this,
-			alloc_buffer, Connection::onRead);
+			Connection::allocBuffer, Connection::onRead);
 	}
 
 	void stopReading() {
@@ -57,9 +56,14 @@ struct Connection : uv_tcp_t {
 		} else if(nread == UV_EOF) {
 			c->onDataEnd(c);
 		} else {
-			c->onData(c, data->base, data->base + data->len);
+			c->onData(c, data->base);
 		}
 	}
+
+  static void allocBuffer(uv_handle_t *h, size_t len, uv_buf_t *buf) {
+    *buf = uv_buf_init(read_buf, sizeof(read_buf));
+  }
+
 
 };
 
