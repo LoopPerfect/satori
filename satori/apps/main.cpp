@@ -17,17 +17,18 @@ int main() {
 
   using namespace std;
 
-  auto loop = uv_default_loop();
-  //fork();
-  auto writer = std::make_shared<WriterPool<>>(1024);
-  auto socket = std::make_shared<SocketPool>(1024);
+  auto loop = Satori::Loop(uv_default_loop());
 
-  socket->create([=](Socket* s, Connection* con){
+  //fork();
+  auto writer = std::make_shared<Satori::WriterPool<>>(1024);
+  auto socket = std::make_shared<Satori::SocketPool>(1024);
+
+  socket->create([=](Satori::Socket* s, Satori::Connection* con){
 
     //std::cout << "new connection" << std::endl;
 		con->onData = [=](auto, auto cstr) {
       //std::cout << std::string(cstr) << std::endl;
-      auto req = parseReq(cstr);
+      auto req = Satori::parseReq(cstr);
       //std::cout << req["path"] << std::endl;
 					//if(req["method"].size()>0)
       if (req.size()) {
@@ -57,8 +58,8 @@ int main() {
 			//std::cout << "wierd connection" << std::endl;
 			con->close();
 		}
-	})->listen("127.0.0.1", 8082, uv_default_loop());
+	})->listen("127.0.0.1", 8082, loop.loop);
 
-	uv_run(loop, UV_RUN_DEFAULT);
-  uv_loop_close(loop);
+	loop.run(UV_RUN_DEFAULT);
+  // loop.close();
 }
