@@ -1,5 +1,5 @@
-#ifndef PLATFORM_WRITER_HPP
-#define PLATFORM_WRITER_HPP
+#ifndef SATORI_WRITER_HPP
+#define SATORI_WRITER_HPP
 
 #include<uv.h>
 #include<functional>

@@ -1,9 +1,9 @@
-#ifndef PLATFORM_CONNECTION_HPP
-#define PLATFORM_CONNECTION_HPP
+#ifndef SATORI_CONNECTION_HPP
+#define SATORI_CONNECTION_HPP
 
 #include <uv.h>
 #include <functional>
-#include <platform/writer.hpp>
+#include <satori/writer.hpp>
 
 //works only on unix. On Linux reads on sockets never interleave
 thread_local static char read_buf[66536];

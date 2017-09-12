@@ -1,5 +1,5 @@
-#ifndef PLATFORM_SOCKET_HPP
-#define PLATFORM_SOCKET_HPP
+#ifndef SATORI_SOCKET_HPP
+#define SATORI_SOCKET_HPP
 
 #include <memory>
 #include <functional>
@@ -48,6 +48,5 @@ struct Socket : uv_tcp_t {
 		});
 	}
 };
-
 
 #endif

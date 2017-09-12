@@ -2,26 +2,32 @@
 include_defs('//BUCKAROO_DEPS')
 
 cxx_library(
-  name = 'platform',
-  header_namespace = 'platform',
+  name = 'satori',
+  header_namespace = 'satori',
   srcs = glob([
-    'platform/src/**/*.cpp',
+    'satori/src/**/*.cpp',
   ]),
-  headers = subdir_glob([ # private include files
-    ('platform/detail', '**/*.h'), # they are only accesible inside the library
-    ('platform/detail', '**/*.hpp'),
+  headers = subdir_glob([
+    ('satori/detail', '**/*.hpp'),
   ]),
-  exported_headers = subdir_glob([ # public include files
-    ('platform/include', '**/*.h'), # those will be exported
-    ('platform/include', '**/*.hpp'), # and accessible via <uv/header.h>
+  exported_headers = subdir_glob([
+    ('satori/include', '**/*.hpp'),
   ]),
   deps = BUCKAROO_DEPS,
-  visibility = ['PUBLIC']
+  visibility = [
+    'PUBLIC',
+  ],
 )
 
 cxx_binary(
   name = 'main',
-  srcs = ['platform/apps/main.cpp'],
-  deps = [':platform'],
-  visibility = ['PUBLIC']
+  srcs = [
+    'satori/apps/main.cpp',
+  ],
+  deps = [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
 )

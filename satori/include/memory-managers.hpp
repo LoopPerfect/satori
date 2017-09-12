@@ -1,13 +1,13 @@
-#ifndef PLATFORM_ALLOCATORS_HPP
-#define PLATFORM_ALLOCATORS_HPP
+#ifndef SATORI_ALLOCATORS_HPP
+#define SATORI_ALLOCATORS_HPP
 
 #include <memory>
 #include <vector>
 #include <queue>
 #include <algorithm>
 
-#include <platform/writer.hpp>
-#include <platform/socket.hpp>
+#include <satori/writer.hpp>
+#include <satori/socket.hpp>
 
 template<class Handle>
 struct Recycler {

@@ -2,18 +2,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "uv.h"
 #include <memory>
 #include <functional>
 #include <type_traits>
-#include <platform/platform.hpp>
 #include <queue>
 #include <string.h>
-
 #include <unistd.h>
 
+#include <uv.h>
+
+#include <satori/satori.hpp>
 
 int main() {
+
   using namespace std;
 
   auto loop = uv_default_loop();
@@ -29,25 +30,20 @@ int main() {
       auto req = parseReq(cstr);
       //std::cout << req["path"] << std::endl;
 					//if(req["method"].size()>0)
-      if(req.size()) {
-					std::string res =
-					  "HTTP/1.1 200 OK\r\n"
-						"Connection: keep-alive\r\n"
-						"Content-Type: text/plain\r\n"
-						"\r\n"
-						"Hello World!";
+      if (req.size()) {
+        std::string res =
+          "HTTP/1.1 200 OK\r\n"
+          "Connection: keep-alive\r\n"
+          "Content-Type: text/plain\r\n"
+          "\r\n"
+          "Hello World!";
 
-
-       //   std::cout << "blub" << std::endl;
-
-          writer->create((uv_stream_t*)con, [=](auto w, int s){
-            //std::cout << "closing" << std::endl;
-            w->close();
-            con->close();
-            //std::cout << "closed" << std::endl;
-          })->write(res.c_str(), res.size());
+        writer->create((uv_stream_t*)con, [=](auto w, int s) {
+          w->close();
+          con->close();
+        })->write(res.c_str(), res.size());
       }
-		};
+    };
 
 		con->onDataEnd = [=](auto) {
 			//std::cout << "endRead" << std::endl;

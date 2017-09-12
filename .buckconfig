@@ -1,2 +1,2 @@
 [cxx]
-  cppflags = -Ofast -Os -O3
+  cxxflags = -std=c++14 -Ofast -Os -O3
