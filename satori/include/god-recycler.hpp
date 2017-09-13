@@ -38,20 +38,20 @@ struct Recycler {
 
 
 struct Handle {
-  std::function<void()> onClose;
+  std::function<void()> onClose = []{};
 };
 
 struct Write : Handle {
-  std::function<void(int)> onWriteEnd;
+  std::function<void(int status)> onWriteEnd = [](int){};
 };
 
 struct Stream : Handle {
-  std::function<void(int status)> onReadEnd;
-  std::function<void(char*)> onRead;
+  std::function<void(int status)> onReadEnd = [](int){};
+  std::function<void(char* str)> onRead = [](char*){};
 };
 
 struct Tcp : Stream {
-  std::function<void(int status)> onListen;
+  std::function<void(int status)> onListen = [](int){};
 };
 
 
@@ -71,9 +71,7 @@ struct God {
     Stream stream; // uv_stream_t callbacks
     Tcp tcp;
 
-    AllOfSatori(){
-      handle.onClose = []{};
-    }
+    AllOfSatori(){}
     ~AllOfSatori(){}
     // add more callbacks
   } cb;
@@ -90,10 +88,12 @@ struct God {
 
 
   void initAsTcp(uv_loop_t* loop) {
-    assert(!isAlive);
-    isAlive = true;
-    uv_tcp_init(loop, this->as<uv_tcp_t>());
-    this->init<Tcp>();
+    uv_tcp_init(loop, as<uv_tcp_t>());
+    init<Tcp>();
+  }
+
+  void initAsWriter(uv_loop_t*) {
+    init<Write>();
   }
 
 
@@ -104,7 +104,9 @@ struct God {
 
   template<class T>
   void init() {
+    assert(!isAlive);
     new (&cb) T();
+    isAlive = true;
   }
 
   constexpr int getType()const {

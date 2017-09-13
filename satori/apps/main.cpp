@@ -24,6 +24,21 @@ void onGodClose (uv_handle_t* h) {
   god->isAlive = false;
 }
 
+void onGodWriteEnd (uv_write_t* h, int status) {
+  auto* god = (God*)h;
+  god->cb.write.onWriteEnd(status);
+  god->isAlive = false;
+}
+
+
+uv_buf_t createBuffer(char const* str, size_t const len) {
+  uv_buf_t buf;
+  buf.base = new char[len];
+  buf.len = len;
+  memcpy(buf.base, str, len);
+  return buf;
+}
+
 int main() {
 
   using namespace std;
@@ -41,8 +56,22 @@ int main() {
     auto client = gr.take();
     client->initAsTcp(loop);
 
-    uv_accept(server->as<uv_tcp_t>() , client->as<uv_tcp_t>());
-    uv_close(client->as<uv_stream_t>(), onGodClose);
+    uv_accept(server->as<uv_stream_t>() , client->as<uv_stream_t>());
+
+
+    auto writer = gr.take();
+    writer->initAsWriter(loop);
+
+
+    char str[] = "Hello World";
+    auto buf = createBuffer(str, sizeof(str));
+    writer->cb.write.onWriteEnd = [&](int status) {
+      uv_close(client->as<uv_handle_t>(), onGodClose);
+    };
+
+    uv_write(writer->as<uv_write_t>(), client->as<uv_stream_t>(), &buf, 1, onGodWriteEnd);
+
+
   };
 
 
