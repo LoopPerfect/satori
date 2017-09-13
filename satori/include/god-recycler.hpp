@@ -1,7 +1,7 @@
 #ifndef SATORI_GOD_RECYCLER_HPP
 #define SATORI_GOD_RECYCLER_HPP
 
-#include <uv/uv.h>
+#include <uv.h>
 #include <memory>
 #include <deque>
 #include <stack>
@@ -13,25 +13,26 @@ struct Recycler {
   std::stack<T*> pool;
 
   Recycler(size_t const num)
-    : handlers(num) {
+    : store(num) {
     for(auto& x: store) {
       pool.push(&x);
     }
   }
 
-  T* aquire() {
+  T* take() {
     if (pool.size()==0) {
       auto n = store.size();
-      store.resize(n+1);
-      pool.push(&store[n]);
+      store.emplace_back();
+      return &store[n];
     }
-    auto g = pool.front();
+    auto g = pool.top();
     pool.pop();
     return g;
   }
 
-  void release(T* id) {
-    pool.push(id);
+  void release(T* o) {
+    o->~T();
+    pool.push(o);
   }
 };
 
@@ -49,29 +50,75 @@ struct Stream : Handle {
   std::function<void(char*)> onRead;
 };
 
+struct Tcp : Stream {
+  std::function<void(int status)> onListen;
+};
 
 
 struct God {
-  union {
+  union AllOfUV {
     uv_handle_t handle;
-    uv_writer_t write;
+    uv_write_t write;
     uv_stream_t stream;
     uv_tcp_t tcp;
+    AllOfUV(){}
+    ~AllOfUV(){}
   } uv;
 
-  union {
+  union AllOfSatori {
     Handle handle;
     Write write; // uv_writer_t callbacks
     Stream stream; // uv_stream_t callbacks
+    Tcp tcp;
+
+    AllOfSatori(){
+      handle.onClose = []{};
+    }
+    ~AllOfSatori(){}
     // add more callbacks
   } cb;
+
+  bool isAlive = false;
+
+
+  God() {}
+
+
+  ~God() {
+    //TODO
+  }
+
+
+  void initAsTcp(uv_loop_t* loop) {
+    assert(!isAlive);
+    isAlive = true;
+    uv_tcp_init(loop, this->as<uv_tcp_t>());
+    this->init<Tcp>();
+  }
+
 
   template<class T>
   T* as() {
     return (T*)this;
   }
 
-  int tag;
+  template<class T>
+  void init() {
+    new (&cb) T();
+  }
+
+  constexpr int getType()const {
+    return uv.handle.type;
+  }
+
+
+};
+
+
+struct GodRecycler : Recycler<God>{
+  GodRecycler(size_t const n=1024)
+    : Recycler<God>(n)
+  {}
 };
 
 
@@ -91,3 +138,5 @@ void stop(God* g) {
 }
 
 */
+
+#endif
