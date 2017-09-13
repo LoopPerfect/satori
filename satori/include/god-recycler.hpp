@@ -21,7 +21,7 @@ struct Recycler {
 
   T* take() {
     if (pool.size()==0) {
-      auto n = store.size();
+      auto const n = store.size();
       store.emplace_back();
       return &store[n];
     }
@@ -79,21 +79,36 @@ struct God {
   bool isAlive = false;
 
 
+  std::function<void()> release = []{};
+
   God() {}
 
 
   ~God() {
-    //TODO
+    switch(type) {
+      case 1:
+        cb.tcp.~Tcp();
+        return;
+
+      case 2:
+        cb.write.~Write();
+        return;
+      default:
+      case 0:
+        return;
+    }
   }
 
-
+  int type = 0;
   void initAsTcp(uv_loop_t* loop) {
     uv_tcp_init(loop, as<uv_tcp_t>());
     init<Tcp>();
+    type = 1;
   }
 
   void initAsWriter(uv_loop_t*) {
     init<Write>();
+    type = 2;
   }
 
 
@@ -109,7 +124,7 @@ struct God {
     isAlive = true;
   }
 
-  constexpr int getType()const {
+  constexpr int getHandleType()const {
     return uv.handle.type;
   }
 
@@ -121,6 +136,16 @@ struct GodRecycler : Recycler<God>{
   GodRecycler(size_t const n=1024)
     : Recycler<God>(n)
   {}
+
+  God* take() {
+    auto g = Recycler<God>::take();
+    g->release = [this, g]{
+      g->isAlive = false;
+      release(g);
+    };
+
+    return g;
+  }
 };
 
 
