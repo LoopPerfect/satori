@@ -46,8 +46,8 @@ struct Write : Handle {
 };
 
 struct Stream : Handle {
-  std::function<void(int status)> onReadEnd = [](int){};
-  std::function<void(char* str)> onRead = [](char*){};
+  std::function<void()> onDataEnd = [](){};
+  std::function<void(char* str, size_t len)> onData = [](char*, size_t){};
 };
 
 struct Tcp : Stream {
