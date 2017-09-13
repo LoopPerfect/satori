@@ -16,10 +16,19 @@
 #include <satori/satori.hpp>
 
 thread_local static char read_buf[66536];
+
+
 static void allocBuffer(uv_handle_t *h, size_t len, uv_buf_t *buf) {
 	*buf = uv_buf_init(read_buf, sizeof(read_buf));
 }
 
+void enableMultiProcess(uv_loop_t* loop, uv_tcp_t* server) {
+  assert(uv_tcp_init_ex(loop, server, AF_INET) == 0);
+  uv_os_fd_t fd;
+  int on = 1;
+  assert(uv_fileno((uv_handle_t*)server, &fd) == 0);
+  assert(setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) == 0);
+}
 
 
 void onGodListen (uv_stream_t* h, int status) {
@@ -121,6 +130,8 @@ int main() {
 
   sockaddr_in address;
   uv_ip4_addr("127.0.0.1", 8081, &address);
+
+  enableMultiProcess(loop, server->as<uv_tcp_t>());
   uv_tcp_bind(server->as<uv_tcp_t>(), (const sockaddr *) &address, 0);
 
 
