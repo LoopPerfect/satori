@@ -2,6 +2,7 @@
 #define SATORI_GOD_RECYCLER_HPP
 
 #include <uv.h>
+#include <assert.h>
 #include <memory>
 #include <deque>
 #include <stack>
@@ -133,10 +134,17 @@ struct Tcp : Stream {
 struct God {
 
   union UV {
+
+    // Handles
     uv_handle_t handle;
     uv_stream_t stream;
     uv_tcp_t tcp;
+
+    // Requests
+    uv_req_t request;
     uv_write_t write;
+    uv_fs_t fs;
+
     UV() {}
     ~UV() {}
   } uv;
@@ -158,14 +166,28 @@ struct God {
 
   ~God() {
     if (isRequest) {
-      // TODO: Different request types
-      uv.write.~uv_write_t();
-      cb.write.~Write();
+      uv_req_type type = uv.request.type;
+      switch (type) {
+        case UV_WRITE:
+          uv.write.~uv_write_t();
+          cb.write.~Write();
+          break;
+        case UV_UNKNOWN_REQ:
+        default:
+          assert(false && "Unrecognized request type");
+      }
     } else {
-      // TODO: Switch on UV type
-      uv_unref(&uv.handle);
-      uv.tcp.~uv_tcp_t();
-      cb.tcp.~Tcp();
+      uv_handle_type type = uv.handle.type;
+      switch (type) {
+        case UV_TCP:
+          uv_unref(&uv.handle);
+          uv.tcp.~uv_tcp_t();
+          cb.tcp.~Tcp();
+          break;
+        case UV_UNKNOWN_HANDLE:
+        default:
+          assert(false && "Unrecognized handle type");
+      }
     }
   }
 
@@ -186,7 +208,8 @@ struct God {
     return (T*)this;
   }
 
-  constexpr int getHandleType()const {
+  constexpr int getHandleType() const {
+    assert(!isRequest && "getHandleType is not valid for requests");
     return uv.handle.type;
   }
 };
@@ -201,7 +224,6 @@ struct GodRecycler : Recycler<God>{
     };
   }
 };
-
 
 static void onGodWriteEnd (uv_write_t* h, int status) {
   auto* god = (God*)h;
