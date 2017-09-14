@@ -130,82 +130,71 @@ struct Tcp : Stream {
   std::function<void(int status)> onListen = [](int){};
 };
 
-
 struct God {
-  union AllOfUV {
+
+  union UV {
     uv_handle_t handle;
-    uv_write_t write;
     uv_stream_t stream;
     uv_tcp_t tcp;
-    AllOfUV(){}
-    ~AllOfUV(){}
+    uv_write_t write;
+    UV() {}
+    ~UV() {}
   } uv;
 
-  union AllOfSatori {
+  bool isRequest = false; // uv is either a handle or a request.
+
+  union Satori {
     Handle handle;
     Write write; // uv_writer_t callbacks
     Stream stream; // uv_stream_t callbacks
     Tcp tcp;
-
-    AllOfSatori(){}
-    ~AllOfSatori(){}
+    Satori() {}
+    ~Satori() {}
   } cb;
-
-
 
   static std::function<void(God*)> release;
 
   God() {}
-  ~God() {
-    switch(type) {
-      case 1:
-        uv_unref(&uv.handle);
-        uv.tcp.~uv_tcp_t();
-        cb.tcp.~Tcp();
-        return;
 
-      case 2:
-        uv.write.~uv_write_t();
-        cb.write.~Write();
-        return;
-      default:
-      case 0:
-        std::cout << "?2323desxv" << std::endl;
-        return;
+  ~God() {
+    if (isRequest) {
+      // TODO: Different request types
+      uv.write.~uv_write_t();
+      cb.write.~Write();
+    } else {
+      // TODO: Switch on UV type
+      uv_unref(&uv.handle);
+      uv.tcp.~uv_tcp_t();
+      cb.tcp.~Tcp();
     }
   }
 
-  int type = 0;
   void initAsTcp(uv_loop_t* loop) {
     new (&uv) uv_tcp_t();
     new (&cb) Tcp(loop, this);
-    type = 1;
+    isRequest = false;
   }
 
   void initAsWriter(uv_loop_t* loop) {
     new (&uv) uv_write_t();
     new (&cb) Write(loop, this);
-    type = 2;
+    isRequest = true;
   }
-
 
   template<class T>
   T* as() {
     return (T*)this;
   }
 
-
   constexpr int getHandleType()const {
     return uv.handle.type;
   }
 };
 
-std::function<void(God*)> God::release = [](auto){};
-
-
+std::function<void(God*)> God::release = [](auto) {};
 
 struct GodRecycler : Recycler<God>{
-  GodRecycler(size_t const n=1024)
+  GodRecycler(size_t const n = 1024)
     : Recycler<God>(n) {
     God::release = [this](auto* g){
       release(g);
