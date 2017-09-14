@@ -6,6 +6,7 @@
 #include <deque>
 #include <stack>
 #include <functional>
+#include <queue>
 
 template<class T>
 struct Recycler {
@@ -29,6 +30,7 @@ struct Recycler {
     pool.pop();
     return g;
   }
+
 
   void release(T* o) {
     o->~T();
@@ -76,38 +78,48 @@ struct God {
     // add more callbacks
   } cb;
 
-  bool isAlive = false;
+  //bool isAlive = false;
 
 
-  std::function<void()> release = []{};
+  static std::function<void(God*)> release;
 
-  God() {}
+  God() {
+    static int i=0;
+    //std::cout << i++ << std::endl;
+   // assert(uv_has_ref(&uv.handle)==false);
+  }
 
 
   ~God() {
     switch(type) {
       case 1:
+        uv_unref(&uv.handle);
+        uv.tcp.~uv_tcp_t();
         cb.tcp.~Tcp();
         return;
 
       case 2:
+        uv.write.~uv_write_t();
         cb.write.~Write();
         return;
       default:
       case 0:
+        std::cout << "?2323desxv" << std::endl;
         return;
     }
   }
 
   int type = 0;
   void initAsTcp(uv_loop_t* loop) {
+    new (&uv) uv_tcp_t();
+    new (&cb) Tcp();
     uv_tcp_init(loop, as<uv_tcp_t>());
-    init<Tcp>();
     type = 1;
   }
 
   void initAsWriter(uv_loop_t*) {
-    init<Write>();
+    new (&uv) uv_write_t();
+    new (&cb) Write();
     type = 2;
   }
 
@@ -119,9 +131,9 @@ struct God {
 
   template<class T>
   void init() {
-    assert(!isAlive);
+   // assert(!isAlive);
     new (&cb) T();
-    isAlive = true;
+  //  isAlive = true;
   }
 
   constexpr int getHandleType()const {
@@ -131,39 +143,19 @@ struct God {
 
 };
 
+std::function<void(God*)> God::release = [](auto){};
+
+
 
 struct GodRecycler : Recycler<God>{
   GodRecycler(size_t const n=1024)
-    : Recycler<God>(n)
-  {}
-
-  God* take() {
-    auto g = Recycler<God>::take();
-    g->release = [this, g]{
-      g->isAlive = false;
+    : Recycler<God>(n) {
+    God::release = [this](auto* g){
       release(g);
     };
-
-    return g;
   }
+
 };
 
-
-/* utillity
-void start(God* g) {
-	uv_read_start(
-		(uv_stream_t*)g,
-		allocBuffer,
-    [](auto* h, char const* chunk){
-      auto self = (God*)h;
-      self.cb.onRead(chunk);
-  });
-}
-
-void stop(God* g) {
-	uv_read_stop((uv_stream_t*)g);
-}
-
-*/
 
 #endif
