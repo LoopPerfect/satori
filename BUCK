@@ -31,3 +31,16 @@ cxx_binary(
     'PUBLIC',
   ],
 )
+
+cxx_binary(
+  name = 'uv_readfile',
+  srcs = [
+    'satori/apps/uv_readfile.cpp',
+  ],
+  deps = BUCKAROO_DEPS + [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
