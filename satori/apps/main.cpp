@@ -17,7 +17,6 @@
 
 thread_local static char read_buf[66536];
 
-
 static void allocBuffer(uv_handle_t *h, size_t len, uv_buf_t *buf) {
 	*buf = uv_buf_init(read_buf, sizeof(read_buf));
 }
@@ -39,21 +38,21 @@ void onGodListen (uv_stream_t* h, int status) {
 void onGodClose (uv_handle_t* h) {
   auto* god = (God*)h;
   god->cb.handle.onClose();
-  god->release();
+  god->release(god);
 }
 
 void onGodWriteEnd (uv_write_t* h, int status) {
   auto* god = (God*)h;
   god->cb.write.onWriteEnd(status);
-  god->release();
+  god->release(god);
 }
 
 
 void onGodRead (uv_stream_t* h, ssize_t nread, uv_buf_t const* data) {
   auto* god = (God*)h;
-	if(nread < 0) {
-		god->cb.stream.onClose();
-    god->release();
+	if (nread < 0) {
+
+    uv_close((uv_handle_t*)h, onGodClose);
 	} else if(nread == UV_EOF) {
 		god->cb.stream.onDataEnd();
 	} else {
@@ -75,7 +74,7 @@ int main() {
   using namespace std;
   using namespace Satori;
 
-  auto gr = std::make_shared<GodRecycler>();
+  auto gr = std::make_shared<GodRecycler>(2048);
   auto server = gr->take();
 
 
@@ -84,11 +83,12 @@ int main() {
 
 
   server->cb.tcp.onListen = [=](auto status) {
+
+    if(status) std::cout << status << std::endl;
     auto client = gr->take();
     client->initAsTcp(loop);
 
-    uv_accept(server->as<uv_stream_t>() , client->as<uv_stream_t>());
-
+    assert(uv_accept(server->as<uv_stream_t>() , client->as<uv_stream_t>())==0);
 
     client->cb.tcp.onData = [=](char const* data, size_t const len) {
       //std::cout << str << std::endl;
@@ -96,18 +96,27 @@ int main() {
 
       if(req.size() == 0) std::cout << "DSADAS" << std::endl;
 
-      auto writer = gr->take();
-      writer->initAsWriter(loop);
+
 
       char res[] =
         "HTTP/1.1 200 OK\r\n"
-          "Connection: keep-alive\r\n"
-          "Content-Type: text/plain\r\n"
-          "\r\n"
-          "Hello World!";
+        "Server: nginx/1.13.5\r\n"
+        "Date: Wed, 13 Sep 2017 17:46:27 GMT\r\n"
+        "Content-Type: text/html\r\n"
+        "Content-Length: 12\r\n"
+        "Last-Modified: Wed, 13 Sep 2017 17:45:22 GMT\r\n"
+        "Connection: keep-alive\r\n"
+        "ETag: \"59b96eb2-c\"\r\n"
+        "Accept-Ranges: bytes\r\n"
+        "\r\n"
+        "hello world";
+
       uv_buf_t buf = createBuffer(res, sizeof(res));
 
+      auto writer = gr->take();
+      writer->initAsWriter(loop);
       writer->cb.write.onWriteEnd = [=](int status) {
+        if(status<0) { std::cout << status << std::endl; }
         uv_close(client->as<uv_handle_t>(), onGodClose);
         delete[] buf.base;
       };
@@ -119,7 +128,6 @@ int main() {
     client->cb.tcp.onDataEnd = [=] {
       std::cout << "data end" << std::endl;
     };
-
 
     uv_read_start(
         client->as<uv_stream_t>(),
