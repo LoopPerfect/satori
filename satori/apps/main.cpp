@@ -22,8 +22,7 @@ int main() {
   using namespace Satori;
 
   auto loop = std::make_shared<Loop>();
-  auto server = loop->takeTcp();
-
+  auto* server = loop->takeTcp();
 
   server->onListen = [=](auto status) {
 

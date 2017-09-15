@@ -9,46 +9,20 @@
 #include <functional>
 #include <queue>
 
-template<class T>
-struct Recycler {
-  std::deque<T> store;
-  std::stack<T*> pool;
-
-  Recycler(size_t const num)
-    : store(num) {
-    for(auto& x: store) {
-      pool.push(&x);
-    }
-  }
-
-  T* take() {
-    if (pool.size()==0) {
-      auto const n = store.size();
-      store.emplace_back();
-      return &store[n];
-    }
-    auto g = pool.top();
-    pool.pop();
-    return g;
-  }
+#include <satori/recycler.hpp>
 
 
-  void release(T* o) {
-    o->~T();
-    pool.push(o);
-  }
-};
-
-
+namespace Satori {
 
 thread_local static char read_buf[66536];
 
 static void enableMultiProcess(uv_loop_t* loop, uv_tcp_t* server);
-static void allocBuffer(uv_handle_t *h, size_t len, uv_buf_t *buf);
-static void onGodWriteEnd (uv_write_t* h, int status);
-static void onGodListen (uv_stream_t* h, int status);
-static void onGodClose (uv_handle_t* h);
-static void onGodRead (uv_stream_t* h, ssize_t nread, uv_buf_t const* data);
+static void allocBuffer(uv_handle_t* h, size_t len, uv_buf_t* buf);
+static void onGodWriteEnd(uv_write_t* h, int status);
+static void onGodListen(uv_stream_t* h, int status);
+static void onGodClose(uv_handle_t* h);
+static void onGodRead(uv_stream_t* h, ssize_t nread, uv_buf_t const* data);
+
 static uv_buf_t createBuffer(char const* str, size_t const len);
 
 struct Handle {
@@ -57,7 +31,7 @@ struct Handle {
   {}
 
   void* handle;
-  std::function<void()> onClose = []{};
+  std::function<void()> onClose = []() {};
 };
 
 struct Stream : Handle {
@@ -90,21 +64,29 @@ struct Write : Handle {
     }
   }
 
-  void close(){}
+  void close() {}
+
   void write(Stream* stream, const char* msg, size_t len) {
     if (buf.len) {
       delete[] buf.base;
     }
-
     buf.base = new char[len];
     buf.len = len;
     memcpy(buf.base, msg, len);
     uv_write((uv_write_t*)handle, (uv_stream_t*)stream->handle, &buf, 1, onGodWriteEnd);
-  };
+  }
 
 };
 
+struct FS : Handle {
 
+  FS(void* loop, void* handle)
+    : Handle(loop, handle) {}
+
+  ~FS() {}
+
+  void close() {}
+};
 
 struct Tcp : Stream {
   Tcp(void* loop, void* handle)
@@ -156,6 +138,7 @@ struct God {
     Write write; // uv_writer_t callbacks
     Stream stream; // uv_stream_t callbacks
     Tcp tcp;
+    FS fs;
     Satori() {}
     ~Satori() {}
   } cb;
@@ -171,6 +154,10 @@ struct God {
         case UV_WRITE:
           uv.write.~uv_write_t();
           cb.write.~Write();
+          break;
+        case UV_FS:
+          uv.fs.~uv_fs_t();
+          cb.fs.~FS();
           break;
         case UV_UNKNOWN_REQ:
         default:
@@ -195,6 +182,12 @@ struct God {
     new (&uv) uv_tcp_t();
     new (&cb) Tcp(loop, this);
     isRequest = false;
+  }
+
+  void initAsFS(uv_loop_t* loop) {
+    new (&uv) uv_fs_t();
+    new (&cb) FS(loop, this);
+    isRequest = true;
   }
 
   void initAsWriter(uv_loop_t* loop) {
@@ -231,21 +224,20 @@ static void onGodWriteEnd (uv_write_t* h, int status) {
   god->release(god);
 }
 
-static void allocBuffer(uv_handle_t *h, size_t len, uv_buf_t *buf) {
+static void allocBuffer(uv_handle_t* h, size_t len, uv_buf_t* buf) {
 	*buf = uv_buf_init(read_buf, sizeof(read_buf));
 }
 
-static void onGodListen (uv_stream_t* h, int status) {
+static void onGodListen(uv_stream_t* h, int status) {
   auto* god = (God*)h;
   god->cb.tcp.onListen(status);
 }
 
-static void onGodClose (uv_handle_t* h) {
+static void onGodClose(uv_handle_t* h) {
   auto* god = (God*)h;
   god->cb.handle.onClose();
   god->release(god);
 }
-
 
 static void onGodRead (uv_stream_t* h, ssize_t nread, uv_buf_t const* data) {
   auto* god = (God*)h;
@@ -258,7 +250,6 @@ static void onGodRead (uv_stream_t* h, ssize_t nread, uv_buf_t const* data) {
 	}
 }
 
-
 static uv_buf_t createBuffer(char const* str, size_t const len) {
   uv_buf_t buf;
   buf.base = new char[len];
@@ -267,13 +258,14 @@ static uv_buf_t createBuffer(char const* str, size_t const len) {
   return buf;
 }
 
-
 static void enableMultiProcess(uv_loop_t* loop, uv_tcp_t* server) {
   assert(uv_tcp_init_ex(loop, server, AF_INET) == 0);
   uv_os_fd_t fd;
   int on = 1;
   assert(uv_fileno((uv_handle_t*)server, &fd) == 0);
   assert(setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) == 0);
+}
+
 }
 
 #endif
