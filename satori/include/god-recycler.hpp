@@ -8,22 +8,13 @@
 #include <stack>
 #include <functional>
 #include <queue>
+#include <cstring>
 
 #include <satori/recycler.hpp>
+#include <satori/uv_interop.hpp>
 
 
 namespace Satori {
-
-thread_local static char read_buf[66536];
-
-static void enableMultiProcess(uv_loop_t* loop, uv_tcp_t* server);
-static void allocBuffer(uv_handle_t* h, size_t len, uv_buf_t* buf);
-static void onGodWriteEnd(uv_write_t* h, int status);
-static void onGodListen(uv_stream_t* h, int status);
-static void onGodClose(uv_handle_t* h);
-static void onGodRead(uv_stream_t* h, ssize_t nread, uv_buf_t const* data);
-
-static uv_buf_t createBuffer(char const* str, size_t const len);
 
 struct Handle {
   Handle(void*, void* handle)
@@ -143,7 +134,7 @@ struct God {
     ~Satori() {}
   } cb;
 
-  static std::function<void(God*)> release;
+  thread_local static std::function<void(God*)> release;
 
   God() {}
 
@@ -207,7 +198,7 @@ struct God {
   }
 };
 
-std::function<void(God*)> God::release = [](auto) {};
+
 
 struct GodRecycler : Recycler<God>{
   GodRecycler(size_t const n = 1024)
@@ -217,54 +208,6 @@ struct GodRecycler : Recycler<God>{
     };
   }
 };
-
-static void onGodWriteEnd (uv_write_t* h, int status) {
-  auto* god = (God*)h;
-  god->cb.write.onWriteEnd(status);
-  god->release(god);
-}
-
-static void allocBuffer(uv_handle_t* h, size_t len, uv_buf_t* buf) {
-	*buf = uv_buf_init(read_buf, sizeof(read_buf));
-}
-
-static void onGodListen(uv_stream_t* h, int status) {
-  auto* god = (God*)h;
-  god->cb.tcp.onListen(status);
-}
-
-static void onGodClose(uv_handle_t* h) {
-  auto* god = (God*)h;
-  god->cb.handle.onClose();
-  god->release(god);
-}
-
-static void onGodRead (uv_stream_t* h, ssize_t nread, uv_buf_t const* data) {
-  auto* god = (God*)h;
-	if (nread < 0) {
-    uv_close((uv_handle_t*)h, onGodClose);
-	} else if(nread == UV_EOF) {
-		god->cb.stream.onDataEnd();
-	} else {
-		god->cb.stream.onData(data->base, (size_t)nread);
-	}
-}
-
-static uv_buf_t createBuffer(char const* str, size_t const len) {
-  uv_buf_t buf;
-  buf.base = new char[len];
-  buf.len = len;
-  memcpy(buf.base, str, len);
-  return buf;
-}
-
-static void enableMultiProcess(uv_loop_t* loop, uv_tcp_t* server) {
-  assert(uv_tcp_init_ex(loop, server, AF_INET) == 0);
-  uv_os_fd_t fd;
-  int on = 1;
-  assert(uv_fileno((uv_handle_t*)server, &fd) == 0);
-  assert(setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) == 0);
-}
 
 }
 
