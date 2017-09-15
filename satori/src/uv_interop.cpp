@@ -7,7 +7,17 @@ namespace Satori {
   void onGodAsync (uv_async_t* h) {
     auto* god = (God*)h;
     god->cb.async.job();
-    god->cb.async.onClose();
+    god->release(god);
+  }
+
+  void onGodWork(uv_work_t* h) {
+    auto* god = (God*)h;
+    god->cb.work.job();
+  }
+
+  void onGodWorkAfter(uv_work_t* h, int status) {
+    auto* god = (God*)h;
+    god->cb.work.then(status);
     god->release(god);
   }
 

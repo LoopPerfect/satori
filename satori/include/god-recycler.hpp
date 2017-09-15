@@ -22,7 +22,7 @@ struct Handle {
   {}
 
   void* handle;
-  std::function<void()> onClose = []() {};
+  std::function<void()> onClose = []{};
 };
 
 struct Async : Handle {
@@ -35,7 +35,22 @@ struct Async : Handle {
     uv_async_send((uv_async_t*)handle);
   }
 
-  std::function<void()> job;
+  std::function<void()> job = []{};
+};
+
+struct Work : Handle {
+  Work(void* loop, void* handle)
+    : Handle(loop, handle) {
+    uv_queue_work((uv_loop_t*)loop, (uv_work_t*)handle, onGodWork, onGodWorkAfter);
+  }
+
+  void cancel() {
+    uv_cancel((uv_req_t*)handle);
+  }
+
+  std::function<void()> job = []{};
+  std::function<void(int)> then =[](int){};
+
 };
 
 struct Stream : Handle {
@@ -125,12 +140,12 @@ struct God {
     uv_handle_t handle;
     uv_stream_t stream;
     uv_tcp_t tcp;
-    uv_async_t async;
-
     // Requests
     uv_req_t request;
     uv_write_t write;
     uv_fs_t fs;
+    uv_work_t work;
+    uv_async_t async;
 
     UV() {}
     ~UV() {}
@@ -145,6 +160,7 @@ struct God {
     Stream stream; // uv_stream_t callbacks
     Tcp tcp;
     FS fs;
+    Work work;
     Satori() {}
     ~Satori() {}
   } cb;
@@ -165,6 +181,16 @@ struct God {
           uv.fs.~uv_fs_t();
           cb.fs.~FS();
           break;
+        case UV_ASYNC:
+          uv_unref(&uv.handle);
+          uv.async.~uv_async_t();
+          cb.async.~Async();
+          break;
+        case UV_WORK:
+          uv_unref(&uv.handle);
+          uv.work.~uv_work_t();
+          cb.work.~Work();
+          break;
         case UV_UNKNOWN_REQ:
         default:
           assert(false && "Unrecognized request type");
@@ -176,11 +202,6 @@ struct God {
           uv_unref(&uv.handle);
           uv.tcp.~uv_tcp_t();
           cb.tcp.~Tcp();
-          break;
-        case UV_ASYNC:
-          uv_unref(&uv.handle);
-          uv.async.~uv_async_t();
-          cb.async.~Async();
           break;
         case UV_UNKNOWN_HANDLE:
         default:
@@ -210,7 +231,13 @@ struct God {
   void initAsAsync(uv_loop_t* loop) {
     new (&uv) uv_async_t();
     new (&cb) Async(loop, this);
-    isRequest = false;
+    isRequest = true;
+  }
+
+  void initAsWork(uv_loop_t* loop) {
+    new (&uv) uv_work_t();
+    new (&cb) Work(loop, this);
+    isRequest = true;
   }
 
   template<class T>

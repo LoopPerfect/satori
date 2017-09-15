@@ -12,6 +12,8 @@ namespace Satori {
   void onGodListen(uv_stream_t* h, int status);
   void onGodClose(uv_handle_t* h);
   void onGodAsync(uv_async_t* h);
+  void onGodWork(uv_work_t* h);
+  void onGodWorkAfter(uv_work_t* h, int status);
   void onGodRead(uv_stream_t* h, ssize_t nread, uv_buf_t const* data);
 
   uv_buf_t createBuffer(char const* str, size_t const len);
