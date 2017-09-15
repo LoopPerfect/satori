@@ -2,7 +2,9 @@
 #define SATORI_LOOP_HPP
 
 #include <satori/god-recycler.hpp>
+
 namespace Satori {
+
   struct Loop {
 
     GodRecycler gr;
@@ -20,7 +22,13 @@ namespace Satori {
       return &g->cb.tcp;
     }
 
-    Loop(size_t n = 1024, uv_loop_t* loop = uv_default_loop())
+    FS* takeFS() {
+      auto* g = gr.take();
+      g->initAsFS(loop);
+      return &g->cb.fs;
+    }
+
+    Loop(size_t n = 1024, uv_loop_t* loop = new uv_loop_t())
       : gr(n)
       , loop(loop) {
       uv_loop_init(loop);
@@ -32,8 +40,10 @@ namespace Satori {
 
     ~Loop() {
       uv_loop_close(loop);
+      // TODO: Should we delete loop?
     }
   };
+
 }
 
 #endif
