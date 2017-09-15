@@ -22,6 +22,12 @@ namespace Satori {
       return &g->cb.tcp;
     }
 
+    Async* takeAsync() {
+      auto* g = gr.take();
+      g->initAsAsync(loop);
+      return &g->cb.async;
+    }
+
     FS* takeFS() {
       auto* g = gr.take();
       g->initAsFS(loop);

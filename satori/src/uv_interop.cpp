@@ -4,6 +4,13 @@
 
 namespace Satori {
 
+  void onGodAsync (uv_async_t* h) {
+    auto* god = (God*)h;
+    god->cb.async.job();
+    god->cb.async.onClose();
+    god->release(god);
+  }
+
   void onGodWriteEnd (uv_write_t* h, int status) {
     auto* god = (God*)h;
     god->cb.write.onWriteEnd(status);

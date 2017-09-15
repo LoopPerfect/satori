@@ -25,6 +25,19 @@ struct Handle {
   std::function<void()> onClose = []() {};
 };
 
+struct Async : Handle {
+  Async(void* loop, void* handle)
+    : Handle(loop, handle) {
+    uv_async_init((uv_loop_t*)loop, (uv_async_t*)handle, onGodAsync);
+  }
+
+  void start() {
+    uv_async_send((uv_async_t*)handle);
+  }
+
+  std::function<void()> job;
+};
+
 struct Stream : Handle {
   Stream(void* loop, void* handle)
     : Handle(loop, handle)
@@ -112,6 +125,7 @@ struct God {
     uv_handle_t handle;
     uv_stream_t stream;
     uv_tcp_t tcp;
+    uv_async_t async;
 
     // Requests
     uv_req_t request;
@@ -126,6 +140,7 @@ struct God {
 
   union Satori {
     Handle handle;
+    Async async;
     Write write; // uv_writer_t callbacks
     Stream stream; // uv_stream_t callbacks
     Tcp tcp;
@@ -162,6 +177,11 @@ struct God {
           uv.tcp.~uv_tcp_t();
           cb.tcp.~Tcp();
           break;
+        case UV_ASYNC:
+          uv_unref(&uv.handle);
+          uv.async.~uv_async_t();
+          cb.async.~Async();
+          break;
         case UV_UNKNOWN_HANDLE:
         default:
           assert(false && "Unrecognized handle type");
@@ -185,6 +205,12 @@ struct God {
     new (&uv) uv_write_t();
     new (&cb) Write(loop, this);
     isRequest = true;
+  }
+
+  void initAsAsync(uv_loop_t* loop) {
+    new (&uv) uv_async_t();
+    new (&cb) Async(loop, this);
+    isRequest = false;
   }
 
   template<class T>
