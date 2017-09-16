@@ -13,7 +13,7 @@
 
 
 #include <satori/http-parser.hpp>
-#include <satori/satori.hpp>
+//#include <satori/satori.hpp>
 #include <satori/loop.hpp>
 
 int main() {
@@ -22,21 +22,20 @@ int main() {
   using namespace Satori;
 
   auto loop = std::make_shared<Loop>();
-  auto* server = loop->takeTcp();
-  auto g = loop->gr.take();
+  auto* server = loop->newTcp();
 
-  std::cout
-    << " uv_any_t "<< sizeof(uv_any_handle)
-    << " uv tcp_t " << sizeof(uv_tcp_t)
-    << " God: " << sizeof(God)
-    << " God handle: " << sizeof(g->cb.handle)
-    << " God write: " << sizeof(g->cb.write)
-    << " God fs: " << sizeof(g->cb.fs)
-    << " God tcp: " << sizeof(g->cb.tcp) << std::endl;
+  std::cout << server << std::endl;
+  server->listen("127.0.0.1", 8080);
+  server->onListen = [](auto status) {
+    std::cout<< "blub" << std::endl;
+  };
 
 
+  loop->run();
+
+/*
   server->onListen = [=](auto status) {
-    auto* client = loop->takeTcp();
+    auto* client = loop->newTcp();
     server->accept(client);
 
     client->onData = [=](char const* data, size_t const len) {
@@ -59,7 +58,7 @@ int main() {
         "\r\n"
         "hello world";
 
-      auto writer = loop->takeWriter();
+      auto writer = loop->newWrite();
       writer->onWriteEnd = [=](int status) {
         if (status<0) { std::cout << status << std::endl; }
         client->close();
@@ -74,6 +73,5 @@ int main() {
 
   };
 
-  server->listen("127.0.0.1", 8081);
-  loop->run();
+  server->listen("127.0.0.1", 8081);*/
 }

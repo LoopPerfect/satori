@@ -1,30 +1,32 @@
 
-#include <satori/satori.hpp>
+//#include <satori/satori.hpp>
+#include <uv.h>
 #include <satori/uv_interop.hpp>
+#include <satori/handles.hpp>
+#include <satori/requests.hpp>
+#include <cassert>
+#include <iostream>
 
 namespace Satori {
 
   void onGodAsync (uv_async_t* h) {
-    auto* god = (God*)h;
-    god->cb.async.job();
-    god->release(god);
+    auto* async = (Async*)h;
+    async->job();
   }
 
   void onGodWork(uv_work_t* h) {
-    auto* god = (God*)h;
-    god->cb.work.job();
+    auto* work = (Work*)h;
+    work->job();
   }
 
   void onGodWorkAfter(uv_work_t* h, int status) {
-    auto* god = (God*)h;
-    god->cb.work.then(status);
-    god->release(god);
+    auto* work = (Work*)h;
+    work->then(status);
   }
 
   void onGodWriteEnd (uv_write_t* h, int status) {
-    auto* god = (God*)h;
-    god->cb.write.onWriteEnd(status);
-    god->release(god);
+    auto* write = (Write*)h;
+    write->onWriteEnd(status);
   }
 
   void allocBuffer(uv_handle_t* h, size_t len, uv_buf_t* buf) {
@@ -32,24 +34,25 @@ namespace Satori {
   }
 
   void onGodListen(uv_stream_t* h, int status) {
-    auto* god = (God*)h;
-    god->cb.tcp.onListen(status);
+    std::cout << h << std::endl;
+    auto* tcp = (Tcp*)h;
+    tcp->onListen(status);
   }
 
   void onGodClose(uv_handle_t* h) {
-    auto* god = (God*)h;
-    god->cb.handle.onClose();
-    god->release(god);
+    auto* handle = (Handle*)h;
+    handle->onClose();
+    //handle->release(handle);
   }
 
   void onGodRead (uv_stream_t* h, ssize_t nread, uv_buf_t const* data) {
-    auto* god = (God*)h;
+    auto* stream = (Stream*)h;
     if (nread < 0) {
       uv_close((uv_handle_t*)h, onGodClose);
     } else if(nread == UV_EOF) {
-      god->cb.stream.onDataEnd();
+      stream->onDataEnd();
     } else {
-      god->cb.stream.onData(data->base, (size_t)nread);
+      stream->onData(data->base, (size_t)nread);
     }
   }
 

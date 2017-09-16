@@ -20,26 +20,6 @@ namespace Satori {
 
 
 struct God {
-
-  union UV {
-
-    // Handles
-    uv_handle_t handle;
-    uv_stream_t stream;
-    uv_tcp_t tcp;
-    // Requests
-    uv_req_t request;
-    uv_write_t write;
-    uv_fs_t fs;
-    uv_work_t work;
-    uv_async_t async;
-
-    UV() {}
-    ~UV() {}
-  } uv;
-
-  bool isRequest = false; // uv is either a handle or a request.
-
   union Satori {
     Handle handle;
     Async async;
@@ -50,18 +30,19 @@ struct God {
     Work work;
     Satori() {}
     ~Satori() {}
-  } cb;
+  };
+
+  bool isRequest = false; // uv is either a handle or a request.
+
 
   thread_local static std::function<void(God*)> release;
 
   God() {}
 
   ~God() {
-    if (isRequest) {
-      uv_req_type type = uv.request.type;
+      long type = uv.request.type;
       switch (type) {
         case UV_WRITE:
-          uv.write.~uv_write_t();
           cb.write.~Write();
           break;
         case UV_FS:
@@ -78,53 +59,20 @@ struct God {
           uv.work.~uv_work_t();
           cb.work.~Work();
           break;
-        case UV_UNKNOWN_REQ:
-        default:
-          assert(false && "Unrecognized request type");
-      }
-    } else {
-      uv_handle_type type = uv.handle.type;
-      switch (type) {
         case UV_TCP:
           uv_unref(&uv.handle);
           uv.tcp.~uv_tcp_t();
           cb.tcp.~Tcp();
           break;
         case UV_UNKNOWN_HANDLE:
-        default:
           assert(false && "Unrecognized handle type");
-      }
+        case UV_UNKNOWN_REQ:
+          assert(false && "Unrecognized request type");
+          break;
+        default:
+          assert(false && "god type");
+          break;
     }
-  }
-
-  void initAsTcp(uv_loop_t* loop) {
-    new (&uv) uv_tcp_t();
-    new (&cb) Tcp(loop, this);
-    isRequest = false;
-  }
-
-  void initAsFS(uv_loop_t* loop) {
-    new (&uv) uv_fs_t();
-    new (&cb) FS(loop, this);
-    isRequest = true;
-  }
-
-  void initAsWriter(uv_loop_t* loop) {
-    new (&uv) uv_write_t();
-    new (&cb) Write(loop, this);
-    isRequest = true;
-  }
-
-  void initAsAsync(uv_loop_t* loop) {
-    new (&uv) uv_async_t();
-    new (&cb) Async(loop, this);
-    isRequest = true;
-  }
-
-  void initAsWork(uv_loop_t* loop) {
-    new (&uv) uv_work_t();
-    new (&cb) Work(loop, this);
-    isRequest = true;
   }
 
   template<class T>
@@ -132,9 +80,12 @@ struct God {
     return (T*)this;
   }
 
-  constexpr int getHandleType() const {
-    assert(!isRequest && "getHandleType is not valid for requests");
-    return uv.handle.type;
+  constexpr int getType() const {
+    if (isRequest) {
+      return request.type ;
+    } else {
+      return handle.type;
+    }
   }
 };
 

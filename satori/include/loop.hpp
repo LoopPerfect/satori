@@ -1,60 +1,52 @@
 #ifndef SATORI_LOOP_HPP
 #define SATORI_LOOP_HPP
 
-#include <satori/god-recycler.hpp>
+#include <satori/handles.hpp>
+#include <satori/requests.hpp>
 
 namespace Satori {
 
-  struct Loop {
-
-    GodRecycler gr;
-    uv_loop_t* loop;
-
-    Write* takeWriter() {
-      auto* g = gr.take();
-      g->initAsWriter(loop);
-      return &g->cb.write;
+  struct Loop : uv_loop_t {
+    Loop() {
+      uv_loop_init(this);
     }
 
-    Tcp* takeTcp() {
-      auto* g = gr.take();
-      g->initAsTcp(loop);
-      return &g->cb.tcp;
+    Handle* newHandle() {
+      return new Handle(this);
+    }
+
+    Stream* newStream() {
+      return new Stream(this);
+    }
+
+    Tcp* newTcp() {
+      return new Tcp(this);
+    }
+
+    Write* newWrite() {
+      return new Write(this);
+    }
+
+    Async* newAsync() {
+      return new Async(this);
+    }
+
+    Work newWork() {
+      return new Work(this);
     }
 
 
-    Async* takeAsync() {
-      auto* g = gr.take();
-      g->initAsAsync(loop);
-      return &g->cb.async;
-    }
-
-
-    Work* takeWork() {
-      auto* g = gr.take();
-      g->initAsWork(loop);
-      return &g->cb.work;
-    }
-
-    FS* takeFS() {
-      auto* g = gr.take();
-      g->initAsFS(loop);
-      return &g->cb.fs;
-    }
-
-    Loop(size_t n = 1024, uv_loop_t* loop = new uv_loop_t())
-      : gr(n)
-      , loop(loop) {
-      uv_loop_init(loop);
+    template<class T>
+    void release(T*ptr) {
+      delete ptr;
     }
 
     void run(uv_run_mode mode = UV_RUN_DEFAULT) {
-      uv_run(loop, mode);
+      uv_run(this, mode);
     }
 
     ~Loop() {
-      uv_loop_close(loop);
-      // TODO: Should we delete loop?
+      uv_loop_close(this);
     }
   };
 
