@@ -63,7 +63,6 @@ int main() {
       writer->onWriteEnd = [=](int status) {
         if (status<0) { std::cout << status << std::endl; }
         client->close();
-        writer->close();
       };
       writer->write(client, res, sizeof(res));
     };

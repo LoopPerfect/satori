@@ -12,125 +12,12 @@
 
 #include <satori/recycler.hpp>
 #include <satori/uv_interop.hpp>
+#include <satori/handles.hpp>
+#include <satori/requests.hpp>
 
 
 namespace Satori {
 
-struct Handle {
-  Handle(void*, void* handle)
-    : handle(handle)
-  {}
-
-  void* handle;
-  std::function<void()> onClose = []{};
-};
-
-struct Async : Handle {
-  Async(void* loop, void* handle)
-    : Handle(loop, handle) {
-    uv_async_init((uv_loop_t*)loop, (uv_async_t*)handle, onGodAsync);
-  }
-
-  void start() {
-    uv_async_send((uv_async_t*)handle);
-  }
-
-  std::function<void()> job = []{};
-};
-
-struct Work : Handle {
-  Work(void* loop, void* handle)
-    : Handle(loop, handle) {
-    uv_queue_work((uv_loop_t*)loop, (uv_work_t*)handle, onGodWork, onGodWorkAfter);
-  }
-
-  void cancel() {
-    uv_cancel((uv_req_t*)handle);
-  }
-
-  std::function<void()> job = []{};
-  std::function<void(int)> then =[](int){};
-
-};
-
-struct Stream : Handle {
-  Stream(void* loop, void* handle)
-    : Handle(loop, handle)
-  {}
-
-  std::function<void()> onDataEnd = [](){};
-  std::function<void(char* str, size_t len)> onData = [](char*, size_t){};
-
-  void read() {
-    uv_read_start(
-      (uv_stream_t*)handle,
-      allocBuffer, onGodRead);
-  }
-};
-
-struct Write : Handle {
-  std::function<void(int status)> onWriteEnd = [](int){};
-  uv_buf_t buf;
-
-  Write(void* loop, void* handle)
-    : Handle(loop, handle)
-    , buf{0, 0}
-  {}
-
-  ~Write() {
-    if(buf.len) {
-      delete[] buf.base;
-    }
-  }
-
-  void close() {}
-
-  void write(Stream* stream, const char* msg, size_t len) {
-    if (buf.len) {
-      delete[] buf.base;
-    }
-    buf.base = new char[len];
-    buf.len = len;
-    memcpy(buf.base, msg, len);
-    uv_write((uv_write_t*)handle, (uv_stream_t*)stream->handle, &buf, 1, onGodWriteEnd);
-  }
-
-};
-
-struct FS : Handle {
-
-  FS(void* loop, void* handle)
-    : Handle(loop, handle) {}
-
-  ~FS() {}
-
-  void close() {}
-};
-
-struct Tcp : Stream {
-  Tcp(void* loop, void* handle)
-    : Stream(loop, handle) {
-    uv_tcp_init((uv_loop_t*)loop, (uv_tcp_t*)handle);
-  }
-
-  void accept(Tcp* client) {
-    uv_accept((uv_stream_t*)handle, (uv_stream_t*)client->handle);
-  }
-
-  void listen(char const* ip, int port, bool multi = false) {
-    enableMultiProcess( ((uv_tcp_t*)handle)->loop, (uv_tcp_t*)handle);
-		sockaddr_in address;
-		uv_ip4_addr(ip, port, &address);
-    uv_tcp_bind((uv_tcp_t*)handle, (const sockaddr *) &address, 0);
-    uv_listen((uv_stream_t*)handle, 1024, onGodListen);
-  }
-
-  void close() {
-    uv_close((uv_handle_t*)handle, onGodClose);
-  }
-
-  std::function<void(int status)> onListen = [](int){};
-};
 
 struct God {
 
