@@ -3,42 +3,79 @@
 
 #include <satori/handles.hpp>
 #include <satori/requests.hpp>
+#include <satori/recycler.hpp>
 
 namespace Satori {
 
+
+  //TODO: replace with a variant...
+  struct AnyHandle {
+    union {
+      char raw[0];
+      Handle handle;
+      Stream stream;
+      Tcp tcp;
+      Write write;
+      Async async;
+    };
+    int type = 0;
+
+    AnyHandle(int type=0)
+      : type{type}
+    {}
+
+    ~AnyHandle(){
+      switch (type) {
+        default:
+        case 0: break;
+        case 1: handle.~Handle(); break;
+        case 2: stream.~Stream(); break;
+        case 3: tcp.~Tcp(); break;
+        case 4: write.~Write(); break;
+        case 5: async.~Async(); break;
+      }
+    }
+  };
+
+
   struct Loop : uv_loop_t {
-    Loop() {
+
+    Recycler<AnyHandle> pool;
+
+    Loop(size_t const&  num = 1024)
+      : pool(num) {
       uv_loop_init(this);
     }
 
     Handle* newHandle() {
-      return new Handle(this);
+      return new (pool.aquire(1)) Handle(this);
     }
 
     Stream* newStream() {
-      return new Stream(this);
+      return new (pool.aquire(2)) Stream(this);
     }
 
     Tcp* newTcp() {
-      return new Tcp(this);
+      return new (pool.aquire(3)) Tcp(this);
     }
 
     Write* newWrite() {
-      return new Write(this);
+      return new (pool.aquire(4)) Write(this);
     }
 
-    Async* newAsync() {
-      return new Async(this);
+    template<class F>
+    Async* newAsync(F const& f) {
+      return new (pool.aquire(5)) Async(this, f);
     }
 
+    /*
     Work newWork() {
-      return new Work(this);
+      return new (pool.aquire()) Work(this);
     }
+*/
 
-
-    template<class T>
-    void release(T*ptr) {
-      delete ptr;
+    void release(void* ptr) {
+      pool.release((AnyHandle*)ptr);
     }
 
     void run(uv_run_mode mode = UV_RUN_DEFAULT) {

@@ -18,21 +18,20 @@ namespace Satori {
       }
     }
 
-    template<class U=T, class...Xs>
-    U* create(Xs&&...xs) {
+    template<class...Xs>
+    T* aquire(Xs const&...xs) {
       if (pool.size() == 0) {
         auto const n = store.size();
-        store.resize(n+1);
-        return new (&store[n])(xs...);
+        store.emplace_back(xs...);
+        return &store[n];
       }
-      U* g = pool.top();
+      T* g = pool.top();
       pool.pop();
-      return g;
+      return new (g) T(xs...);
     }
 
-    template<class U=T>
-    void release(U* o) {
-      o->~U();
+    void release(T* o) {
+      o->~T();
       pool.push((T*)o);
     }
   };

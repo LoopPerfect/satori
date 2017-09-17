@@ -24,22 +24,13 @@ int main() {
   auto loop = std::make_shared<Loop>();
   auto* server = loop->newTcp();
 
-  std::cout << server << std::endl;
   server->listen("127.0.0.1", 8080);
-  server->onListen = [](auto status) {
-    std::cout<< "blub" << std::endl;
-  };
-
-
-  loop->run();
-
-/*
   server->onListen = [=](auto status) {
     auto* client = loop->newTcp();
     server->accept(client);
+    client->read();
 
     client->onData = [=](char const* data, size_t const len) {
-
       auto req = parseReq(std::string(data, data+len));
       if (req.size()==0) {
         std::cout << "dasd" << std::endl;
@@ -62,16 +53,17 @@ int main() {
       writer->onWriteEnd = [=](int status) {
         if (status<0) { std::cout << status << std::endl; }
         client->close();
+        writer->close();
       };
-      writer->write(client, res, sizeof(res));
+      writer->write(client, res);
     };
 
     client->onDataEnd = [=]{
       std::cout << "data end" << std::endl;
     };
-    client->read();
+
 
   };
 
-  server->listen("127.0.0.1", 8081);*/
+  loop->run();
 }
