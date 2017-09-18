@@ -41,6 +41,7 @@ struct Handle : T {
     });
     return 0;
   }
+
   std::function<void()> onClose = []{};
 };
 
@@ -114,7 +115,7 @@ struct Async : Handle<T> {
   Async(void* loop, std::function<void()> f)
     : Handle<T>(loop)
     , job{f} {
-    uv_async_init((uv_loop_t*)loop, (uv_async_t*)this, [](void* h) {
+    uv_async_init((uv_loop_t*)loop, (uv_async_t*)this, [](uv_async_t* h) {
         auto handle = (Async*)h;
         handle->job();
     });

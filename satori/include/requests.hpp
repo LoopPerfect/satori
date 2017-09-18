@@ -32,11 +32,13 @@ struct Request : T {
   }
 
   void close() {
+    onClose();
     ((Loop*)loop)->release(this);
   }
+
+  std::function<void()> onClose = []{};
 };
 
-static char write_buf[2048];
 template<class T=uv_write_t>
 struct Write : Request<T> {
   Write(void* loop)
@@ -46,7 +48,7 @@ struct Write : Request<T> {
 
   ~Write() {
     if(buf.len) {
-      //delete[] buf.base;
+      delete[] buf.base;
     }
   }
 
@@ -62,9 +64,9 @@ struct Write : Request<T> {
 
   void write(void* stream, const char* msg, size_t len) {
     if (buf.len) {
-      //delete[] buf.base;
+      delete[] buf.base;
     }
-    buf.base = write_buf;//new char[len];
+    buf.base = new char[len];
     buf.len = len;
     memcpy(buf.base, msg, len);
     uv_write((uv_write_t*)this, (uv_stream_t*)stream, &buf, 1, [](uv_write_t* h, int status) {
