@@ -50,9 +50,7 @@ cxx_binary(
   srcs = [
     'satori/apps/uv_readfile.cpp',
   ],
-  deps = BUCKAROO_DEPS + [
-    ':satori',
-  ],
+  deps = BUCKAROO_DEPS,
   visibility = [
     'PUBLIC',
   ],

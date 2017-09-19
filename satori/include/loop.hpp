@@ -16,6 +16,7 @@ namespace Satori {
       Tcp tcp;
       Write write;
       Async async;
+      FS fs;
       Pipe pipe;
       Connect connect;
     };
@@ -23,20 +24,38 @@ namespace Satori {
     int type = 0;
 
     AnyHandle(int type = 0)
-      : type{type}
-    {}
+      : type{type} {
+    }
 
     ~AnyHandle() {
       switch (type) {
+        case 1:
+          handle.~Handle();
+          break;
+        case 2:
+          stream.~Stream();
+          break;
+        case 3:
+          tcp.~Tcp();
+          break;
+        case 4:
+          write.~Write();
+          break;
+        case 5:
+          async.~Async();
+          break;
+        case 6:
+          fs.~FS();
+          break;
+        case 7:
+          pipe.~Pipe();
+          break;
+        case 8:
+          connect.~Connect();
+          break;
+        case 0:
         default:
-        case 0: break;
-        case 1: handle.~Handle(); break;
-        case 2: stream.~Stream(); break;
-        case 3: tcp.~Tcp(); break;
-        case 4: write.~Write(); break;
-        case 5: async.~Async(); break;
-        case 6: pipe.~Pipe(); break;
-        case 7: connect.~Connect(); break;
+          break;
       }
     }
   };
@@ -73,12 +92,17 @@ namespace Satori {
       return new (pool.acquire(5)) Async(this, f);
     }
 
-    Pipe* newPipe(bool ipc=0) {
-      return new (pool.acquire(6)) Pipe(this, ipc);
+    FS* newFS() {
+      return new (pool.acquire(6)) FS(this);
+    }
+
+
+    Pipe* newPipe(bool ipc = 0) {
+      return new (pool.acquire(7)) Pipe(this, ipc);
     }
 
     Connect* newConnect() {
-      return new (pool.acquire(7)) Connect(this);
+      return new (pool.acquire(8)) Connect(this);
     }
 
 

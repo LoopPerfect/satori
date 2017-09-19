@@ -1,9 +1,16 @@
 #include <iostream>
+#include <string>
 #include <memory>
 
 #include <uv.h>
 #include <satori/satori.hpp>
 
+
+std::string error_to_string(int error) {
+  return std::string(uv_err_name(error)) +
+    " " +
+    std::string(uv_strerror(error));
+}
 
 int main(int argc, const char ** argv) {
 
@@ -16,10 +23,28 @@ int main(int argc, const char ** argv) {
 
   auto loop = std::make_shared<Loop>();
 
-  auto* fs = loop->takeFS();
+  FS* fs = loop->newFS();
 
-  fs->onOpen = [](int status) {
-    std::cout << "Callback here" << std::endl;
+  fs->onOpen = [=](ssize_t file) {
+
+    fs->onRead = [=](int result, uv_buf_t buffer) {
+      if (result < 0) {
+        std::cerr << error_to_string(result) << std::endl;
+        exit(1);
+      }
+      else if (result > 0) {
+        std::cout << buffer.base;
+      }
+
+      if (result < buffer.len) {
+        fs->onClose = []() {
+          std::cout << "=================EOF=================" << std::endl;
+        };
+        fs->close(file);
+      }
+    };
+
+    fs->read(file);
   };
 
   fs->open(
