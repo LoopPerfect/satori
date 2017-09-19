@@ -17,6 +17,7 @@ namespace Satori {
       Write write;
       Async async;
       Pipe pipe;
+      Connect connect;
     };
 
     int type = 0;
@@ -35,6 +36,7 @@ namespace Satori {
         case 4: write.~Write(); break;
         case 5: async.~Async(); break;
         case 6: pipe.~Pipe(); break;
+        case 7: connect.~Connect(); break;
       }
     }
   };
@@ -65,6 +67,7 @@ namespace Satori {
       return new (pool.acquire(4)) Write(this);
     }
 
+
     template<class F>
     Async* newAsync(F const& f) {
       return new (pool.acquire(5)) Async(this, f);
@@ -72,6 +75,10 @@ namespace Satori {
 
     Pipe* newPipe(bool ipc=0) {
       return new (pool.acquire(6)) Pipe(this, ipc);
+    }
+
+    Connect* newConnect() {
+      return new (pool.acquire(7)) Connect(this);
     }
 
 

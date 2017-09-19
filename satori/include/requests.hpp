@@ -105,6 +105,27 @@ struct Work : Request<T> {
 };
 
 
+template<class T = uv_connect_t>
+struct Connect : Request<T> {
+  Connect(void* loop)
+    : Request<T>(loop)
+  {}
+
+  int connect(uv_tcp_t* tcp) {
+    return uv_connect_t((uv_connect_t*)this, (uv_tcp_t*)tcp, [](uv_connect_t* h, int status) {
+      ((Connect*) h)->onConnect(status);
+    });
+  }
+
+  int connect(uv_pipe_t* pipe, char const* name) {
+    return uv_pipe_connect((uv_connect_t*)this, (uv_pipe_t*)pipe, name, [](uv_connect_t* h, int status) {
+      ((Connect*) h)->onConnect(status);
+    });
+  }
+
+  std::function<void(int status)> onConnect = [](int){};
+};
+
 
 template<class T=uv_fs_t>
 struct FS : Request<T> {
@@ -117,6 +138,7 @@ struct FS : Request<T> {
 }
 
 using Request = detail::Request<>;
+using Connect = detail::Connect<>;
 using Write = detail::Write<>;
 using Work = detail::Work<>;
 using FS = detail::FS<>;

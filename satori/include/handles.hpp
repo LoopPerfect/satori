@@ -104,6 +104,10 @@ struct Tcp : Stream<T> {
     });
   }
 
+  int keepAlive(unsigned delay = 0) {
+    return uv_tcp_keepalive((uv_tcp_t*)this, !delay, delay);
+  }
+
   std::function<void(int status)> onListen = [](int){};
 };
 
