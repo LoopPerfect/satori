@@ -4,6 +4,8 @@
 #include <uv.h>
 #include <memory>
 #include <functional>
+#include <string>
+
 
 namespace Satori {
 
@@ -18,14 +20,15 @@ static uv_buf_t createBuffer(char const* str, size_t const len) {
 
 namespace detail {
 
-template<class T=uv_req_t>
+template<class T = uv_req_t>
 struct Request : T {
   void* loop;
 
-  ~Request() {}
   Request(void* loop)
     : loop(loop)
   {}
+
+  ~Request() {}
 
   void cancel() {
     uv_cancel((uv_req_t*)this);
@@ -33,13 +36,13 @@ struct Request : T {
 
   void close() {
     onClose();
-    ((Loop*)loop)->release(this);
+    release((Loop*)loop, this);
   }
 
-  std::function<void()> onClose = []{};
+  std::function<void()> onClose = []() {};
 };
 
-template<class T=uv_write_t>
+template<class T = uv_write_t>
 struct Write : Request<T> {
   Write(void* loop)
     : Request<T>(loop)
@@ -47,7 +50,7 @@ struct Write : Request<T> {
   {}
 
   ~Write() {
-    if(buf.len) {
+    if (buf.len) {
       delete[] buf.base;
     }
   }
@@ -75,7 +78,7 @@ struct Write : Request<T> {
     });
   }
 
-  std::function<void(int status)> onWriteEnd = [](int){};
+  std::function<void(int status)> onWriteEnd = [](int) {};
   uv_buf_t buf;
 };
 

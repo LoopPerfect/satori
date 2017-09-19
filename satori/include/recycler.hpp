@@ -19,7 +19,7 @@ namespace Satori {
     }
 
     template<class...Xs>
-    T* aquire(Xs const&...xs) {
+    T* acquire(Xs const&...xs) {
       if (pool.size() == 0) {
         auto const n = store.size();
         store.emplace_back(xs...);

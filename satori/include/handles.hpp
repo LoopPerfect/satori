@@ -1,10 +1,16 @@
 #ifndef SATORI_HANDLES_HPP
 #define SATORI_HANDLES_HPP
 
-#include <uv.h>
 #include <memory>
 #include <functional>
 #include <cstring>
+
+#include <assert.h>
+
+#include <uv.h>
+
+#include <satori/enableMultiProcess.hpp>
+
 
 namespace Satori {
 
@@ -12,32 +18,22 @@ struct Loop;
 
 namespace detail {
 
-
 thread_local static char read_buf[65635];
 static void allocBuffer(uv_handle_t* h, size_t len, uv_buf_t* buf) {
   *buf = uv_buf_init(read_buf, sizeof(read_buf));
 }
 
-void enableMultiProcess(uv_loop_t* loop, uv_tcp_t* server) {
-  assert(uv_tcp_init_ex(loop, server, AF_INET) == 0);
-  uv_os_fd_t fd;
-  int on = 1;
-  assert(uv_fileno((uv_handle_t*)server, &fd) == 0);
-  assert(setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) == 0);
-}
-
-template<class T=uv_handle_t>
+template<class T = uv_handle_t>
 struct Handle : T {
 
   ~Handle() {}
   Handle(void*) {}
 
   int close() {
-    uv_close((uv_handle_t*)this, [](auto* h){
+    uv_close((uv_handle_t*)this, [](auto* h) {
       auto* handle = (Handle*)h;
       handle->onClose();
-      ((Loop*)handle->loop)
-        ->release(handle);
+      release((Loop*)handle->loop, handle);
     });
     return 0;
   }
@@ -46,12 +42,13 @@ struct Handle : T {
 };
 
 
-template<class T=uv_stream_t>
+template<class T = uv_stream_t>
 struct Stream : Handle<T> {
 
   Stream(void* loop)
     : Handle<T>(loop)
   {}
+
   ~Stream() {}
 
   int accept(void* client) {
@@ -66,7 +63,7 @@ struct Stream : Handle<T> {
         auto* stream = (Stream*)h;
         if (nread < 0) {
           stream->close();
-        } else if(nread == UV_EOF) {
+        } else if (nread == UV_EOF) {
           stream->onDataEnd();
         } else {
           stream->onData(data->base, (size_t)nread);
@@ -74,23 +71,23 @@ struct Stream : Handle<T> {
       });
   }
 
-
   int stop() {
     return uv_read_stop(
       (uv_stream_t*)this);
   }
 
-  std::function<void()> onDataEnd = [](){};
-  std::function<void(char* str, size_t len)> onData = [](char*, size_t){};
+  std::function<void()> onDataEnd = []() {};
+  std::function<void(char* str, size_t len)> onData = [](char*, size_t) {};
 };
 
 
-template<class T=uv_tcp_t>
+template<class T = uv_tcp_t>
 struct Tcp : Stream<T> {
   Tcp(void* loop)
     : Stream<T>(loop) {
     uv_tcp_init((uv_loop_t*)loop, (uv_tcp_t*)this);
   }
+
   ~Tcp() {}
 
   int listen(char const* ip, int port, bool multi = false) {
@@ -128,14 +125,15 @@ struct Pipe : Stream<T> {
   ~Pipe(){}
 };
 
-template<class T=uv_async_t>
+
+template<class T = uv_async_t>
 struct Async : Handle<T> {
   Async(void* loop, std::function<void()> f)
     : Handle<T>(loop)
     , job{f} {
     uv_async_init((uv_loop_t*)loop, (uv_async_t*)this, [](uv_async_t* h) {
-        auto handle = (Async*)h;
-        handle->job();
+      auto handle = (Async*)h;
+      handle->job();
     });
   }
 
@@ -145,7 +143,7 @@ struct Async : Handle<T> {
     uv_async_send((uv_async_t*)this);
   }
 
-  std::function<void()> job = [](auto){};
+  std::function<void()> job = [](auto) {};
 };
 
 }
