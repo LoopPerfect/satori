@@ -17,6 +17,7 @@ namespace Satori {
       Write write;
       Async async;
       FS fs;
+      Pipe pipe;
     };
 
     int type = 0;
@@ -85,6 +86,10 @@ namespace Satori {
 
     FS* newFS() {
       return new (pool.acquire(6)) FS(this);
+    }
+
+    Pipe* newPipe(bool ipc = 0) {
+      return new (pool.acquire(6)) Pipe(this, ipc);
     }
 
     /*

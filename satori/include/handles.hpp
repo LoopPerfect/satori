@@ -107,6 +107,25 @@ struct Tcp : Stream<T> {
   std::function<void(int status)> onListen = [](int){};
 };
 
+template<class T=uv_pipe_t>
+struct Pipe : Stream<T> {
+  Pipe(void* loop, bool ipc = 0)
+    : Stream<T>(loop) {
+    uv_pipe_init((uv_loop_t*)loop, (uv_pipe_t*)this, ipc);
+  }
+
+  int bindToFile(uv_file file) {
+    return uv_pipe_open((uv_pipe_t*)this, file);
+  }
+
+  int bindToName(const char* name) {
+    return uv_pipe_bind((uv_pipe_t*)this, name);
+  }
+
+  ~Pipe(){}
+};
+
+
 template<class T = uv_async_t>
 struct Async : Handle<T> {
   Async(void* loop, std::function<void()> f)
@@ -131,9 +150,9 @@ struct Async : Handle<T> {
 
 using Handle = detail::Handle<>;
 using Stream = detail::Stream<>;
-using Tcp = detail::Tcp<>;
-
-using Async = detail::Async<>;
+using Tcp    = detail::Tcp<>;
+using Pipe   = detail::Pipe<>;
+using Async  = detail::Async<>;
 
 }
 
