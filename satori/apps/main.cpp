@@ -48,7 +48,9 @@ int main() {
       auto writer = loop->newWrite();
       writer->write(client, res);
       writer->onWriteEnd = [=](int status) {
-        if (status<0) { std::cout << status << std::endl; }
+        if (status < 0) { 
+          std::cout << status << std::endl;
+        }
         client->close();
         writer->close();
       };
