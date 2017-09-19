@@ -26,14 +26,14 @@ void enableMultiProcess(uv_loop_t* loop, uv_tcp_t* server) {
   assert(setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) == 0);
 }
 
-template<class T=uv_handle_t>
+template<class T = uv_handle_t>
 struct Handle : T {
 
   ~Handle() {}
   Handle(void*) {}
 
   int close() {
-    uv_close((uv_handle_t*)this, [](auto* h){
+    uv_close((uv_handle_t*)this, [](auto* h) {
       auto* handle = (Handle*)h;
       handle->onClose();
       ((Loop*)handle->loop)
@@ -46,12 +46,13 @@ struct Handle : T {
 };
 
 
-template<class T=uv_stream_t>
+template<class T = uv_stream_t>
 struct Stream : Handle<T> {
 
   Stream(void* loop)
     : Handle<T>(loop)
   {}
+
   ~Stream() {}
 
   int accept(void* client) {
@@ -66,7 +67,7 @@ struct Stream : Handle<T> {
         auto* stream = (Stream*)h;
         if (nread < 0) {
           stream->close();
-        } else if(nread == UV_EOF) {
+        } else if (nread == UV_EOF) {
           stream->onDataEnd();
         } else {
           stream->onData(data->base, (size_t)nread);
@@ -74,23 +75,23 @@ struct Stream : Handle<T> {
       });
   }
 
-
   int stop() {
     return uv_read_stop(
       (uv_stream_t*)this);
   }
 
-  std::function<void()> onDataEnd = [](){};
-  std::function<void(char* str, size_t len)> onData = [](char*, size_t){};
+  std::function<void()> onDataEnd = []() {};
+  std::function<void(char* str, size_t len)> onData = [](char*, size_t) {};
 };
 
 
-template<class T=uv_tcp_t>
+template<class T = uv_tcp_t>
 struct Tcp : Stream<T> {
   Tcp(void* loop)
     : Stream<T>(loop) {
     uv_tcp_init((uv_loop_t*)loop, (uv_tcp_t*)this);
   }
+
   ~Tcp() {}
 
   int listen(char const* ip, int port, bool multi = false) {
@@ -110,14 +111,14 @@ struct Tcp : Stream<T> {
   std::function<void(int status)> onListen = [](int){};
 };
 
-template<class T=uv_async_t>
+template<class T = uv_async_t>
 struct Async : Handle<T> {
   Async(void* loop, std::function<void()> f)
     : Handle<T>(loop)
     , job{f} {
     uv_async_init((uv_loop_t*)loop, (uv_async_t*)this, [](uv_async_t* h) {
-        auto handle = (Async*)h;
-        handle->job();
+      auto handle = (Async*)h;
+      handle->job();
     });
   }
 
@@ -127,7 +128,7 @@ struct Async : Handle<T> {
     uv_async_send((uv_async_t*)this);
   }
 
-  std::function<void()> job = [](auto){};
+  std::function<void()> job = [](auto) {};
 };
 
 }

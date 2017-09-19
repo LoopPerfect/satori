@@ -33,6 +33,19 @@ cxx_binary(
 )
 
 cxx_binary(
+  name = 'satori_readfile',
+  srcs = [
+    'satori/apps/satori_readfile.cpp',
+  ],
+  deps = [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+cxx_binary(
   name = 'uv_readfile',
   srcs = [
     'satori/apps/uv_readfile.cpp',

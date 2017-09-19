@@ -1,8 +1,10 @@
 #ifndef SATORI_ACTOR_HPP
 #define SATORI_ACTOR_HPP
-#include <satori/handles.hpp>
+
 #include <functional>
 #include <type_traits>
+
+#include <satori/handles.hpp>
 
 namespace Satori {
 
@@ -27,7 +29,7 @@ struct Actor : Async {
     invoke();
   }
 
-  ~Actor(){}
+  ~Actor() {}
 };
 
 }
