@@ -1,22 +1,17 @@
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
 #include <assert.h>
 #include <memory>
 #include <functional>
 #include <type_traits>
 #include <queue>
+#include <tuple>
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include <uv.h>
-
-
-#include <satori/http-parser.hpp>
-//#include <satori/satori.hpp>
-#include <satori/loop.hpp>
-#include <satori/actor.hpp>
-#include <tuple>
+#include <satori/satori.hpp>
 
 int main() {
 
@@ -25,15 +20,15 @@ int main() {
 
   auto loop = std::make_shared<Loop>();
 
-  using ConType = std::tuple<Tcp*,Tcp*>;
+  using ConType = std::tuple<Tcp*, Tcp*>;
 
   auto act = std::make_shared<Actor<vector<ConType>>>(loop.get(), [=](ConType const& con) {
     auto server =  std::get<0>(con);
     auto client =  std::get<1>(con);
     client->read();
     client->onData = [=](char const* data, size_t const len) {
-      auto req = parseReq(std::string(data, data+len));
-      if (req.size()==0) {
+      auto req = parseReq(std::string(data, data + len));
+      if (req.size() == 0) {
         std::cout << "dasd" << std::endl;
       }
 
@@ -59,12 +54,11 @@ int main() {
       };
     };
 
-    client->onDataEnd = [=]{
+    client->onDataEnd = []{
       std::cout << "data end" << std::endl;
     };
 
   });
-
 
   auto* server = loop->newTcp();
   server->listen("127.0.0.1", 8080);

@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include <satori/handles.hpp>
+#include <satori/loop.hpp>
 
 namespace Satori {
 

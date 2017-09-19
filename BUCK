@@ -4,14 +4,14 @@ include_defs('//BUCKAROO_DEPS')
 cxx_library(
   name = 'satori',
   header_namespace = 'satori',
-  srcs = glob([
-    'satori/src/**/*.cpp',
+  exported_headers = subdir_glob([
+    ('satori/include', '**/*.hpp'),
   ]),
   headers = subdir_glob([
     ('satori/detail', '**/*.hpp'),
   ]),
-  exported_headers = subdir_glob([
-    ('satori/include', '**/*.hpp'),
+  srcs = glob([
+    'satori/src/**/*.cpp',
   ]),
   deps = BUCKAROO_DEPS,
   visibility = [

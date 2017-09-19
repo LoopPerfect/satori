@@ -4,6 +4,8 @@
 #include <uv.h>
 #include <memory>
 #include <functional>
+#include <string>
+
 
 namespace Satori {
 
@@ -34,7 +36,7 @@ struct Request : T {
 
   void close() {
     onClose();
-    ((Loop*)loop)->release(this);
+    release((Loop*)loop, this);
   }
 
   std::function<void()> onClose = []() {};

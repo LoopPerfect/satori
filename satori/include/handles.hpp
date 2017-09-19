@@ -1,10 +1,16 @@
 #ifndef SATORI_HANDLES_HPP
 #define SATORI_HANDLES_HPP
 
-#include <uv.h>
 #include <memory>
 #include <functional>
 #include <cstring>
+
+#include <assert.h>
+
+#include <uv.h>
+
+#include <satori/enableMultiProcess.hpp>
+
 
 namespace Satori {
 
@@ -12,18 +18,9 @@ struct Loop;
 
 namespace detail {
 
-
 thread_local static char read_buf[65635];
 static void allocBuffer(uv_handle_t* h, size_t len, uv_buf_t* buf) {
   *buf = uv_buf_init(read_buf, sizeof(read_buf));
-}
-
-void enableMultiProcess(uv_loop_t* loop, uv_tcp_t* server) {
-  assert(uv_tcp_init_ex(loop, server, AF_INET) == 0);
-  uv_os_fd_t fd;
-  int on = 1;
-  assert(uv_fileno((uv_handle_t*)server, &fd) == 0);
-  assert(setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) == 0);
 }
 
 template<class T = uv_handle_t>
@@ -36,8 +33,7 @@ struct Handle : T {
     uv_close((uv_handle_t*)this, [](auto* h) {
       auto* handle = (Handle*)h;
       handle->onClose();
-      ((Loop*)handle->loop)
-        ->release(handle);
+      release((Loop*)handle->loop, handle);
     });
     return 0;
   }

@@ -74,10 +74,6 @@ namespace Satori {
     }
     */
 
-    void release(void* ptr) {
-      pool.release((AnyHandle*)ptr);
-    }
-
     void run(uv_run_mode mode = UV_RUN_DEFAULT) {
       uv_run(this, mode);
     }
@@ -86,6 +82,8 @@ namespace Satori {
       uv_loop_close(this);
     }
   };
+
+  void release(Loop* loop, void* ptr);
 
 }
 
