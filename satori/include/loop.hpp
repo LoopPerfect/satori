@@ -16,23 +16,38 @@ namespace Satori {
       Tcp tcp;
       Write write;
       Async async;
+      FS fs;
     };
 
     int type = 0;
 
     AnyHandle(int type = 0)
-      : type{type}
-    {}
+      : type{type} {
+    }
 
     ~AnyHandle() {
       switch (type) {
+        case 1:
+          handle.~Handle();
+          break;
+        case 2:
+          stream.~Stream();
+          break;
+        case 3:
+          tcp.~Tcp();
+          break;
+        case 4:
+          write.~Write();
+          break;
+        case 5:
+          async.~Async();
+          break;
+        case 6:
+          fs.~FS();
+          break;
+        case 0:
         default:
-        case 0: break;
-        case 1: handle.~Handle(); break;
-        case 2: stream.~Stream(); break;
-        case 3: tcp.~Tcp(); break;
-        case 4: write.~Write(); break;
-        case 5: async.~Async(); break;
+          break;
       }
     }
   };
@@ -66,6 +81,10 @@ namespace Satori {
     template<class F>
     Async* newAsync(F const& f) {
       return new (pool.acquire(5)) Async(this, f);
+    }
+
+    FS* newFS() {
+      return new (pool.acquire(6)) FS(this);
     }
 
     /*

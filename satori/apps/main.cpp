@@ -33,22 +33,22 @@ int main() {
       }
 
       char res[] =
-      "HTTP/1.1 200 OK\r\n"
-      "Server: nginx/1.13.5\r\n"
-      "Date: Wed, 13 Sep 2017 17:46:27 GMT\r\n"
-      "Content-Type: text/html\r\n"
-      "Content-Length: 11\r\n"
-      "Last-Modified: Wed, 13 Sep 2017 17:45:22 GMT\r\n"
-      "Connection: keep-alive\r\n"
-      "ETag: \"59b96eb2-c\"\r\n"
-      "Accept-Ranges: bytes\r\n"
-      "\r\n"
-      "hello world";
+        "HTTP/1.1 200 OK\r\n"
+        "Server: nginx/1.13.5\r\n"
+        "Date: Wed, 13 Sep 2017 17:46:27 GMT\r\n"
+        "Content-Type: text/html\r\n"
+        "Content-Length: 11\r\n"
+        "Last-Modified: Wed, 13 Sep 2017 17:45:22 GMT\r\n"
+        "Connection: keep-alive\r\n"
+        "ETag: \"59b96eb2-c\"\r\n"
+        "Accept-Ranges: bytes\r\n"
+        "\r\n"
+        "hello world";
 
       auto writer = loop->newWrite();
       writer->write(client, res);
       writer->onWriteEnd = [=](int status) {
-        if (status < 0) { 
+        if (status < 0) {
           std::cout << status << std::endl;
         }
         client->close();

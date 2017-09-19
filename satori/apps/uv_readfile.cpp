@@ -67,7 +67,7 @@ void open_cb(uv_fs_t* req) {
     &read_req,
     file,
     &buffer,
-    buffer.len,
+    1, // buffer.len,
     0,
     read_cb);
 
