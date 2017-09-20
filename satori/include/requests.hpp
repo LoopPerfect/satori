@@ -195,9 +195,33 @@ namespace Satori {
           });
       }
 
+      int utime(const char* path, double atime, double mtime) {
+        // int uv_fs_utime(
+        //   uv_loop_t* loop,
+        //   uv_fs_t* req,
+        //   const char* path,
+        //   double atime,
+        //   double mtime,
+        //   uv_fs_cb cb);
+        return uv_fs_utime(
+          this->loop,
+          (uv_fs_t*)this,
+          path,
+          atime,
+          mtime,
+          [](uv_fs_t* r) {
+            // assert(r == this);
+            int result = r->result;
+            auto* request = (FS*)r;
+            request->onUtime(result);
+            uv_fs_req_cleanup(r);
+          });
+      }
+
       std::function<void(ssize_t)> onOpen = [](ssize_t) {};
       std::function<void(int, uv_buf_t)> onRead = [](int, uv_buf_t) {};
       std::function<void(int)> onWrite = [](int) {};
+      std::function<void(int)> onUtime = [](int) {};
 
       uv_buf_t buffer;
       unsigned const bufferSize = 1024;
