@@ -30,6 +30,7 @@ namespace Satori {
         release((Loop*)loop, this);
       }
 
+      std::function<void(int)> onError = [](int) {};
       std::function<void()> onClose = []() {};
     };
 

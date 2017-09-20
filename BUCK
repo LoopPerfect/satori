@@ -134,3 +134,16 @@ cxx_binary(
     'PUBLIC',
   ],
 )
+
+cxx_binary(
+  name = 'satori_pwd',
+  srcs = [
+    'satori/apps/satori_pwd.cpp',
+  ],
+  deps = BUCKAROO_DEPS + [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)

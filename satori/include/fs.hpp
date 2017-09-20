@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <iostream>
 
 #include <uv.h>
 
@@ -153,6 +154,23 @@ namespace Satori {
           });
       }
 
+      int realpath(std::string const& path) {
+        return uv_fs_realpath(
+          this->loop,
+          (uv_fs_t*)this,
+          path.c_str(),
+          [](uv_fs_t* r) {
+            auto result = r->result;
+            auto* request = (FS*)r;
+            if (result < 0) {
+              request->onError(result);
+            } else {
+              request->onRealpath(std::string((char*)r->ptr));
+            }
+            uv_fs_req_cleanup(r);
+          });
+      }
+
       std::function<void(ssize_t)> onOpen = [](ssize_t) {};
       std::function<void(int, uv_buf_t)> onRead = [](int, uv_buf_t) {};
       std::function<void(int)> onWrite = [](int) {};
@@ -160,6 +178,7 @@ namespace Satori {
       std::function<void(int)> onUtime = [](int) {};
       std::function<void(int)> onScandir = [](int) {};
       std::function<bool(uv_dirent_t)> onScandirNext = [](uv_dirent_t) { return false; };
+      std::function<void(std::string)> onRealpath = [](std::string) {};
 
       uv_buf_t buffer;
       unsigned const bufferSize = 1024;
