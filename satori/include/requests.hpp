@@ -186,13 +186,13 @@ namespace Satori {
 
       int close(ssize_t file) {
         return uv_fs_close(
-            this->loop,
-            (uv_fs_t*)this,
-            file,
-            [](uv_fs_t* r) {
+          this->loop,
+          (uv_fs_t*)this,
+          file,
+          [](uv_fs_t* r) {
             auto* request = (Request<T>*)r;
             request->close();
-            });
+          });
       }
 
       std::function<void(ssize_t)> onOpen = [](ssize_t) {};
@@ -226,14 +226,11 @@ namespace Satori {
 
   }
 
-
   using Request = detail::Request<>;
   using Connect = detail::Connect<>;
   using Write = detail::Write<>;
   using Work = detail::Work<>;
   using FS = detail::FS<>;
-
-
 }
 
 #endif
