@@ -131,11 +131,35 @@ namespace Satori {
           });
       }
 
+      int scandir(std::string const& path, int flags) {
+        return uv_fs_scandir(
+          this->loop,
+          (uv_fs_t*)this,
+          path.c_str(),
+          flags,
+          [](uv_fs_t* r) {
+            auto result = r->result;
+            auto* request = (FS*)r;
+            request->onScandir(result);
+            uv_dirent_t ent;
+            while (true) {
+              int i = uv_fs_scandir_next(r, &ent);
+              auto keepGoing = request->onScandirNext(ent);
+              if (i == UV_EOF || !keepGoing) {
+                break;
+              }
+            }
+            uv_fs_req_cleanup(r);
+          });
+      }
+
       std::function<void(ssize_t)> onOpen = [](ssize_t) {};
       std::function<void(int, uv_buf_t)> onRead = [](int, uv_buf_t) {};
       std::function<void(int)> onWrite = [](int) {};
       std::function<void(int, uv_stat_t)> onStat = [](int, uv_stat_t) {};
       std::function<void(int)> onUtime = [](int) {};
+      std::function<void(int)> onScandir = [](int) {};
+      std::function<bool(uv_dirent_t)> onScandirNext = [](uv_dirent_t) { return false; };
 
       uv_buf_t buffer;
       unsigned const bufferSize = 1024;

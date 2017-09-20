@@ -114,12 +114,15 @@ namespace Satori {
       return new (pool.acquire(9)) GetAddrInfo(this);
     }
 
-
     /*
     Work newWork() {
       return new (pool.aquire()) Work(this);
     }
     */
+
+    uint64_t now() {
+      return uv_now(this);
+    }
 
     void run(uv_run_mode mode = UV_RUN_DEFAULT) {
       uv_run(this, mode);
