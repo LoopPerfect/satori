@@ -50,7 +50,6 @@ int main(int argc, const char ** argv) {
         tcp->close();
       };
 
-      connect->close(); // frees the connection object only..
     };
 
     connect->connect(tcp, addr);

@@ -81,12 +81,27 @@ cxx_binary(
 )
 
 
+
 cxx_binary(
   name = 'satori_getrequest',
   srcs = [
     'satori/apps/satori_getrequest.cpp',
   ],
-  deps = [
+  deps = BUCKAROO_DEPS + [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+
+cxx_binary(
+  name = 'satori_utime',
+  srcs = [
+    'satori/apps/satori_utime.cpp',
+  ],
+  deps = BUCKAROO_DEPS + [
     ':satori',
   ],
   visibility = [
