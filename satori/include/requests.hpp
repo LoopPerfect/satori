@@ -185,7 +185,7 @@ namespace Satori {
           : Request<T>(loop)
         {}
 
-        int connect(uv_tcp_t* tcp) {
+        uv_connect_t connect(uv_tcp_t* tcp) {
           return uv_connect_t((uv_connect_t*)this, (uv_tcp_t*)tcp, [](uv_connect_t* h, int status) {
             ((Connect*) h)->onConnect(status);
           });
