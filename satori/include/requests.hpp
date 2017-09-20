@@ -149,16 +149,39 @@ namespace Satori {
             (uv_fs_t*)this,
             file,
             &buffer,
-            buffer.len,
+            1,
             0,
             [](uv_fs_t* r) {
+              // assert(r == this);
+              int result = r->result;
+              uv_fs_req_cleanup(r);
+              auto* request = (FS*)r;
+              request->onRead(result, request->buffer);
+            }
+          );
+      }
+
+      int write(ssize_t file, const char* msg, size_t len) {
+        if (buffer.len) {
+          delete[] buffer.base;
+        }
+        buffer.base = new char[len];
+        buffer.len = len;
+        memcpy(buffer.base, msg, len);
+        return uv_fs_write(
+          this->loop,
+          (uv_fs_t*)this,
+          file,
+          &buffer,
+          1,
+          0,
+          [](uv_fs_t* r) {
             // assert(r == this);
             int result = r->result;
             uv_fs_req_cleanup(r);
             auto* request = (FS*)r;
-            request->onRead(result, request->buffer);
-            }
-            );
+            request->onWrite(result);
+          });
       }
 
       int close(ssize_t file) {
@@ -174,6 +197,7 @@ namespace Satori {
 
       std::function<void(ssize_t)> onOpen = [](ssize_t) {};
       std::function<void(int, uv_buf_t)> onRead = [](int, uv_buf_t) {};
+      std::function<void(int)> onWrite = [](int) {};
 
       uv_buf_t buffer;
       unsigned const bufferSize = 1024;

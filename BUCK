@@ -66,3 +66,16 @@ cxx_binary(
     'PUBLIC',
   ],
 )
+
+cxx_binary(
+  name = 'satori_writefile',
+  srcs = [
+    'satori/apps/satori_writefile.cpp',
+  ],
+  deps = BUCKAROO_DEPS + [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
