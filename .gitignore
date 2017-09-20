@@ -1,5 +1,11 @@
-buck-out
-.buckd
+# Buck
+/buck-out/
+/.buckd/
 .buckconfig.local
-buckaroo
+
+# Buckaroo
+/buckaroo/
 BUCKAROO_DEPS
+
+# Node
+/node_modules/
