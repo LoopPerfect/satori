@@ -55,3 +55,14 @@ cxx_binary(
     'PUBLIC',
   ],
 )
+
+cxx_binary(
+  name = 'uv_readfile_reuse_req',
+  srcs = [
+    'satori/apps/uv_readfile_reuse_req.cpp',
+  ],
+  deps = BUCKAROO_DEPS,
+  visibility = [
+    'PUBLIC',
+  ],
+)
