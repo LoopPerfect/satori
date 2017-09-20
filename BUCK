@@ -92,3 +92,16 @@ cxx_binary(
     'PUBLIC',
   ],
 )
+
+cxx_binary(
+  name = 'satori_stat',
+  srcs = [
+    'satori/apps/satori_stat.cpp',
+  ],
+  deps = BUCKAROO_DEPS + [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)

@@ -100,6 +100,21 @@ namespace Satori {
           });
       }
 
+      int stat(std::string const& path) {
+        return uv_fs_stat(
+          this->loop,
+          (uv_fs_t*)this,
+          path.c_str(),
+          [](uv_fs_t* r) {
+            // assert(r == this);
+            auto result = r->result;
+            auto statbuf = r->statbuf;
+            auto* request = (FS*)r;
+            request->onStat(result, statbuf);
+            uv_fs_req_cleanup(r);
+          });
+      }
+
       int utime(const char* path, double atime, double mtime) {
         return uv_fs_utime(
           this->loop,
@@ -119,6 +134,7 @@ namespace Satori {
       std::function<void(ssize_t)> onOpen = [](ssize_t) {};
       std::function<void(int, uv_buf_t)> onRead = [](int, uv_buf_t) {};
       std::function<void(int)> onWrite = [](int) {};
+      std::function<void(int, uv_stat_t)> onStat = [](int, uv_stat_t) {};
       std::function<void(int)> onUtime = [](int) {};
 
       uv_buf_t buffer;
