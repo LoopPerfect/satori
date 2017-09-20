@@ -145,31 +145,30 @@ namespace Satori {
         buffer.len = bufferSize;
 
         return uv_fs_read(
-            this->loop,
-            (uv_fs_t*)this,
-            file,
-            &buffer,
-            buffer.len,
-            0,
-            [](uv_fs_t* r) {
+          this->loop,
+          (uv_fs_t*)this,
+          file,
+          &buffer,
+          1,
+          0,
+          [](uv_fs_t* r) {
             // assert(r == this);
             int result = r->result;
             uv_fs_req_cleanup(r);
             auto* request = (FS*)r;
             request->onRead(result, request->buffer);
-            }
-            );
+          });
       }
 
       int close(ssize_t file) {
         return uv_fs_close(
-            this->loop,
-            (uv_fs_t*)this,
-            file,
-            [](uv_fs_t* r) {
+          this->loop,
+          (uv_fs_t*)this,
+          file,
+          [](uv_fs_t* r) {
             auto* request = (Request<T>*)r;
             request->close();
-            });
+          });
       }
 
       std::function<void(ssize_t)> onOpen = [](ssize_t) {};
