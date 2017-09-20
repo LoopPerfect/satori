@@ -79,3 +79,17 @@ cxx_binary(
     'PUBLIC',
   ],
 )
+
+
+cxx_binary(
+  name = 'satori_getrequest',
+  srcs = [
+    'satori/apps/satori_getrequest.cpp',
+  ],
+  deps = [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)

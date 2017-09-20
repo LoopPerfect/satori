@@ -19,6 +19,7 @@ namespace Satori {
       FS fs;
       Pipe pipe;
       Connect connect;
+      GetAddrInfo getAddrInfo;
     };
 
     int type = 0;
@@ -52,6 +53,9 @@ namespace Satori {
           break;
         case 8:
           connect.~Connect();
+          break;
+        case 9:
+          getAddrInfo.~GetAddrInfo();
           break;
         case 0:
         default:
@@ -103,6 +107,11 @@ namespace Satori {
 
     Connect* newConnect() {
       return new (pool.acquire(8)) Connect(this);
+    }
+
+
+    GetAddrInfo* newGetAddrInfo() {
+      return new (pool.acquire(9)) GetAddrInfo(this);
     }
 
 
