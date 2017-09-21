@@ -51,6 +51,7 @@ int main(int argc, const char** argv) {
 
   options.exit_cb = on_exit;
   options.file = "sleep";
+  options.flags = 0;
   options.args = args;
 
   std::cout << "Going to sleep..." << std::endl;

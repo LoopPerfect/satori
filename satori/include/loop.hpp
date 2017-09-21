@@ -20,6 +20,7 @@ namespace Satori {
       Pipe pipe;
       Connect connect;
       GetAddrInfo getAddrInfo;
+      Process process;
     };
 
     int type = 0;
@@ -57,6 +58,9 @@ namespace Satori {
         case 9:
           getAddrInfo.~GetAddrInfo();
           break;
+        case 10:
+          process.~Process();
+          break;
         case 0:
         default:
           break;
@@ -90,7 +94,6 @@ namespace Satori {
       return new (pool.acquire(4)) Write(this);
     }
 
-
     template<class F>
     Async* newAsync(F const& f) {
       return new (pool.acquire(5)) Async(this, f);
@@ -100,7 +103,6 @@ namespace Satori {
       return new (pool.acquire(6)) FS(this);
     }
 
-
     Pipe* newPipe(bool ipc = 0) {
       return new (pool.acquire(7)) Pipe(this, ipc);
     }
@@ -109,9 +111,12 @@ namespace Satori {
       return new (pool.acquire(8)) Connect(this);
     }
 
-
     GetAddrInfo* newGetAddrInfo() {
       return new (pool.acquire(9)) GetAddrInfo(this);
+    }
+
+    Process* newProcess() {
+      return new (pool.acquire(10)) Process(this);
     }
 
     /*
@@ -124,8 +129,8 @@ namespace Satori {
       return uv_now(this);
     }
 
-    void run(uv_run_mode mode = UV_RUN_DEFAULT) {
-      uv_run(this, mode);
+    int run(uv_run_mode mode = UV_RUN_DEFAULT) {
+      return uv_run(this, mode);
     }
 
     ~Loop() {

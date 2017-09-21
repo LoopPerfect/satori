@@ -12,13 +12,6 @@ std::string error_to_string(int error) {
     std::string(uv_strerror(error));
 }
 
-void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
-  // fprintf(stderr, "Process exited with status %" PRId64 ", signal %d\n",
-  //   exit_status, term_signal);
-  std::cout << "exit" << std::endl;
-  uv_close((uv_handle_t*) req, NULL);
-}
-
 int main(int argc, const char ** argv) {
 
   using namespace Satori;
@@ -27,36 +20,26 @@ int main(int argc, const char ** argv) {
 
   auto* process = loop->newProcess();
 
-  uv_process_options_t options = {};
+  process->onExit = [](int64_t exit_status, int term_signal) {
+    std::cout << "I'm back! " << std::endl;
+    std::cout << "exit_status " << exit_status
+              << " term_signal " << term_signal
+              << std::endl;
+  };
 
-  char* args[1];
-  args[0] = "pwd";
+  int r = process->spawn("sleep", { "sleep", "1" });
 
-  options.exit_cb = on_exit;
-  options.file = "pwd";
-  options.flags = UV_PROCESS_DETACHED;
-  options.args = args;
-  options.stdio_count = 3;
+  if (r < 0) {
+    std::cout << error_to_string(r) << std::endl;
+    return 1;
+  }
 
-  int r = process->spawn(&options);
+  r = loop->run();
 
-  std::cout << r << std::endl;
-
-  // fs->onScandirNext = [](uv_dirent_t ent) {
-  //   std::cout << ent.type << " " << ent.name << std::endl;
-  //   return true;
-  // };
-
-  // fs->onScandir = [](int result) {
-  //   if (result < 0) {
-  //     std::cerr << error_to_string(result) << std::endl;
-  //     exit(1);
-  //   }
-  // };
-
-  // fs->scandir(path, 0);
-
-  loop->run();
-
+  if (r < 0) {
+    std::cout << error_to_string(r) << std::endl;
+    return 1;
+  }
+  
   return 0;
 }

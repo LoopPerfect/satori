@@ -4,12 +4,13 @@
 #include <memory>
 #include <functional>
 #include <cstring>
-
 #include <assert.h>
 
 #include <uv.h>
 
 #include <satori/enableMultiProcess.hpp>
+#include <satori/handle.hpp>
+#include <satori/process.hpp>
 
 
 namespace Satori {
@@ -23,29 +24,10 @@ static void allocBuffer(uv_handle_t* h, size_t len, uv_buf_t* buf) {
   *buf = uv_buf_init(read_buf, sizeof(read_buf));
 }
 
-template<class T = uv_handle_t>
-struct Handle : T {
-
-  ~Handle() {}
-  Handle(void*) {}
-
-  int close() {
-    uv_close((uv_handle_t*)this, [](auto* h) {
-      auto* handle = (Handle*)h;
-      handle->onClose();
-      release((Loop*)handle->loop, handle);
-    });
-    return 0;
-  }
-
-  std::function<void()> onClose = []{};
-};
-
-
 template<class T = uv_stream_t>
 struct Stream : Handle<T> {
 
-  Stream(void* loop)
+  Stream(uv_loop_t* loop)
     : Handle<T>(loop)
   {}
 
@@ -83,7 +65,7 @@ struct Stream : Handle<T> {
 
 template<class T = uv_tcp_t>
 struct Tcp : Stream<T> {
-  Tcp(void* loop)
+  Tcp(uv_loop_t* loop)
     : Stream<T>(loop) {
     uv_tcp_init((uv_loop_t*)loop, (uv_tcp_t*)this);
   }
@@ -113,7 +95,7 @@ struct Tcp : Stream<T> {
 
 template<class T=uv_pipe_t>
 struct Pipe : Stream<T> {
-  Pipe(void* loop, bool ipc = 0)
+  Pipe(uv_loop_t* loop, bool ipc = 0)
     : Stream<T>(loop) {
     uv_pipe_init((uv_loop_t*)loop, (uv_pipe_t*)this, ipc);
   }
@@ -126,13 +108,13 @@ struct Pipe : Stream<T> {
     return uv_pipe_bind((uv_pipe_t*)this, name);
   }
 
-  ~Pipe(){}
+  ~Pipe() {}
 };
 
 
 template<class T = uv_async_t>
 struct Async : Handle<T> {
-  Async(void* loop, std::function<void()> f)
+  Async(uv_loop_t* loop, std::function<void()> f)
     : Handle<T>(loop)
     , job{f} {
     uv_async_init((uv_loop_t*)loop, (uv_async_t*)this, [](uv_async_t* h) {
@@ -157,6 +139,7 @@ using Stream = detail::Stream<>;
 using Tcp    = detail::Tcp<>;
 using Pipe   = detail::Pipe<>;
 using Async  = detail::Async<>;
+using Process  = detail::Process<>;
 
 }
 
