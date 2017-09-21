@@ -16,17 +16,16 @@ std::string error_to_string(int const& error) {
     std::string(uv_strerror(error));
 }
 
-void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
+void on_exit(uv_process_t* req, int64_t exit_status, int term_signal) {
   std::cout << "I'm back! " << std::endl;
   std::cout << "exit_status " << exit_status
     << " term_signal " << term_signal << std::endl;
 
-  // Clean up
-  delete args;
+  uv_close((uv_handle_t*)req, nullptr);
+
   delete a;
   delete b;
-
-  uv_close((uv_handle_t*)req, nullptr);
+  delete args;
 }
 
 int main(int argc, const char** argv) {
@@ -45,13 +44,13 @@ int main(int argc, const char** argv) {
   strcpy(a, "sleep\0");
   strcpy(b, "1\0");
 
-  args = new char*[2];
+  args = new char*[3];
   args[0] = a;
   args[1] = b;
+  args[2] = nullptr;
 
   options.exit_cb = on_exit;
   options.file = "sleep";
-  options.flags = UV_PROCESS_DETACHED;
   options.args = args;
 
   std::cout << "Going to sleep..." << std::endl;
@@ -60,6 +59,7 @@ int main(int argc, const char** argv) {
 
   if (r < 0) {
     std::cout << error_to_string(r) << std::endl;
+    return 1;
   }
 
   uv_run(loop, UV_RUN_DEFAULT);
