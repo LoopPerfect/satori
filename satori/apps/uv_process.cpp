@@ -41,8 +41,8 @@ int main(int argc, const char** argv) {
   a = new char[100];
   b = new char[100];
 
-  strcpy(a, "sleep\0");
-  strcpy(b, "1\0");
+  strcpy(a, "sleep");
+  strcpy(b, "1");
 
   args = new char*[3];
   args[0] = a;
