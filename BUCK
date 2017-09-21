@@ -147,3 +147,27 @@ cxx_binary(
     'PUBLIC',
   ],
 )
+
+cxx_binary(
+  name = 'satori_process',
+  srcs = [
+    'satori/apps/satori_process.cpp',
+  ],
+  deps = BUCKAROO_DEPS + [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+cxx_binary(
+  name = 'uv_process',
+  srcs = [
+    'satori/apps/uv_process.cpp',
+  ],
+  deps = BUCKAROO_DEPS,
+  visibility = [
+    'PUBLIC',
+  ],
+)
