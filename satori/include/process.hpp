@@ -18,7 +18,7 @@ namespace Satori {
       if (options->args) {
         int i = 0;
         while (options->args[i] != nullptr) {
-          delete options->args[i];
+          delete[] options->args[i];
           i += 1;
         }
         delete options->args;
