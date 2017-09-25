@@ -171,3 +171,27 @@ cxx_binary(
     'PUBLIC',
   ],
 )
+
+cxx_binary(
+  name = 'nodejs_parse_http',
+  srcs = [
+    'satori/apps/nodejs_parse_http.cpp',
+  ],
+  deps = BUCKAROO_DEPS,
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+cxx_binary(
+  name = 'satori_parse_http',
+  srcs = [
+    'satori/apps/satori_parse_http.cpp',
+  ],
+  deps = [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
