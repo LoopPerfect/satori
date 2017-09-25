@@ -16,7 +16,7 @@
 int main() {
 
   using namespace std;
-  using namespace Satori;
+  using namespace ;
 
   auto loop = std::make_shared<Loop>();
 

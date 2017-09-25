@@ -13,7 +13,7 @@
 #include <satori/process.hpp>
 
 
-namespace Satori {
+namespace satori {
 
 struct Loop;
 

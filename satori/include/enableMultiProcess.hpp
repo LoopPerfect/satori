@@ -3,7 +3,7 @@
 
 #include <uv.h>
 
-namespace Satori {
+namespace satori {
 
   namespace detail {
 

@@ -5,7 +5,7 @@
 #include <satori/requests.hpp>
 #include <satori/recycler.hpp>
 
-namespace Satori {
+namespace satori {
 
   // TODO: replace with a variant...
   struct AnyHandle {

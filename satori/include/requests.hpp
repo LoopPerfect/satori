@@ -11,7 +11,7 @@
 #include <satori/request.hpp>
 #include <satori/fs.hpp>
 
-namespace Satori {
+namespace satori {
 
   struct Loop;
 

@@ -10,7 +10,7 @@
 
 #include <satori/request.hpp>
 
-namespace Satori {
+namespace satori {
 
   namespace detail {
 

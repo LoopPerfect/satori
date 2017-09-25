@@ -2,7 +2,7 @@
 #include <uv.h>
 #include <satori/enableMultiProcess.hpp>
 
-namespace Satori {
+namespace satori {
   namespace detail {
 
     void enableMultiProcess(uv_loop_t* loop, uv_tcp_t* server) {

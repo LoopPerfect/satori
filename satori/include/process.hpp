@@ -8,7 +8,7 @@
 
 #include <satori/handle.hpp>
 
-namespace Satori {
+namespace satori {
   namespace detail {
 
     // Utility method for deleting all memory pointed to

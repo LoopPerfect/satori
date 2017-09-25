@@ -4,7 +4,7 @@
 #include <memory>
 #include <functional>
 
-namespace Satori {
+namespace satori {
 
   struct Loop;
 

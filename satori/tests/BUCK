@@ -7,3 +7,13 @@ cxx_test(
     '//:satori',
   ],
 )
+
+cxx_test(
+  name = 'url-parser-tests',
+  srcs = [
+    'url-parser-tests.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)

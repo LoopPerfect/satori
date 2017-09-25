@@ -20,5 +20,26 @@
       "url": "https://raw.githubusercontent.com/nikhedonia/googletest/665327f0141d4a4fc4f2496e781dce436d742645/BUCK",
       "sha256": "d976069f5b47fd8fc57201f47026a70dee4e47b3141ac23567b8a0c56bf9288c"
     }
+  },
+  "nodejs/http-parser": {
+    "source": {
+      "url": "https://github.com/nodejs/http-parser/archive/feae95a3a69f111bc1897b9048d9acbc290992f9.zip",
+      "sha256": "746973cf378bf1dd884c58900734baadc12aaa788a3569a50feb521e90db655c",
+      "subPath": "http-parser-feae95a3a69f111bc1897b9048d9acbc290992f9"
+    },
+    "buck": {
+      "url": "https://raw.githubusercontent.com/njlr/http-parser/6d3169e01fa6f284b0e268f2e4ff63eb6395ebac/BUCK",
+      "sha256": "8271da902bed90694ee5294e013abbaca27512ec6bdf734504b1b1d7cf6ec8ff"
+    }
+  },
+  "github+loopperfect/neither": {
+    "source": {
+      "url": "https://github.com/loopperfect/neither/archive/377aeedea9dd1bd806a9daa440a3bdc86dc986dd.zip",
+      "sha256": "15b97d7005b08c8030a99830d7239c10a03e921da6d3120235d659ed83113bd0",
+      "subPath": "/neither-377aeedea9dd1bd806a9daa440a3bdc86dc986dd"
+    },
+    "dependencies": [
+      "google.gtest//:gtest"
+    ]
   }
 }

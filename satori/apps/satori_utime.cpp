@@ -14,7 +14,7 @@ std::string error_to_string(int error) {
 
 int main(int argc, const char ** argv) {
 
-  using namespace Satori;
+  using namespace ;
 
   if (!argv[1]) {
     std::cout << "Usage: file_path " << std::endl;

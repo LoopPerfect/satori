@@ -10,7 +10,7 @@ TEST(satori, httpparser) {
     { "path", "/" }
   });
 
-  auto actual = Satori::parseReq("GET / HTTP/1.1\nHost: localhost:8082");
+  auto actual = ::parseReq("GET / HTTP/1.1\nHost: localhost:8082");
 
   EXPECT_EQ(expected, actual);
 }

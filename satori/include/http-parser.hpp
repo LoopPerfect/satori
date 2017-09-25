@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-namespace Satori {
+namespace satori {
 
   std::map<std::string, std::string> parseReq(std::string const& str) {
 

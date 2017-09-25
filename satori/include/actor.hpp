@@ -7,7 +7,7 @@
 #include <satori/handles.hpp>
 #include <satori/loop.hpp>
 
-namespace Satori {
+namespace satori {
 
 template<class U>
 struct Actor : Async {

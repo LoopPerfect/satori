@@ -4,7 +4,7 @@
 #include <deque>
 #include <stack>
 
-namespace Satori {
+namespace satori {
 
   template<class T>
   struct Recycler {
