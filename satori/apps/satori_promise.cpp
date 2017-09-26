@@ -10,13 +10,13 @@ int main() {
 
   // auto loop = std::make_shared<Loop>();
 
-  auto promise = Promise<std::string>(); //createPromise<std::string>(loop.get());
+  Promise<std::string> promise{}; //createPromise<std::string>(loop.get());
 
-  promise->onResolve([](std::string x) {
+  promise.onResolve([](std::string x) {
     std::cout << x << std::endl;
   });
 
-  promise->resolve("Hello, world. ");
+  promise.resolve("Hello, world. ");
 
   // loop->run();
 
