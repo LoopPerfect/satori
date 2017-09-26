@@ -7,71 +7,10 @@
 
 namespace satori {
 
-  // TODO: replace with a variant...
-  struct AnyHandle {
-    union {
-      char raw[0];
-      Handle handle;
-      Stream stream;
-      Tcp tcp;
-      Write write;
-      Async async;
-      FS fs;
-      Pipe pipe;
-      Connect connect;
-      GetAddrInfo getAddrInfo;
-      Process process;
-    };
-
-    int type = 0;
-
-    AnyHandle(int type = 0)
-      : type{type} {
-    }
-
-    ~AnyHandle() {
-      switch (type) {
-        case 1:
-          handle.~Handle();
-          break;
-        case 2:
-          stream.~Stream();
-          break;
-        case 3:
-          tcp.~Tcp();
-          break;
-        case 4:
-          write.~Write();
-          break;
-        case 5:
-          async.~Async();
-          break;
-        case 6:
-          fs.~FS();
-          break;
-        case 7:
-          pipe.~Pipe();
-          break;
-        case 8:
-          connect.~Connect();
-          break;
-        case 9:
-          getAddrInfo.~GetAddrInfo();
-          break;
-        case 10:
-          process.~Process();
-          break;
-        case 0:
-        default:
-          break;
-      }
-    }
-  };
-
 
   struct Loop : uv_loop_t {
 
-    Recycler<AnyHandle> pool;
+    SmartRecycler<1024> pool;
 
     Loop(size_t const& num = 1024)
       : pool(num) {
@@ -79,44 +18,44 @@ namespace satori {
     }
 
     Handle* newHandle() {
-      return new (pool.acquire(1)) Handle(this);
+      return pool.create<Handle>(this);
     }
 
     Stream* newStream() {
-      return new (pool.acquire(2)) Stream(this);
+      return pool.create<Stream>(this);
     }
 
     Tcp* newTcp() {
-      return new (pool.acquire(3)) Tcp(this);
+      return pool.create<Tcp>(this);
     }
 
     Write* newWrite() {
-      return new (pool.acquire(4)) Write(this);
+      return pool.create<Write>(this);
     }
 
     template<class F>
     Async* newAsync(F const& f) {
-      return new (pool.acquire(5)) Async(this, f);
+      return pool.create<Async>(this, f);
     }
 
     FS* newFS() {
-      return new (pool.acquire(6)) FS(this);
+      return pool.create<FS>(this);
     }
 
     Pipe* newPipe(bool ipc = 0) {
-      return new (pool.acquire(7)) Pipe(this, ipc);
+      return pool.create<Pipe>(this, ipc);
     }
 
     Connect* newConnect() {
-      return new (pool.acquire(8)) Connect(this);
+      return pool.create<Connect>(this);
     }
 
     GetAddrInfo* newGetAddrInfo() {
-      return new (pool.acquire(9)) GetAddrInfo(this);
+      return pool.create<GetAddrInfo>(this);
     }
 
     Process* newProcess() {
-      return new (pool.acquire(10)) Process(this);
+      return pool.create<Process>(this);
     }
 
     /*

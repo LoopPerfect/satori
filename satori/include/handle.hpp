@@ -18,7 +18,9 @@ namespace satori {
         this->loop = loop;
       }
 
-      ~Handle() {}
+      ~Handle() {
+        close();
+      }
 
       int close() {
         uv_close((uv_handle_t*)this, [](auto* h) {
