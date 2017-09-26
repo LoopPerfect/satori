@@ -58,43 +58,45 @@ namespace satori {
 
     using ValueType = T;
 
-    Promise() :
+    std::weak_ptr<Loop> loop;
+
+    Promise(std::weak_ptr<Loop> loop) :
+      loop(loop),
       state(std::make_shared<State>()) {}
 
     Promise(Promise const& rhs) = default;
 
     ~Promise() = default;
 
+    void executeCallback(T result, std::function<void(T)> callback) const {
+      auto l = loop.lock();
+      Async* async = l->newAsync([=]() {
+        callback(result);
+        async->close();
+      });
+      async->invoke();
+    }
+
     void resolve(T result) {
       state->setValue(result);
       for (auto const& callback : state->callbacks) {
-        callback(result); // TODO: Do this async
+        executeCallback(result, callback);
       }
       state->callbacks.clear();
     }
 
     void onResolve(std::function<void(T)> callback) const {
       if (state->isDone) {
-        callback(state->value); // TODO: async
+        executeCallback(state->value, callback);
       } else {
         state->callbacks.push_back(callback);
       }
     }
 
-    // template <typename F>
-    // auto map(F f) const -> Promise<decltype(f(this->state->value))> {
-    //   using R = decltype(f(this->state->value));
-    //   auto p = Promise<R>();
-    //   onResolve([p, f](T result) mutable{
-    //     p.resolve(f(result));
-    //   });
-    //   return p;
-    // }
-
     template <typename F>
     auto flatMap(F f) const -> decltype(ensurePromise(f(this->state->value))) {
       using R = decltype(f(this->state->value));
-      auto p = R();
+      auto p = R(loop);
       onResolve([=](T result) mutable {
         auto q = f(result);
         q.onResolve([p](auto x) mutable {
@@ -107,8 +109,8 @@ namespace satori {
     template <typename F>
     auto map(F f) const -> Promise<decltype(f(this->state->value))> {
       using R = decltype(f(this->state->value));
-      return flatMap([f](auto x) mutable {
-        auto p = Promise<R>();
+      return flatMap([this, f](auto x) mutable {
+        auto p = Promise<R>(this->loop);
         p.resolve(f(x));
         return p;
       });

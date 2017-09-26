@@ -32,7 +32,6 @@ namespace satori {
   }
 
   using Async = detail::Async<>;
-
 }
 
 #endif

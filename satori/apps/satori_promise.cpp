@@ -8,10 +8,10 @@ int main() {
 
   using namespace satori;
 
-  // auto loop = std::make_shared<Loop>();
+  auto loop = std::make_shared<Loop>();
 
-  auto p = Promise<std::string>();
-  auto w = Promise<std::string>();
+  auto p = Promise<std::string>(std::weak_ptr<Loop>(loop));
+  auto w = Promise<std::string>(std::weak_ptr<Loop>(loop));
 
   auto q = p.map([=](std::string x) {
     return x + x;
@@ -31,7 +31,7 @@ int main() {
 
   w.resolve("world. ");
 
-  // loop->run();
+  loop->run();
 
   return 0;
 }
