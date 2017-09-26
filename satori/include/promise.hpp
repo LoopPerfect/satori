@@ -4,68 +4,117 @@
 #include <vector>
 #include <functional>
 #include <cassert>
+#include <memory>
 
-template <typename T>
-struct Promise {
+namespace satori {
 
-  union {
-    T value;
+  template <typename T>
+  struct Promise;
+
+  template <typename T>
+  constexpr auto ensurePromiseType(Promise<T> const& p) {
+    return p;
+  }
+
+  template <typename P>
+  constexpr auto ensurePromise(P const& p)
+    -> decltype(ensurePromiseType<typename P::ValueType>(p)) {
+    return p;
+  }
+
+  template <typename T>
+  struct Promise {
+
+  private:
+
+    struct State {
+      union {
+        T value;
+      };
+      bool isDone = false;
+      std::vector<std::function<void(T)>> callbacks;
+
+      State() {}
+
+      State(State const& rhs) = delete;
+
+      ~State() {
+        if (isDone) {
+          value.~T();
+          isDone = false;
+        }
+      }
+
+      void setValue(T const& x) {
+        assert(!isDone && "Cannot set value more than once");
+        new (&value) T(x);
+        isDone = true;
+      }
+    };
+
+    mutable std::shared_ptr<State> state;
+
+  public:
+
+    using ValueType = T;
+
+    Promise() :
+      state(std::make_shared<State>()) {}
+
+    Promise(Promise const& rhs) = default;
+
+    ~Promise() = default;
+
+    void resolve(T result) {
+      state->setValue(result);
+      for (auto const& callback : state->callbacks) {
+        callback(result); // TODO: Do this async
+      }
+      state->callbacks.clear();
+    }
+
+    void onResolve(std::function<void(T)> callback) const {
+      if (state->isDone) {
+        callback(state->value); // TODO: async
+      } else {
+        state->callbacks.push_back(callback);
+      }
+    }
+
+    // template <typename F>
+    // auto map(F f) const -> Promise<decltype(f(this->state->value))> {
+    //   using R = decltype(f(this->state->value));
+    //   auto p = Promise<R>();
+    //   onResolve([p, f](T result) mutable{
+    //     p.resolve(f(result));
+    //   });
+    //   return p;
+    // }
+
+    template <typename F>
+    auto flatMap(F f) const -> decltype(ensurePromise(f(this->state->value))) {
+      using R = decltype(f(this->state->value));
+      auto p = R();
+      onResolve([=](T result) mutable {
+        auto q = f(result);
+        q.onResolve([p](auto x) mutable {
+          p.resolve(x);
+        });
+      });
+      return p;
+    }
+
+    template <typename F>
+    auto map(F f) const -> Promise<decltype(f(this->state->value))> {
+      using R = decltype(f(this->state->value));
+      return flatMap([f](auto x) mutable {
+        auto p = Promise<R>();
+        p.resolve(f(x));
+        return p;
+      });
+    }
   };
 
-  // Actor<std::function<T>>* actor;
-  bool isDone = false;
-  std::vector<std::function<void(T)>> callbacks = {};
-
-  Promise() :
-    isDone(false),
-    callbacks({}) {}
-
-  ~Promise() {
-    if (isDone) {
-      value.~T();
-    }
-  }
-
-  // template <typename R>
-  // Promise<R> map(Loop& loop, std::function<R(T)> f) {
-  //   if (isDone) {
-  //     return f(value);
-  //   }
-  //   auto result = Promise<R>;
-  //   actor->push([this, result]() {
-  //     assert(isDone && "Callback called too soon");
-  //     result.resolve(f(value));
-  //   });
-  //   return result;
-  // }
-
-  // template <typename F>
-  // Promise flatMap(F f) {
-  //
-  // }
-
-  // template <typename F>
-  // Promise then() {
-  //
-  // }
-
-  void onResolve(std::function<void(T)> f) {
-    if (isDone) {
-      f(value);
-    } else {
-      callbacks.push_back(f);
-    }
-  }
-
-  void resolve(T result) {
-    assert(!isDone && "Cannot set the result twice");
-    isDone = true;
-    value = result;
-    for (auto const& callback : callbacks) {
-      callback(value);
-    }
-    callbacks.clear();
-  }
-};
+}
 
 #endif

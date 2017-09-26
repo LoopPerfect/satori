@@ -11,6 +11,5 @@
 #include <satori/url.hpp>
 #include <satori/url-parser.hpp>
 #include <satori/promise.hpp>
-#include <satori/promises.hpp>
 
 #endif

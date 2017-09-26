@@ -58,10 +58,10 @@ namespace satori {
       return pool.create<Process>(this);
     }
 
-    // template <typename T>
-    // Actor<T>* newActor() {
-    //   return new (pool.acquire(11)) Actor<T>(this);
-    // }
+    template <typename T>
+    Actor<T>* newActor() {
+      return pool.create<Actor<T>>(this);
+    }
 
     /*
     Work newWork() {

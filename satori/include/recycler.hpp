@@ -5,13 +5,14 @@
 #include <stack>
 #include <tuple>
 #include <type_traits>
+#include <cassert>
 
 namespace satori {
 
-constexpr unsigned nextPow2(unsigned x) {
+constexpr unsigned nextPow2(unsigned const x) {
   unsigned n = 2;
-  while (n<x) { 
-    n*=2; 
+  while (n < x) {
+    n *= 2;
   }
   return n;
 };
@@ -34,13 +35,16 @@ struct BlockRecycler {
 
   BlockRecycler(unsigned prealloc = 4096 / Block::size() + 1)
     : blocks(prealloc) {
-    for(auto& b : blocks) {
+    for (auto& b : blocks) {
       pool.push(&b);
     }
   }
 
   void* allocate(size_t x) {
-    if (x > Block::size()) return nullptr;
+    assert(x <= Block::size());
+    if (x > Block::size()) {
+      return nullptr;
+    }
     return allocate();
   }
 
@@ -55,16 +59,15 @@ struct BlockRecycler {
     return b;
   }
 
-  void release(void * ptr) {
+  void release(void* ptr) {
     pool.push((Block*)ptr);
   }
 };
 
 
-
 template<unsigned blockSize = 64>
 struct SmartBlock {
-  
+
   struct Meta {
     unsigned free = 0;
     void (*deleter)(void*);
@@ -80,12 +83,13 @@ struct SmartBlock {
 
 
 template<unsigned minBlockSize = 64>
-struct SmartRecycler 
+struct SmartRecycler
   : BlockRecycler<SmartBlock<minBlockSize>> {
 
   using Parent = BlockRecycler<SmartBlock<minBlockSize>>;
   using Block = SmartBlock<minBlockSize>;
-  SmartRecycler(unsigned const& n) 
+  
+  SmartRecycler(unsigned const& n)
     : BlockRecycler<Block>(n)
   {}
 
@@ -104,7 +108,7 @@ struct SmartRecycler
 
   template<class T, class...Xs>
   static T* createIntoBlock(void* b, Xs&&...xs) {
-    Block* block = (Block*)b; 
+    Block* block = (Block*)b;
     if (block->meta.free >= sizeof(T)) {
       auto obj = new (&block->data[Block::size() - block->meta.free]) T(
         std::forward<Xs>(xs)...
@@ -117,7 +121,7 @@ struct SmartRecycler
   }
 
   void release(void* ptr) {
-    ((Block*)ptr)->meta.deleter(ptr);   
+    ((Block*)ptr)->meta.deleter(ptr);
     Parent::release((Block*)ptr);
   }
 };

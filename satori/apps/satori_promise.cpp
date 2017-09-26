@@ -10,13 +10,26 @@ int main() {
 
   // auto loop = std::make_shared<Loop>();
 
-  Promise<std::string> promise{}; //createPromise<std::string>(loop.get());
+  auto p = Promise<std::string>();
+  auto w = Promise<std::string>();
 
-  promise.onResolve([](std::string x) {
+  auto q = p.map([=](std::string x) {
+    return x + x;
+  });
+
+  p.resolve("Hello");
+
+  auto r = q.flatMap([=](std::string x) {
+    return w.map([=](std::string y) {
+      return x + "... " + y;
+    });
+  });
+
+  r.onResolve([=](std::string x) {
     std::cout << x << std::endl;
   });
 
-  promise.resolve("Hello, world. ");
+  w.resolve("world. ");
 
   // loop->run();
 
