@@ -6,9 +6,12 @@
 #include <cstring>
 #include <iostream>
 
+#include <uv.h>
+
 #include <satori/handle.hpp>
 
 namespace satori {
+
   namespace detail {
 
     // Utility method for deleting all memory pointed to
@@ -68,6 +71,8 @@ namespace satori {
     };
 
   }
+
+  using Process = detail::Process<>;
 }
 
 #endif

@@ -21,9 +21,10 @@ namespace satori {
       Connect connect;
       GetAddrInfo getAddrInfo;
       Process process;
+      // Actor actor;
     };
 
-    int type = 0;
+    int type;
 
     AnyHandle(int type = 0)
       : type{type} {
@@ -61,6 +62,9 @@ namespace satori {
         case 10:
           process.~Process();
           break;
+        // case 11:
+        //   actor.~Actor();
+        //   break;
         case 0:
         default:
           break;
@@ -118,6 +122,11 @@ namespace satori {
     Process* newProcess() {
       return new (pool.acquire(10)) Process(this);
     }
+
+    // template <typename T>
+    // Actor<T>* newActor() {
+    //   return new (pool.acquire(11)) Actor<T>(this);
+    // }
 
     /*
     Work newWork() {

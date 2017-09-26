@@ -33,6 +33,8 @@ namespace satori {
     };
 
   }
+
+  using Handle = detail::Handle<>;
 }
 
 #endif
