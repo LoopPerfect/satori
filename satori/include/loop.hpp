@@ -22,10 +22,7 @@ namespace satori {
       return pool.create<Tcp>(this);
     }
 
-    template<class S>
-    Write* newWrite(S* stream, std::string const& msg) {
-      return pool.create<Write>((uv_stream_t*)stream, msg);
-    }
+
 
     template<class F>
     Async* newAsync(F const& f) {
@@ -35,15 +32,29 @@ namespace satori {
     Pipe* newPipe(bool ipc = 0) {
       return pool.create<Pipe>(this, ipc);
     }
-/*
-    Connect* newConnect() {
-      return pool.create<Connect>(this);
+
+
+    template<class S>
+    Write* newWrite(S* stream, std::string const& msg) {
+      return pool.create<Write>((uv_stream_t*)stream, msg);
     }
 
-    GetAddrInfo* newGetAddrInfo() {
-      return pool.create<GetAddrInfo>(this);
+
+    template<class P>
+    ConnectPipe* newConnectPipe(P* pipe, const char* name) {
+      return pool.create<ConnectPipe>((uv_pipe_t*)pipe, name);
     }
-*/
+
+
+    template<class T>
+    ConnectTcp* newConnectTcp(T* tcp, addrinfo const& addr) {
+      return pool.create<ConnectTcp>((uv_tcp_t*)tcp, addr);
+    }
+
+    GetAddrInfo* newGetAddrInfo(const char* host, const char* port) {
+      return pool.create<GetAddrInfo>(this, host, port);
+    }
+
 
 /*
     FS* newFS() {

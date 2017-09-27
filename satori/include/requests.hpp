@@ -56,6 +56,94 @@ namespace satori {
 
     std::function<void(int status)> onWriteEnd = [](int) {};
   };
+
+  struct ConnectTcp 
+    : uv_connect_t
+    , Request<ConnectTcp> {
+    ConnectTcp(uv_tcp_t* tcp, addrinfo const& addr) {
+      connect(tcp, addr);
+    }
+
+    int connect(uv_tcp_t* tcp, addrinfo res) {
+      return uv_tcp_connect(
+        (uv_connect_t*)this,
+        tcp,
+        new sockaddr (*res.ai_addr),
+        [](uv_connect_t* h, int status) {
+          ((ConnectTcp*) h)->onConnect(status);
+      });
+    }
+
+    std::function<void(int status)> onConnect = [](int){};
+  };
+
+
+  struct ConnectPipe  
+    : uv_connect_t
+    , Request<ConnectPipe> {
+    ConnectPipe(uv_pipe_t* pipe, char const* name) {
+      connect(pipe, name);
+    }
+
+    int connect(uv_pipe_t* pipe, char const* name) {
+      uv_pipe_connect(
+        (uv_connect_t*)this, 
+        (uv_pipe_t*)pipe, name,
+        [](uv_connect_t* h, int status) {
+          ((ConnectPipe*) h)->onConnect(status);
+      });
+      return 0;
+    }
+
+    std::function<void(int status)> onConnect = [](int){};
+  };
+
+
+
+  struct GetAddrInfo 
+    : uv_getaddrinfo_t
+    , Request<GetAddrInfo> {
+    GetAddrInfo(
+      uv_loop_t* loop, 
+      char const* host, 
+      char const* port,
+      ::addrinfo hints = defaultHints()) {
+      resolve(loop, host, port, hints);
+    }
+
+
+    static ::addrinfo defaultHints() {
+      ::addrinfo hints;
+      hints.ai_family = PF_INET;
+      hints.ai_socktype = SOCK_STREAM;
+      hints.ai_protocol = IPPROTO_TCP;
+      hints.ai_flags = 0;
+      return hints;
+    }
+
+    int resolve(uv_loop_t* loop, 
+        char const* host, 
+        char const* port, 
+        ::addrinfo hints) {
+      return uv_getaddrinfo(
+          loop,
+          (uv_getaddrinfo_t*)this,
+          GetAddrInfo::whenResolved, host, port, &hints );
+    }
+
+    static void whenResolved(uv_getaddrinfo_t* h, int status, ::addrinfo* res) {
+      ((GetAddrInfo*)h)->onResolved(status, *res);
+      uv_freeaddrinfo(res);
+    }
+
+    
+    std::function<void(int, ::addrinfo)> onResolved =
+      [](int, ::addrinfo){};
+  };
+
+
+
+
 /*
     template<class T = uv_work_t>
     struct Work : Request<T> {
@@ -81,59 +169,8 @@ namespace satori {
       std::function<void(int)> then = [](int) {};
     };
 
-    template<class T = uv_connect_t>
-    struct Connect : Request<T> {
-      Connect(uv_loop_t* loop)
-        : Request<T>(loop)
-      {}
-
-      int connect(uv_tcp_t* tcp, addrinfo res) {
-       return uv_tcp_connect(
-         (uv_connect_t*)this,
-         tcp,
-         (const struct sockaddr*) res.ai_addr,
-         [](uv_connect_t* h, int status) {
-           ((Connect*) h)->onConnect(status);
-       });
-      }
 
 
-      int connect(uv_pipe_t* pipe, char const* name) {
-        return uv_pipe_connect((uv_connect_t*)this, (uv_pipe_t*)pipe, name, [](uv_connect_t* h, int status) {
-          ((Connect*) h)->onConnect(status);
-        });
-      }
-
-     std::function<void(int status)> onConnect = [](int){};
-    };
-
-    template<class T = uv_getaddrinfo_t>
-    struct GetAddrInfo : Request<T> {
-      GetAddrInfo(uv_loop_t* loop)
-        : Request<T>(loop) {
-        hints.ai_family = PF_INET;
-        hints.ai_socktype = SOCK_STREAM;
-        hints.ai_protocol = IPPROTO_TCP;
-        hints.ai_flags = 0;
-      }
-
-      int resolve(char const* host, char const* port) {
-        return uv_getaddrinfo(
-          this->loop,
-          (uv_getaddrinfo_t*)this,
-          GetAddrInfo::whenResolved, host, port, &hints);
-      }
-
-      static void whenResolved(uv_getaddrinfo_t* h, int status, addrinfo* res) {
-        ((GetAddrInfo*)h)->onResolved(status, *res);
-        uv_freeaddrinfo(res);
-      }
-
-      addrinfo hints;
-      std::function<void(int, addrinfo)> onResolved =
-        [](int, addrinfo){};
-    };
-  }
 
   using Request = detail::Request<>;
   using Connect = detail::Connect<>;
