@@ -10,7 +10,7 @@
 
 namespace satori {
 
-neither::Either<int, Url> parseUrl(std::string const &maybeUrl) {
+neither::Either<int, Url> parseUrl(std::string const& maybeUrl) {
 
   http_parser_url parser;
 

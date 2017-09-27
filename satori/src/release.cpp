@@ -3,6 +3,6 @@
 
 namespace satori {
 
-void release(Loop *loop, void *ptr) { loop->pool.release(ptr); }
+void release(Loop* loop, void* ptr) { loop->pool.release(ptr); }
 
 } // namespace satori

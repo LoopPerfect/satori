@@ -4,7 +4,7 @@
 #include <string>
 #include <uv.h>
 
-uv_loop_t *loop;
+uv_loop_t* loop;
 
 uv_fs_t open_req;
 uv_fs_t read_req;
@@ -13,16 +13,16 @@ uv_fs_t close_req;
 uv_buf_t buffer;
 char data[1024];
 
-void open_cb(uv_fs_t *req);
-void read_cb(uv_fs_t *req);
-void close_cb(uv_fs_t *req);
+void open_cb(uv_fs_t* req);
+void read_cb(uv_fs_t* req);
+void close_cb(uv_fs_t* req);
 
 std::string error_to_string(int error) {
   return std::string(uv_err_name(error)) + " " +
          std::string(uv_strerror(error));
 }
 
-int main(int argc, const char **argv) {
+int main(int argc, const char** argv) {
 
   loop = new uv_loop_t();
 
@@ -46,7 +46,7 @@ int main(int argc, const char **argv) {
   return 0;
 }
 
-void open_cb(uv_fs_t *req) {
+void open_cb(uv_fs_t* req) {
 
   assert(req == &open_req);
 
@@ -56,9 +56,13 @@ void open_cb(uv_fs_t *req) {
 
   buffer = uv_buf_init(data, sizeof(data));
 
-  int uv_fs_read_result = uv_fs_read(loop, &read_req, file, &buffer,
+  int uv_fs_read_result = uv_fs_read(loop,
+                                     &read_req,
+                                     file,
+                                     &buffer,
                                      1, // buffer.len,
-                                     0, read_cb);
+                                     0,
+                                     read_cb);
 
   if (uv_fs_read_result < 0) {
     std::cerr << error_to_string(uv_fs_read_result) << std::endl;
@@ -66,7 +70,7 @@ void open_cb(uv_fs_t *req) {
   }
 }
 
-void read_cb(uv_fs_t *req) {
+void read_cb(uv_fs_t* req) {
 
   assert(req == &read_req);
 
@@ -91,7 +95,7 @@ void read_cb(uv_fs_t *req) {
   }
 }
 
-void close_cb(uv_fs_t *req) {
+void close_cb(uv_fs_t* req) {
 
   assert(req == &close_req);
 

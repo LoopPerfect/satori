@@ -10,7 +10,7 @@ std::string error_to_string(int error) {
          std::string(uv_strerror(error));
 }
 
-int main(int argc, const char **argv) {
+int main(int argc, const char** argv) {
 
   using namespace satori;
 
@@ -18,7 +18,7 @@ int main(int argc, const char **argv) {
 
   auto loop = std::make_shared<Loop>();
 
-  auto *fs = loop->newFSScanDir(path, 0);
+  auto* fs = loop->newFSScanDir(path, 0);
 
   fs->onScandirNext = [](uv_dirent_t ent) {
     std::cout << ent.type << " " << ent.name << std::endl;

@@ -10,7 +10,7 @@ std::string error_to_string(int error) {
          std::string(uv_strerror(error));
 }
 
-int main(int argc, const char **argv) {
+int main(int argc, const char** argv) {
 
   using namespace;
 
@@ -21,7 +21,7 @@ int main(int argc, const char **argv) {
 
   auto loop = std::make_shared<Loop>();
 
-  FS *fs = loop->newFS();
+  FS* fs = loop->newFS();
 
   fs->onOpen = [=](ssize_t file) {
 

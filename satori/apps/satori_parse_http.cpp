@@ -10,24 +10,24 @@ int main() {
 
   auto parser = std::make_shared<satori::HttpParser>(HTTP_REQUEST);
 
-  parser->onUrl = [](http_parser const *parser, char const *at, size_t length) {
+  parser->onUrl = [](http_parser const* parser, char const* at, size_t length) {
     std::cout << "URL: " << std::string(at, length) << std::endl;
     return 0;
   };
 
-  parser->onHeaderField = [](http_parser const *parser, char const *at,
-                             size_t length) {
-    std::cout << std::string(at, length) << ": " << std::endl;
-    return 0;
-  };
+  parser->onHeaderField =
+    [](http_parser const* parser, char const* at, size_t length) {
+      std::cout << std::string(at, length) << ": " << std::endl;
+      return 0;
+    };
 
-  parser->onHeaderValue = [](http_parser const *parser, char const *at,
-                             size_t length) {
-    std::cout << std::string(at, length) << std::endl;
-    return 0;
-  };
+  parser->onHeaderValue =
+    [](http_parser const* parser, char const* at, size_t length) {
+      std::cout << std::string(at, length) << std::endl;
+      return 0;
+    };
 
-  parser->onHeadersComplete = [](http_parser const *parser) {
+  parser->onHeadersComplete = [](http_parser const* parser) {
     std::cout << "---" << std::endl;
     return 0;
   };

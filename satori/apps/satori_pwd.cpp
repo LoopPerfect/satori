@@ -10,13 +10,13 @@ std::string error_to_string(int error) {
          std::string(uv_strerror(error));
 }
 
-int main(int argc, const char **argv) {
+int main(int argc, const char** argv) {
 
   using namespace satori;
 
   auto loop = std::make_shared<Loop>();
 
-  auto *fs = loop->newFSRealPath(".");
+  auto* fs = loop->newFSRealPath(".");
 
   fs->onError = [](int error) {
     std::cerr << error_to_string(error) << std::endl;

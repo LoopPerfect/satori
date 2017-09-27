@@ -13,7 +13,7 @@ namespace detail {
 
 template <class T = uv_handle_t> struct Handle : T {
 
-  Handle(uv_loop_t *loop) { this->loop = loop; }
+  Handle(uv_loop_t* loop) { this->loop = loop; }
 
   ~Handle() {
     // close(); can't call close; to late... will crash in the uv_close
@@ -21,10 +21,10 @@ template <class T = uv_handle_t> struct Handle : T {
   }
 
   int close() {
-    uv_close((uv_handle_t *)this, [](auto *h) {
-      auto *handle = (Handle *)h;
+    uv_close((uv_handle_t*)this, [](auto* h) {
+      auto* handle = (Handle*)h;
       handle->onClose();
-      release((Loop *)handle->loop, handle);
+      release((Loop*)handle->loop, handle);
     });
     return 0;
   }

@@ -10,7 +10,7 @@ std::string error_to_string(int error) {
          std::string(uv_strerror(error));
 }
 
-auto const repeat = [](std::string const &x, std::size_t n) {
+auto const repeat = [](std::string const& x, std::size_t n) {
   std::string y = "";
   for (int i = 0; i < n; ++i) {
     y += x;
@@ -18,7 +18,7 @@ auto const repeat = [](std::string const &x, std::size_t n) {
   return y;
 };
 
-int main(int argc, const char **argv) {
+int main(int argc, const char** argv) {
 
   using namespace satori;
 

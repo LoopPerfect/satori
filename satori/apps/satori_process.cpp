@@ -11,13 +11,13 @@ std::string error_to_string(int error) {
          std::string(uv_strerror(error));
 }
 
-int main(int argc, const char **argv) {
+int main(int argc, const char** argv) {
 
   using namespace;
 
   auto loop = std::make_shared<Loop>();
 
-  auto *process = loop->newProcess();
+  auto* process = loop->newProcess();
 
   process->onExit = [](int64_t exit_status, int term_signal) {
     std::cout << "I'm back! " << std::endl;

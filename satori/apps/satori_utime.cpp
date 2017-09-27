@@ -10,7 +10,7 @@ std::string error_to_string(int error) {
          std::string(uv_strerror(error));
 }
 
-int main(int argc, const char **argv) {
+int main(int argc, const char** argv) {
 
   using namespace satori;
 
@@ -24,7 +24,7 @@ int main(int argc, const char **argv) {
   double atime = 1000;
   double mtime = 2000;
 
-  auto *fs = loop->newFSUTime(argv[1], atime, mtime);
+  auto* fs = loop->newFSUTime(argv[1], atime, mtime);
 
   fs->onUtime = [&](int result) {
     if (result < 0) {

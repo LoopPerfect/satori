@@ -15,9 +15,9 @@ template <class U> struct Actor : Async {
   using FunctorType = std::function<void(ValueType)>;
 
   template <class F>
-  Actor(void *loop, F const &f)
+  Actor(void* loop, F const& f)
     : Async(loop, [this, f] {
-        for (auto const &msg : inbox) {
+        for (auto const& msg : inbox) {
           f(msg);
         }
         inbox.clear();

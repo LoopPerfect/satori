@@ -20,13 +20,13 @@ int main() {
 
   auto loop = std::make_shared<Loop>();
 
-  using ConType = std::tuple<Tcp *, Tcp *>;
+  using ConType = std::tuple<Tcp*, Tcp*>;
 
-  auto act = [=](ConType const &con) {
+  auto act = [=](ConType const& con) {
     auto server = std::get<0>(con);
     auto client = std::get<1>(con);
     client->read();
-    client->onData = [=](char const *data, size_t const len) {
+    client->onData = [=](char const* data, size_t const len) {
       /*
        auto req = parseReq(std::string(data, data + len));
        if (req.size() == 0) {
@@ -59,10 +59,10 @@ int main() {
 
   };
 
-  auto *server = loop->newTcp();
+  auto* server = loop->newTcp();
   server->listen("127.0.0.1", 8080);
   server->onListen = [=](auto status) {
-    auto *client = loop->newTcp();
+    auto* client = loop->newTcp();
     server->accept(client);
     act(make_tuple(server, client));
   };
