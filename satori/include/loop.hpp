@@ -1,9 +1,10 @@
 #ifndef SATORI_LOOP_HPP
 #define SATORI_LOOP_HPP
 
+
+#include <satori/recycler.hpp>
 #include <satori/handles.hpp>
 #include <satori/requests.hpp>
-#include <satori/recycler.hpp>
 
 namespace satori {
 
@@ -31,21 +32,22 @@ namespace satori {
       return pool.create<Async>(this, f);
     }
 
-
-
     Pipe* newPipe(bool ipc = 0) {
       return pool.create<Pipe>(this, ipc);
     }
 /*
-    FS* newFS() {
-      return pool.create<FS>(this);
-    }
     Connect* newConnect() {
       return pool.create<Connect>(this);
     }
 
     GetAddrInfo* newGetAddrInfo() {
       return pool.create<GetAddrInfo>(this);
+    }
+*/
+
+/*
+    FS* newFS() {
+      return pool.create<FS>(this);
     }
 
     
@@ -73,13 +75,15 @@ namespace satori {
 
 
   template<class H>
-  void release(H h) {
-    ((Loop*)h->loop)->pool.release(h);
+  void release(H h) { 
+    std::cout << "handle: "<< sizeof(*h) << std::endl;
+    ((Loop*)h->loop)->pool.destroy(h);
   }
 
   template<class R>
   void releaseRequest(R r) {
-    ((Loop*)r->handle->loop)->pool.release(r);
+    std::cout << "request: "<< sizeof(*r) << std::endl;
+    ((Loop*)r->handle->loop)->pool.destroy(r);
   }
 
 }

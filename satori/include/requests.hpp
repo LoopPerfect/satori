@@ -50,7 +50,7 @@ namespace satori {
         [](uv_write_t* h, int status) {
           auto* write = (Write*)h;
           write->onWriteEnd(status);
-          releaseRequest(h);
+          releaseRequest(write);
         });
     }
 

@@ -67,7 +67,6 @@ struct SmartBlock {
   
   struct Meta {
     unsigned free = 0;
-    void (*deleter)(void*);
   };
 
   char data[blockSize - sizeof(Meta)];
@@ -94,11 +93,6 @@ struct SmartRecycler
     if (sizeof(T) > Block::size()) return nullptr;
     auto block  = (Block*)Parent::allocate();
     block->meta.free = Block::size() - sizeof(T);
-    block->meta.deleter = [](void* ptr) {
-      ((T*)ptr)->~T();
-      ((Block*)ptr)->meta.free = Block::size();
-      ((Block*)ptr)->meta.deleter = nullptr;
-    };
     return new (block) T(std::forward<Xs>(xs)...);
   }
 
@@ -116,10 +110,13 @@ struct SmartRecycler
     return new T(std::forward<Xs>(xs)...);
   }
 
-  void release(void* ptr) {
-    ((Block*)ptr)->meta.deleter(ptr);   
-    Parent::release((Block*)ptr);
-  }
+  template<class T>
+  void destroy(T* ptr) {
+    ptr->~T();
+    Parent::release(ptr);
+  };
+
+
 };
 
 
