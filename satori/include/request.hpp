@@ -10,7 +10,8 @@ struct Loop;
 
 namespace detail {
 
-template <class T = uv_req_t> struct Request : T {
+template <class T = uv_req_t>
+struct Request : T {
 
   uv_loop_t* loop;
 

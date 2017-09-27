@@ -16,13 +16,15 @@ constexpr unsigned nextPow2(unsigned x) {
   return n;
 };
 
-template <unsigned minBlockSize = 64> struct Block {
+template <unsigned minBlockSize = 64>
+struct Block {
   static constexpr unsigned blockSize = nextPow2(minBlockSize);
   char data[blockSize];
   constexpr static size_t size() { return blockSize; }
 };
 
-template <class Block = Block<64>> struct BlockRecycler {
+template <class Block = Block<64>>
+struct BlockRecycler {
 
   std::deque<Block> blocks;
   std::stack<Block*> pool;
@@ -54,7 +56,8 @@ template <class Block = Block<64>> struct BlockRecycler {
   void release(void* ptr) { pool.push((Block*)ptr); }
 };
 
-template <unsigned blockSize = 64> struct SmartBlock {
+template <unsigned blockSize = 64>
+struct SmartBlock {
 
   struct Meta {
     unsigned free = 0;
@@ -73,7 +76,8 @@ struct SmartRecycler : BlockRecycler<SmartBlock<minBlockSize>> {
   using Block = SmartBlock<minBlockSize>;
   SmartRecycler(unsigned const& n) : BlockRecycler<Block>(n) {}
 
-  template <class T, class... Xs> T* create(Xs&&... xs) {
+  template <class T, class... Xs>
+  T* create(Xs&&... xs) {
     if (sizeof(T) > Block::size())
       return nullptr;
     auto block = (Block*)Parent::allocate();
@@ -94,7 +98,8 @@ struct SmartRecycler : BlockRecycler<SmartBlock<minBlockSize>> {
     return new T(std::forward<Xs>(xs)...);
   }
 
-  template <class T> void destroy(T* ptr) {
+  template <class T>
+  void destroy(T* ptr) {
     ptr->~T();
     Parent::release(ptr);
   };

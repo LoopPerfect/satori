@@ -13,13 +13,15 @@
 
 namespace satori {
 
-template <class R> void releaseRequest(R);
+template <class R>
+void release(R);
 
-template <class T = uv_fs_t> struct FS : uv_fs_t {
+template <class T = uv_fs_t>
+struct FS : uv_fs_t {
 
   void cleanup() {
-    uv_fs_req_cleanup((uv_fs_req_t*)this);
-    releaseRequest(this);
+    uv_fs_req_cleanup((uv_fs_t*)this);
+    release(this);
   }
 };
 

@@ -11,7 +11,8 @@ struct Loop;
 
 namespace detail {
 
-template <class T = uv_handle_t> struct Handle : T {
+template <class T = uv_handle_t>
+struct Handle : T {
 
   Handle(uv_loop_t* loop) { this->loop = loop; }
 

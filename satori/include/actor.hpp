@@ -9,7 +9,8 @@
 
 namespace satori {
 
-template <class U> struct Actor : Async {
+template <class U>
+struct Actor : Async {
   U inbox;
   using ValueType = std::remove_reference_t<decltype(*inbox.begin())>;
   using FunctorType = std::function<void(ValueType)>;

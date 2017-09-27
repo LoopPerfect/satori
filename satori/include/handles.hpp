@@ -18,7 +18,8 @@ static void allocBuffer(uv_handle_t* h, size_t len, uv_buf_t* buf) {
   *buf = uv_buf_init(read_buf, sizeof(read_buf));
 }
 
-template <class H> void release(H);
+template <class H>
+void release(H);
 
 struct HandleCB {
   std::function<void()> onClose = [] {};
@@ -37,7 +38,8 @@ struct AsyncCB : HandleCB {
   std::function<void()> job = []() {};
 };
 
-template <class B> struct Handle {
+template <class B>
+struct Handle {
   int close() {
     uv_close((uv_handle_t*)this, [](auto* h) {
       auto* handle = (B*)h;
@@ -48,7 +50,8 @@ template <class B> struct Handle {
   }
 };
 
-template <class B> struct Stream : Handle<B> {
+template <class B>
+struct Stream : Handle<B> {
 
   int accept(void* client) {
     return uv_accept((uv_stream_t*)this, (uv_stream_t*)client);

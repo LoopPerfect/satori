@@ -13,7 +13,8 @@
 
 namespace satori {
 
-template <class R> void releaseRequest(R);
+template <class R>
+void releaseRequest(R);
 
 static uv_buf_t createBuffer(char const* str, size_t const len) {
   uv_buf_t buf;
@@ -23,7 +24,8 @@ static uv_buf_t createBuffer(char const* str, size_t const len) {
   return buf;
 }
 
-template <class B> struct Request {
+template <class B>
+struct Request {
   void cancel() { uv_cancel((uv_req_t*)this); }
 };
 

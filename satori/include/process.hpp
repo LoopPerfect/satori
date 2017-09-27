@@ -26,7 +26,8 @@ static void delete_uv_process_options_t(uv_process_options_t* options) {
   }
 }
 
-template <class T = uv_process_t> struct Process : Handle<T> {
+template <class T = uv_process_t>
+struct Process : Handle<T> {
 
   Process(uv_loop_t* loop) : Handle<T>(loop) {}
 
