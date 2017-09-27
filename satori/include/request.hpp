@@ -25,11 +25,6 @@ namespace satori {
         uv_cancel((uv_req_t*)this);
       }
 
-      void close() {
-        onClose();
-        release((Loop*)loop, this);
-      }
-
       std::function<void(int)> onError = [](int) {};
       std::function<void()> onClose = []() {};
     };

@@ -9,7 +9,7 @@
 #include <uv.h>
 
 #include <satori/enableMultiProcess.hpp>
-#include <satori/process.hpp>
+//#include <satori/process.hpp>
 
 
 namespace satori {
@@ -18,6 +18,9 @@ thread_local static char read_buf[65635];
 static void allocBuffer(uv_handle_t* h, size_t len, uv_buf_t* buf) {
   *buf = uv_buf_init(read_buf, sizeof(read_buf));
 }
+
+template<class H>
+void release(H);
 
 
 struct HandleCB {
@@ -34,7 +37,7 @@ struct TcpCB : StreamCB {
 };
 
 struct AsyncCB : HandleCB {
-  std::function<void()> job = [](auto) {};
+  std::function<void()> job = []() {};
 };
 
 
@@ -44,13 +47,14 @@ struct Handle {
     uv_close((uv_handle_t*)this, [](auto* h) {
       auto* handle = (B*)h;
       handle->onClose();
+      release(handle);
     });
     return 0;
   }
 };
 
 template<class B>
-struct Stream {
+struct Stream : Handle<B> {
 
   int accept(void* client) {
     return uv_accept((uv_stream_t*)this, (uv_stream_t*)client);
@@ -83,7 +87,7 @@ struct Stream {
 struct Tcp 
 	: uv_tcp_t
 	, Stream<Tcp> 
-	, StreamCB	{
+	, TcpCB	{
 
   Tcp(uv_loop_t* loop) {
     uv_tcp_init((uv_loop_t*)loop, (uv_tcp_t*)this);
@@ -135,10 +139,9 @@ struct Pipe
 struct Async 
 	: uv_async_t
 	, Handle<Async>
-	, HandleCB {
+	, AsyncCB {
 
-  Async(uv_loop_t* loop, std::function<void()> f) {
-		job = f;
+  Async(uv_loop_t* loop) {
     uv_async_init((uv_loop_t*)loop, (uv_async_t*)this, [](uv_async_t* h) {
       auto handle = (Async*)h;
       handle->job();

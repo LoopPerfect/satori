@@ -8,12 +8,13 @@
 
 #include <uv.h>
 
-#include <satori/request.hpp>
-#include <satori/fs.hpp>
+//#include <satori/request.hpp>
+//#include <satori/fs.hpp>
 
 namespace satori {
 
-  struct Loop;
+  template<class R>
+  void releaseRequest(R);
 
   static uv_buf_t createBuffer(char const* str, size_t const len) {
     uv_buf_t buf;
@@ -23,47 +24,39 @@ namespace satori {
     return buf;
   }
 
-  namespace detail {
+  template<class B>
+  struct Request {
+    void cancel() {
+      uv_cancel((uv_req_t*)this);
+    }
+  };
 
-    template<class T = uv_write_t>
-    struct Write : Request<T> {
-      Write(uv_loop_t* loop)
-        : Request<T>(loop)
-        , buf{0, 0}
-      {}
+  struct Write 
+    : uv_write_t
+    , Request<Write> {
 
-      ~Write() {
-        if (buf.len) {
-          delete[] buf.base;
-        }
-      }
+    std::string msg;  
+    Write(uv_stream_t* stream, std::string const& msg)
+      : msg{msg} {
+      write(stream);
+    }
 
-      constexpr void write(void* stream, std::string const& msg) {
-        write(stream, msg.c_str(), msg.size());
-      }
+    ~Write() {}
 
-      template<unsigned n>
-      constexpr void write(void* stream, char msg[n]) {
-        write(stream, msg, n);
-      }
+    void write(uv_stream_t* stream) {
 
-      void write(void* stream, const char* msg, size_t len) {
-        if (buf.len) {
-          delete[] buf.base;
-        }
-        buf.base = new char[len];
-        buf.len = len;
-        memcpy(buf.base, msg, len);
-        uv_write((uv_write_t*)this, (uv_stream_t*)stream, &buf, 1, [](uv_write_t* h, int status) {
+      uv_buf_t buf = uv_buf_init(&msg[0], msg.size());
+      uv_write((uv_write_t*)this, (uv_stream_t*)stream, &buf, 1, 
+        [](uv_write_t* h, int status) {
           auto* write = (Write*)h;
           write->onWriteEnd(status);
+          releaseRequest(h);
         });
-      }
+    }
 
-      std::function<void(int status)> onWriteEnd = [](int) {};
-      uv_buf_t buf;
-    };
-
+    std::function<void(int status)> onWriteEnd = [](int) {};
+  };
+/*
     template<class T = uv_work_t>
     struct Work : Request<T> {
 
@@ -104,14 +97,14 @@ namespace satori {
        });
       }
 
-/*
+
       int connect(uv_pipe_t* pipe, char const* name) {
         return uv_pipe_connect((uv_connect_t*)this, (uv_pipe_t*)pipe, name, [](uv_connect_t* h, int status) {
           ((Connect*) h)->onConnect(status);
         });
       }
-*/
-      std::function<void(int status)> onConnect = [](int){};
+
+     std::function<void(int status)> onConnect = [](int){};
     };
 
     template<class T = uv_getaddrinfo_t>
@@ -147,7 +140,7 @@ namespace satori {
   using Write = detail::Write<>;
   using Work = detail::Work<>;
   using FS = detail::FS<>;
-  using GetAddrInfo = detail::GetAddrInfo<>;
+  using GetAddrInfo = detail::GetAddrInfo<>;*/
 }
 
 #endif

@@ -6,6 +6,7 @@
 #include <functional>
 #include <iostream>
 
+#include <cassert>
 #include <uv.h>
 
 #include <satori/request.hpp>

@@ -21,8 +21,9 @@ namespace satori {
       return pool.create<Tcp>(this);
     }
 
-    Write* newWrite() {
-      return pool.create<Write>(this);
+    template<class S>
+    Write* newWrite(S* stream, std::string const& msg) {
+      return pool.create<Write>((uv_stream_t*)stream, msg);
     }
 
     template<class F>
@@ -30,14 +31,15 @@ namespace satori {
       return pool.create<Async>(this, f);
     }
 
-    FS* newFS() {
-      return pool.create<FS>(this);
-    }
+
 
     Pipe* newPipe(bool ipc = 0) {
       return pool.create<Pipe>(this, ipc);
     }
-
+/*
+    FS* newFS() {
+      return pool.create<FS>(this);
+    }
     Connect* newConnect() {
       return pool.create<Connect>(this);
     }
@@ -46,11 +48,11 @@ namespace satori {
       return pool.create<GetAddrInfo>(this);
     }
 
+    
     Process* newProcess() {
       return pool.create<Process>(this);
     }
 
-    /*
     Work newWork() {
       return new (pool.aquire()) Work(this);
     }
@@ -69,7 +71,16 @@ namespace satori {
     }
   };
 
-  void release(Loop* loop, void* ptr);
+
+  template<class H>
+  void release(H h) {
+    ((Loop*)h->loop)->pool.release(h);
+  }
+
+  template<class R>
+  void releaseRequest(R r) {
+    ((Loop*)r->handle->loop)->pool.release(r);
+  }
 
 }
 
