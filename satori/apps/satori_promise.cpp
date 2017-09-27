@@ -14,7 +14,7 @@ int main() {
   auto w = Promise<std::string>(std::weak_ptr<Loop>(loop));
 
   auto q = p.map([=](std::string x) {
-    return x + x;
+    return x + "! " + x;
   });
 
   p.resolve("Hello");

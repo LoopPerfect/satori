@@ -2,7 +2,6 @@
 #define SATORI_HANDLE_HPP
 
 #include <functional>
-
 #include <uv.h>
 
 namespace satori {
@@ -18,9 +17,7 @@ namespace satori {
         this->loop = loop;
       }
 
-      ~Handle() {
-        close();
-      }
+      ~Handle() {}
 
       int close() {
         uv_close((uv_handle_t*)this, [](auto* h) {
@@ -31,7 +28,7 @@ namespace satori {
         return 0;
       }
 
-      std::function<void()> onClose = []{};
+      std::function<void()> onClose = []() {};
     };
 
   }

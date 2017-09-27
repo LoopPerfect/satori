@@ -70,10 +70,12 @@ namespace satori {
 
     void executeCallback(T result, std::function<void(T)> callback) const {
       auto l = loop.lock();
-      Async* async = l->newAsync([=]() {
+      assert(l && "loop has already been destroyed");
+      auto* async = l->newAsync([]() {});
+      async->job = [=]() {
         callback(result);
         async->close();
-      });
+      };
       async->invoke();
     }
 
