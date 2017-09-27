@@ -4,42 +4,42 @@
 
 #include <http_parser.h>
 
-int on_message_begin(http_parser*) {
+int on_message_begin(http_parser *) {
   printf("\n***MESSAGE BEGIN***\n\n");
   return 0;
 }
 
-int on_headers_complete(http_parser*) {
+int on_headers_complete(http_parser *) {
   printf("\n***HEADERS COMPLETE***\n\n");
   return 0;
 }
 
-int on_message_complete(http_parser*) {
+int on_message_complete(http_parser *) {
   printf("\n***MESSAGE COMPLETE***\n\n");
   return 0;
 }
 
-int on_url(http_parser*, const char* at, size_t length) {
+int on_url(http_parser *, const char *at, size_t length) {
   printf("Url: %.*s\n", (int)length, at);
   return 0;
 }
 
-int on_header_field(http_parser*, const char* at, size_t length) {
+int on_header_field(http_parser *, const char *at, size_t length) {
   printf("Header field: %.*s\n", (int)length, at);
   return 0;
 }
 
-int on_header_value(http_parser*, const char* at, size_t length) {
+int on_header_value(http_parser *, const char *at, size_t length) {
   printf("Header value: %.*s\n", (int)length, at);
   return 0;
 }
 
-int on_body(http_parser*, const char* at, size_t length) {
+int on_body(http_parser *, const char *at, size_t length) {
   printf("Body: %.*s\n", (int)length, at);
   return 0;
 }
 
-void usage(const char* name) {
+void usage(const char *name) {
   fprintf(stderr,
           "Usage: %s $type $filename\n"
           "  type: -x, where x is one of {r,b,q}\n"
@@ -48,7 +48,7 @@ void usage(const char* name) {
   exit(EXIT_FAILURE);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 
   enum http_parser_type file_type;
 
@@ -56,28 +56,28 @@ int main(int argc, char* argv[]) {
     usage(argv[0]);
   }
 
-  char* type = argv[1];
+  char *type = argv[1];
   if (type[0] != '-') {
     usage(argv[0]);
   }
 
   switch (type[1]) {
-    /* in the case of "-", type[1] will be NUL */
-    case 'r':
-      file_type = HTTP_RESPONSE;
-      break;
-    case 'q':
-      file_type = HTTP_REQUEST;
-      break;
-    case 'b':
-      file_type = HTTP_BOTH;
-      break;
-    default:
-      usage(argv[0]);
+  /* in the case of "-", type[1] will be NUL */
+  case 'r':
+    file_type = HTTP_RESPONSE;
+    break;
+  case 'q':
+    file_type = HTTP_REQUEST;
+    break;
+  case 'b':
+    file_type = HTTP_BOTH;
+    break;
+  default:
+    usage(argv[0]);
   }
 
-  char* filename = argv[2];
-  FILE* file = fopen(filename, "r");
+  char *filename = argv[2];
+  FILE *file = fopen(filename, "r");
   if (file == NULL) {
     perror("fopen");
     fclose(file);
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
   }
   fseek(file, 0, SEEK_SET);
 
-  char* data = new char[file_length];
+  char *data = new char[file_length];
   if (fread(data, 1, file_length, file) != (size_t)file_length) {
     fprintf(stderr, "couldn't read entire file\n");
     free(data);
@@ -117,8 +117,7 @@ int main(int argc, char* argv[]) {
   free(data);
 
   if (nparsed != (size_t)file_length) {
-    fprintf(stderr,
-            "Error: %s (%s)\n",
+    fprintf(stderr, "Error: %s (%s)\n",
             http_errno_description(HTTP_PARSER_ERRNO(&parser)),
             http_errno_name(HTTP_PARSER_ERRNO(&parser)));
     fclose(file);

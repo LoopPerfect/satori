@@ -7,34 +7,32 @@
 
 namespace satori {
 
-  struct Loop;
+struct Loop;
 
-  namespace detail {
+namespace detail {
 
-    template<class T = uv_handle_t>
-    struct Handle : T {
+template <class T = uv_handle_t> struct Handle : T {
 
-      Handle(uv_loop_t* loop) {
-        this->loop = loop;
-      }
+  Handle(uv_loop_t *loop) { this->loop = loop; }
 
-      ~Handle() { 
-        //close(); can't call close; to late... will crash in the uv_close callback...
-      }
-
-      int close() {
-        uv_close((uv_handle_t*)this, [](auto* h) {
-          auto* handle = (Handle*)h;
-          handle->onClose();
-          release((Loop*)handle->loop, handle);
-        });
-        return 0;
-      }
-
-      std::function<void()> onClose = []{};
-    };
-
+  ~Handle() {
+    // close(); can't call close; to late... will crash in the uv_close
+    // callback...
   }
-}
+
+  int close() {
+    uv_close((uv_handle_t *)this, [](auto *h) {
+      auto *handle = (Handle *)h;
+      handle->onClose();
+      release((Loop *)handle->loop, handle);
+    });
+    return 0;
+  }
+
+  std::function<void()> onClose = [] {};
+};
+
+} // namespace detail
+} // namespace satori
 
 #endif

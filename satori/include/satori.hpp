@@ -8,7 +8,7 @@
 #include <satori/loop.hpp>
 #include <satori/recycler.hpp>
 #include <satori/requests.hpp>
-#include <satori/url.hpp>
 #include <satori/url-parser.hpp>
+#include <satori/url.hpp>
 
 #endif
