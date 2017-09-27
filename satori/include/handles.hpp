@@ -9,29 +9,48 @@
 #include <uv.h>
 
 #include <satori/enableMultiProcess.hpp>
-#include <satori/handle.hpp>
 #include <satori/process.hpp>
 
 
 namespace satori {
-
-struct Loop;
-
-namespace detail {
 
 thread_local static char read_buf[65635];
 static void allocBuffer(uv_handle_t* h, size_t len, uv_buf_t* buf) {
   *buf = uv_buf_init(read_buf, sizeof(read_buf));
 }
 
-template<class T = uv_stream_t>
-struct Stream : Handle<T> {
 
-  Stream(uv_loop_t* loop)
-    : Handle<T>(loop)
-  {}
+struct HandleCB {
+	std::function<void()> onClose = []{};
+};
 
-  ~Stream() {}
+struct StreamCB : HandleCB {
+  std::function<void()> onDataEnd = [] {};
+  std::function<void(char* str, size_t len)> onData = [](char*, size_t){};
+};
+
+struct TcpCB : StreamCB {
+  std::function<void(int status)> onListen = [](int){};
+};
+
+struct AsyncCB : HandleCB {
+  std::function<void()> job = [](auto) {};
+};
+
+
+template<class B>
+struct Handle {
+  int close() {
+    uv_close((uv_handle_t*)this, [](auto* h) {
+      auto* handle = (B*)h;
+      handle->onClose();
+    });
+    return 0;
+  }
+};
+
+template<class B>
+struct Stream {
 
   int accept(void* client) {
     return uv_accept((uv_stream_t*)this, (uv_stream_t*)client);
@@ -42,7 +61,7 @@ struct Stream : Handle<T> {
       (uv_stream_t*)this,
       allocBuffer,
       [](auto* h, ssize_t nread, uv_buf_t const* data) {
-        auto* stream = (Stream*)h;
+        auto* stream = (B*)h;
         if (nread < 0) {
           stream->close();
         } else if (nread == UV_EOF) {
@@ -58,15 +77,15 @@ struct Stream : Handle<T> {
       (uv_stream_t*)this);
   }
 
-  std::function<void()> onDataEnd = []() {};
-  std::function<void(char* str, size_t len)> onData = [](char*, size_t) {};
 };
 
 
-template<class T = uv_tcp_t>
-struct Tcp : Stream<T> {
-  Tcp(uv_loop_t* loop)
-    : Stream<T>(loop) {
+struct Tcp 
+	: uv_tcp_t
+	, Stream<Tcp> 
+	, StreamCB	{
+
+  Tcp(uv_loop_t* loop) {
     uv_tcp_init((uv_loop_t*)loop, (uv_tcp_t*)this);
   }
 
@@ -90,13 +109,14 @@ struct Tcp : Stream<T> {
     return uv_tcp_keepalive((uv_tcp_t*)this, !delay, delay);
   }
 
-  std::function<void(int status)> onListen = [](int){};
 };
 
-template<class T=uv_pipe_t>
-struct Pipe : Stream<T> {
-  Pipe(uv_loop_t* loop, bool ipc = 0)
-    : Stream<T>(loop) {
+struct Pipe 
+	: uv_pipe_t 
+	, Stream<Pipe>
+  , StreamCB {
+
+  Pipe(uv_loop_t* loop, bool ipc = 0) {
     uv_pipe_init((uv_loop_t*)loop, (uv_pipe_t*)this, ipc);
   }
 
@@ -112,11 +132,13 @@ struct Pipe : Stream<T> {
 };
 
 
-template<class T = uv_async_t>
-struct Async : Handle<T> {
-  Async(uv_loop_t* loop, std::function<void()> f)
-    : Handle<T>(loop)
-    , job{f} {
+struct Async 
+	: uv_async_t
+	, Handle<Async>
+	, HandleCB {
+
+  Async(uv_loop_t* loop, std::function<void()> f) {
+		job = f;
     uv_async_init((uv_loop_t*)loop, (uv_async_t*)this, [](uv_async_t* h) {
       auto handle = (Async*)h;
       handle->job();
@@ -128,18 +150,7 @@ struct Async : Handle<T> {
   void invoke() {
     uv_async_send((uv_async_t*)this);
   }
-
-  std::function<void()> job = [](auto) {};
 };
-
-}
-
-using Handle = detail::Handle<>;
-using Stream = detail::Stream<>;
-using Tcp    = detail::Tcp<>;
-using Pipe   = detail::Pipe<>;
-using Async  = detail::Async<>;
-using Process  = detail::Process<>;
 
 }
 

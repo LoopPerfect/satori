@@ -22,7 +22,7 @@ int main() {
 
   using ConType = std::tuple<Tcp*, Tcp*>;
 
-  auto act = std::make_shared<Actor<vector<ConType>>>(loop.get(), [=](ConType const& con) {
+  auto act = [](ConType const& con) {
     auto server =  std::get<0>(con);
     auto client =  std::get<1>(con);
     client->read();
@@ -60,14 +60,14 @@ int main() {
       std::cout << "data end" << std::endl;
     };
 
-  });
+  };
 
   auto* server = loop->newTcp();
   server->listen("127.0.0.1", 8080);
   server->onListen = [=](auto status) {
     auto* client = loop->newTcp();
     server->accept(client);
-    act->push(make_tuple(server, client));
+    act(make_tuple(server, client));
   };
 
   loop->run();

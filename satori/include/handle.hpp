@@ -18,8 +18,8 @@ namespace satori {
         this->loop = loop;
       }
 
-      ~Handle() {
-        close();
+      ~Handle() { 
+        //close(); can't call close; to late... will crash in the uv_close callback...
       }
 
       int close() {

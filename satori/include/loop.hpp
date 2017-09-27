@@ -17,14 +17,6 @@ namespace satori {
       uv_loop_init(this);
     }
 
-    Handle* newHandle() {
-      return pool.create<Handle>(this);
-    }
-
-    Stream* newStream() {
-      return pool.create<Stream>(this);
-    }
-
     Tcp* newTcp() {
       return pool.create<Tcp>(this);
     }
