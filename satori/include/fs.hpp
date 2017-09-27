@@ -9,28 +9,42 @@
 #include <cassert>
 #include <uv.h>
 
-#include <satori/request.hpp>
+#include <satori/requests.hpp>
+
 
 namespace satori {
 
-  namespace detail {
 
-    template<class T = uv_fs_t>
-    struct FS : Request<T> {
+  template<class T = uv_fs_t>
+  struct FS  
+    : uv_fs_t
+    , Request<T> {
+    
+    int close(ssize_t file) {
+      /*  
+      return uv_fs_close(
+        loop,
+        (uv_fs_t*)this,
+        file,
+        [](uv_fs_t* r) {
+          auto* request = (Request<T>*)r;
+        });
+      */
+    }
+    
+  };
 
-      FS(uv_loop_t* loop)
-        : Request<T>(loop), buffer{0, 0} {}
+   
+    struct FSOpen 
+      : FS<FSOpen> {
 
-      ~FS() {
-        if (buffer.len > 0) {
-          delete[] buffer.base;
-          buffer.len = 0;
-        }
-      };
+      FSOpen(uv_loop_t* loop, std::string const& path, int flags, int mode) { 
+        open(loop, path, flags, mode);
+      }
 
-      int open(std::string path, int flags, int mode) {
+      int open(uv_loop_t* loop, std::string const& path, int flags, int mode) {
         return uv_fs_open(
-          this->loop,
+          loop,
           (uv_fs_t*)this,
           path.c_str(),
           flags,
@@ -39,44 +53,29 @@ namespace satori {
             // assert(r == this);
             ssize_t file = r->result;
             uv_fs_req_cleanup(r);
-            auto* request = (FS*)r;
+            auto* request = (FSOpen*)r;
             request->onOpen(file);
           });
       }
 
-      int read(ssize_t file) {
+      std::function<void(ssize_t)> onOpen = [](ssize_t) {};
+    };
 
-        assert(buffer.len == 0);
+    struct FSRead 
+      : FS<FSRead> {
 
-        buffer.base = new char[bufferSize];
-        buffer.len = bufferSize;
-
-        return uv_fs_read(
-            this->loop,
-            (uv_fs_t*)this,
-            file,
-            &buffer,
-            1,
-            0,
-            [](uv_fs_t* r) {
-              // assert(r == this);
-              int result = r->result;
-              uv_fs_req_cleanup(r);
-              auto* request = (FS*)r;
-              request->onRead(result, request->buffer);
-            }
-          );
+      FSRead(uv_loop_t* loop, ssize_t fileID, unsigned bufSize = 1024) {
+        read(loop, fileID, bufSize);
       }
 
-      int write(ssize_t file, const char* msg, size_t len) {
-        if (buffer.len) {
-          delete[] buffer.base;
-        }
-        buffer.base = new char[len];
-        buffer.len = len;
-        memcpy(buffer.base, msg, len);
-        return uv_fs_write(
-          this->loop,
+      int read(uv_loop_t* loop, ssize_t file, unsigned bufferSize) {
+        buffer = uv_buf_init(
+          new char[bufferSize],
+          bufferSize
+        );
+
+        return uv_fs_read(
+          loop,
           (uv_fs_t*)this,
           file,
           &buffer,
@@ -86,62 +85,121 @@ namespace satori {
             // assert(r == this);
             int result = r->result;
             uv_fs_req_cleanup(r);
-            auto* request = (FS*)r;
+            auto* request = (FSRead*)r;
+            request->onRead(result, request->buffer);
+            delete[] request->buffer.base;
+          }
+        );
+      }
+
+      uv_buf_t buffer;
+      std::function<void(int, uv_buf_t)> onRead = [](int, uv_buf_t) {};
+    };
+
+    struct FSWrite
+      : FS<FSWrite> {
+
+      FSWrite(uv_loop_t* loop, ssize_t file, std::string const& msg) 
+        : msg{msg} {
+        write(loop, file);
+      }
+
+
+      int write(uv_loop_t* loop, ssize_t file) {
+        uv_buf_t buf = uv_buf_init(&msg[0], msg.size());
+        return uv_fs_write(
+          this->loop,
+          (uv_fs_t*)this,
+          file,
+          &buf,
+          1,
+          0,
+          [](uv_fs_t* r) {
+            // assert(r == this);
+            int result = r->result;
+            uv_fs_req_cleanup(r);
+            auto* request = (FSWrite*)r;
             request->onWrite(result);
           });
       }
 
-      int close(ssize_t file) {
-        return uv_fs_close(
-          this->loop,
-          (uv_fs_t*)this,
-          file,
-          [](uv_fs_t* r) {
-            auto* request = (Request<T>*)r;
-            request->close();
-          });
+      std::string msg;
+      std::function<void(int)> onWrite = [](int) {};
+    };
+
+
+    struct FSStat
+      : FS<FSStat> {
+
+      FSStat(uv_loop_t* loop, std::string const& path) {
+        stat(loop, path);
       }
 
-      int stat(std::string const& path) {
+      int stat(uv_loop_t* loop, std::string const& path) {
         return uv_fs_stat(
-          this->loop,
+          loop,
           (uv_fs_t*)this,
           path.c_str(),
           [](uv_fs_t* r) {
             // assert(r == this);
             auto result = r->result;
             auto statbuf = r->statbuf;
-            auto* request = (FS*)r;
+            auto* request = (FSStat*)r;
             request->onStat(result, statbuf);
             uv_fs_req_cleanup(r);
           });
       }
 
-      int utime(const char* path, double atime, double mtime) {
+      std::function<void(int, uv_stat_t)> onStat = [](int, uv_stat_t) {};
+    };
+
+
+    struct FSUTime 
+      : FS<FSUTime> {
+
+
+      FSUTime(uv_loop_t* loop, 
+          std::string const& path, 
+          double atime, double mtime) {
+        utime(loop, path, atime, mtime);
+      }
+
+    
+      int utime(uv_loop_t* loop, std::string const& path, double atime, double mtime) {
         return uv_fs_utime(
-          this->loop,
+          loop,
           (uv_fs_t*)this,
-          path,
+          path.c_str(),
           atime,
           mtime,
           [](uv_fs_t* r) {
             // assert(r == this);
             int result = r->result;
-            auto* request = (FS*)r;
+            auto* request = (FSUTime*)r;
             request->onUtime(result);
             uv_fs_req_cleanup(r);
           });
       }
 
-      int scandir(std::string const& path, int flags) {
+      std::function<void(int)> onUtime = [](int) {};
+    };
+
+    struct FSScanDir 
+      : FS<FSScanDir> {
+
+      FSScanDir(uv_loop_t* loop, std::string const& path, int flags) {
+        scandir(loop, path, flags);
+      }
+
+      int scandir(uv_loop_t* loop, std::string const& path, int flags) {
         return uv_fs_scandir(
-          this->loop,
+          loop,
           (uv_fs_t*)this,
           path.c_str(),
           flags,
           [](uv_fs_t* r) {
             auto result = r->result;
-            auto* request = (FS*)r;
+            auto* request = (FSScanDir*)r;
             request->onScandir(result);
             uv_dirent_t ent;
             while (true) {
@@ -151,41 +209,43 @@ namespace satori {
                 break;
               }
             }
-            uv_fs_req_cleanup(r);
+            uv_fs_req_cleanup(request);
           });
       }
 
-      int realpath(std::string const& path) {
+      std::function<void(int)> onScandir = [](int) {};
+      std::function<bool(uv_dirent_t)> onScandirNext = [](uv_dirent_t) { return false; };
+    };
+
+    struct FSRealPath 
+      : FS<FSRealPath> {
+
+      FSRealPath(uv_loop_t* loop, std::string const& path) {
+        realpath(loop, path);
+      }
+
+      int realpath(uv_loop_t* loop, std::string const& path)  {
         return uv_fs_realpath(
-          this->loop,
+          loop,
           (uv_fs_t*)this,
           path.c_str(),
           [](uv_fs_t* r) {
             auto result = r->result;
-            auto* request = (FS*)r;
+            auto* request = (FSRealPath*)r;
             if (result < 0) {
               request->onError(result);
             } else {
               request->onRealpath(std::string((char*)r->ptr));
             }
-            uv_fs_req_cleanup(r);
+            uv_fs_req_cleanup(request);
           });
       }
 
-      std::function<void(ssize_t)> onOpen = [](ssize_t) {};
-      std::function<void(int, uv_buf_t)> onRead = [](int, uv_buf_t) {};
-      std::function<void(int)> onWrite = [](int) {};
-      std::function<void(int, uv_stat_t)> onStat = [](int, uv_stat_t) {};
-      std::function<void(int)> onUtime = [](int) {};
-      std::function<void(int)> onScandir = [](int) {};
-      std::function<bool(uv_dirent_t)> onScandirNext = [](uv_dirent_t) { return false; };
       std::function<void(std::string)> onRealpath = [](std::string) {};
+      std::function<void(ssize_t)> onError = [](ssize_t) {};
 
-      uv_buf_t buffer;
-      unsigned const bufferSize = 1024;
     };
 
-  }
 }
 
 #endif

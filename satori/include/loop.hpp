@@ -5,6 +5,7 @@
 #include <satori/recycler.hpp>
 #include <satori/handles.hpp>
 #include <satori/requests.hpp>
+#include <satori/fs.hpp>
 
 namespace satori {
 
@@ -56,12 +57,43 @@ namespace satori {
     }
 
 
-/*
-    FS* newFS() {
-      return pool.create<FS>(this);
+
+    template<class...Xs>
+    FSOpen* newFSOpen(Xs...xs) {
+      return pool.create<FSOpen>(this, xs...);
     }
 
-    
+    template<class...Xs>
+    FSWrite* newFSWrite(Xs...xs) {
+      return pool.create<FSWrite>(this, xs...);
+    }
+
+    template<class...Xs>
+    FSRead* newFSOpen(Xs...xs) {
+      return pool.create<FSRead>(this, xs...);
+    }
+
+    template<class...Xs>
+    FSStat* newFSStat(Xs...xs) {
+      return pool.create<FSStat>(this, xs...);
+    }
+
+    template<class...Xs>
+    FSScanDir* newFSScanDir(Xs...xs) {
+      return pool.create<FSScanDir>(this, xs...);
+    }
+
+    template<class...Xs>
+    FSUTime* newFSUTime(Xs...xs) {
+      return pool.create<FSUTime>(this, xs...);
+    }
+
+    template<class...Xs>
+    FSRealPath* newFSRealPath(Xs...xs) {
+      return pool.create<FSRealPath>(this, xs...);
+    }
+  
+    /*
     Process* newProcess() {
       return pool.create<Process>(this);
     }
