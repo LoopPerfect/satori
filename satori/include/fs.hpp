@@ -108,7 +108,7 @@ namespace satori {
       int write(uv_loop_t* loop, ssize_t file) {
         uv_buf_t buf = uv_buf_init(&msg[0], msg.size());
         return uv_fs_write(
-          this->loop,
+          loop,
           (uv_fs_t*)this,
           file,
           &buf,
@@ -156,7 +156,6 @@ namespace satori {
 
     struct FSUTime 
       : FS<FSUTime> {
-
 
       FSUTime(uv_loop_t* loop, 
           std::string const& path, 

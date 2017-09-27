@@ -69,7 +69,7 @@ namespace satori {
     }
 
     template<class...Xs>
-    FSRead* newFSOpen(Xs...xs) {
+    FSRead* newFSRead(Xs...xs) {
       return pool.create<FSRead>(this, xs...);
     }
 
