@@ -33,9 +33,8 @@ namespace satori {
       return pool.create<Write>(this);
     }
 
-    template<class F>
-    Async* newAsync(F const& f) {
-      return pool.create<Async>(this, f);
+    Async* newAsync() {
+      return pool.create<Async>(this);
     }
 
     FS* newFS() {
