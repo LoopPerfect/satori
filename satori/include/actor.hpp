@@ -2,10 +2,10 @@
 #define SATORI_ACTOR_HPP
 
 #include <functional>
+#include <memory>
 #include <type_traits>
-
+#include <uv.h>
 #include <satori/handles.hpp>
-#include <satori/loop.hpp>
 
 namespace satori {
 

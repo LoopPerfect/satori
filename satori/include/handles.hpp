@@ -128,4 +128,5 @@ struct Async : uv_async_t, Handle<Async>, AsyncCB {
 
 } // namespace satori
 
+
 #endif
