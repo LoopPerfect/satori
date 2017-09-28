@@ -109,7 +109,6 @@ struct SmartRecycler : BlockRecycler<SmartBlock<minBlockSize>> {
   };
 
   void release(void* ptr) {
-    ((Block*)ptr)->meta.deleter(ptr);
     Parent::release((Block*)ptr);
   }
 };

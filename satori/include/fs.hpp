@@ -16,18 +16,21 @@ namespace satori {
 template <class R>
 void release(R);
 
-template <class T = uv_fs_t>
+template <class T>
 struct FS : uv_fs_t {
 
   void cleanup() {
     uv_fs_req_cleanup((uv_fs_t*)this);
-    release(this);
+    release((T*)this);
   }
 };
 
 struct FSClose : FS<FSClose> {
 
   FSClose(uv_loop_t* loop, ssize_t file) { close(loop, file); }
+
+
+  ~FSClose(){}
 
   int close(uv_loop_t* loop, ssize_t file) {
     return uv_fs_close(loop, (uv_fs_t*)this, file, [](uv_fs_t* r) {
@@ -46,12 +49,14 @@ struct FSOpen : FS<FSOpen> {
     open(loop, path, flags, mode);
   }
 
+
+  ~FSOpen(){}
+
   int open(uv_loop_t* loop, std::string const& path, int flags, int mode) {
     return uv_fs_open(
       loop, (uv_fs_t*)this, path.c_str(), flags, mode, [](uv_fs_t* r) {
         // assert(r == this);
         ssize_t file = r->result;
-        uv_fs_req_cleanup(r);
         auto* request = (FSOpen*)r;
         request->onOpen(file);
         request->cleanup();
@@ -67,6 +72,8 @@ struct FSRead : FS<FSRead> {
     read(loop, fileID, bufSize);
   }
 
+  ~FSRead(){}
+
   int read(uv_loop_t* loop, ssize_t file, unsigned bufferSize) {
     buffer = uv_buf_init(new char[bufferSize], bufferSize);
 
@@ -74,7 +81,6 @@ struct FSRead : FS<FSRead> {
       loop, (uv_fs_t*)this, file, &buffer, 1, 0, [](uv_fs_t* r) {
         // assert(r == this);
         int result = r->result;
-        uv_fs_req_cleanup(r);
         auto* request = (FSRead*)r;
         request->onRead(result, request->buffer);
         delete[] request->buffer.base;
@@ -92,12 +98,14 @@ struct FSWrite : FS<FSWrite> {
     write(loop, file);
   }
 
+
+  ~FSWrite(){}
+
   int write(uv_loop_t* loop, ssize_t file) {
     uv_buf_t buf = uv_buf_init(&msg[0], msg.size());
     return uv_fs_write(loop, (uv_fs_t*)this, file, &buf, 1, 0, [](uv_fs_t* r) {
       // assert(r == this);
       int result = r->result;
-      uv_fs_req_cleanup(r);
       auto* request = (FSWrite*)r;
       request->onWrite(result);
       request->cleanup();

@@ -103,13 +103,13 @@ struct Loop : uv_loop_t {
 
 template <class H>
 void release(H h) {
-  std::cout << "handle: " << sizeof(*h) << std::endl;
+  //std::cout << "handle: " << sizeof(*h) << std::endl;
   ((Loop*)h->loop)->pool.destroy(h);
 }
 
 template <class R>
 void releaseRequest(R r) {
-  std::cout << "request: " << sizeof(*r) << std::endl;
+  //std::cout << "request: " << sizeof(*r) << std::endl;
   ((Loop*)r->handle->loop)->pool.destroy(r);
   void release(Loop * loop, void* ptr);
 }

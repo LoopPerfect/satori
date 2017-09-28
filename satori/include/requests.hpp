@@ -31,7 +31,6 @@ struct Request {
 
 struct Write : uv_write_t, Request<Write> {
 
-  std::string msg;
   Write(uv_stream_t* stream, std::string const& msg) : msg{msg} {
     write(stream);
   }
@@ -42,16 +41,17 @@ struct Write : uv_write_t, Request<Write> {
 
     uv_buf_t buf = uv_buf_init(&msg[0], msg.size());
     uv_write((uv_write_t*)this,
-             (uv_stream_t*)stream,
-             &buf,
-             1,
-             [](uv_write_t* h, int status) {
-               auto* write = (Write*)h;
-               write->onWriteEnd(status);
-               releaseRequest(write);
-             });
+      (uv_stream_t*)stream,
+      &buf,
+      1,
+      [](uv_write_t* h, int status) {
+        auto* write = (Write*)h;
+        write->onWriteEnd(status);
+        releaseRequest(write);
+      });
   }
 
+  std::string msg;
   std::function<void(int status)> onWriteEnd = [](int) {};
 };
 
