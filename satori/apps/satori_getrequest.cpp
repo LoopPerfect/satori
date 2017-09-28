@@ -37,7 +37,7 @@ int main(int argc, const char** argv) {
         tcp->close();
       };
 
-      tcp->onDataEnd = [=]() {
+      tcp->onDataEnd = [=] {
         std::cout << "data end" << std::endl;
         tcp->close();
       };

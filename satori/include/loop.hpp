@@ -1,7 +1,6 @@
 #ifndef SATORI_LOOP_HPP
 #define SATORI_LOOP_HPP
 
-
 #include <satori/fs.hpp>
 #include <satori/handles.hpp>
 #include <satori/recycler.hpp>
@@ -17,9 +16,7 @@ struct Loop : uv_loop_t {
 
   Tcp* newTcp() { return pool.create<Tcp>(this); }
 
-  Async* newAsync() {
-    return pool.create<Async>(this);
-  }
+  Async* newAsync() { return pool.create<Async>(this); }
 
   Pipe* newPipe(bool ipc = 0) { return pool.create<Pipe>(this, ipc); }
 
@@ -81,12 +78,11 @@ struct Loop : uv_loop_t {
   FSRealPath* newFSRealPath(Xs... xs) {
     return pool.create<FSRealPath>(this, xs...);
   }
-  
+
   template <typename T>
   Actor<T>* newActor() {
     return pool.create<Actor<T>>(this);
   }
-
 
   /*
   Process* newProcess() {
@@ -115,7 +111,7 @@ template <class R>
 void releaseRequest(R r) {
   std::cout << "request: " << sizeof(*r) << std::endl;
   ((Loop*)r->handle->loop)->pool.destroy(r);
-  void release(Loop* loop, void* ptr);
+  void release(Loop * loop, void* ptr);
 }
 
 } // namespace satori

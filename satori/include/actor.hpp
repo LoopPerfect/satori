@@ -3,9 +3,9 @@
 
 #include <functional>
 #include <memory>
+#include <satori/handles.hpp>
 #include <type_traits>
 #include <uv.h>
-#include <satori/handles.hpp>
 
 namespace satori {
 

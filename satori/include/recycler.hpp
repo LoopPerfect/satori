@@ -1,11 +1,11 @@
 #ifndef SATORI_RECYCLER_HPP
 #define SATORI_RECYCLER_HPP
 
+#include <cassert>
 #include <deque>
 #include <stack>
 #include <tuple>
 #include <type_traits>
-#include <cassert>
 
 namespace satori {
 
@@ -56,13 +56,10 @@ struct BlockRecycler {
     return b;
   }
 
-  void release(void* ptr) {
-    pool.push((Block*)ptr);
-  }
+  void release(void* ptr) { pool.push((Block*)ptr); }
 };
 
-
-template<unsigned blockSize = 64>
+template <unsigned blockSize = 64>
 struct SmartBlock {
 
   struct Meta {
@@ -75,28 +72,25 @@ struct SmartBlock {
   constexpr static size_t size() { return blockSize - sizeof(Meta); }
 };
 
-
-template<unsigned minBlockSize = 64>
-struct SmartRecycler
-  : BlockRecycler<SmartBlock<minBlockSize>> {
+template <unsigned minBlockSize = 64>
+struct SmartRecycler : BlockRecycler<SmartBlock<minBlockSize>> {
 
   using Parent = BlockRecycler<SmartBlock<minBlockSize>>;
   using Block = SmartBlock<minBlockSize>;
-  
-  SmartRecycler(unsigned const& n)
-    : BlockRecycler<Block>(n)
-  {}
 
-  template<class T, class...Xs>
-  T* create(Xs &&...xs) {
-    if (sizeof(T) > Block::size()) return nullptr;
-    auto block  = (Block*)Parent::allocate();
+  SmartRecycler(unsigned const& n) : BlockRecycler<Block>(n) {}
+
+  template <class T, class... Xs>
+  T* create(Xs&&... xs) {
+    if (sizeof(T) > Block::size())
+      return nullptr;
+    auto block = (Block*)Parent::allocate();
     block->meta.free = Block::size() - sizeof(T);
     return new (block) T(std::forward<Xs>(xs)...);
   }
 
-  template<class T, class...Xs>
-  static T* createIntoBlock(void* b, Xs&&...xs) {
+  template <class T, class... Xs>
+  static T* createIntoBlock(void* b, Xs&&... xs) {
     Block* block = (Block*)b;
     if (block->meta.free >= sizeof(T)) {
       auto obj = new (&block->data[Block::size() - block->meta.free])
