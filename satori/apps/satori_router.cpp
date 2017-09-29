@@ -15,6 +15,10 @@ int main() {
     }
   });
 
+  if(maybeError) {
+    std::cout << "error message: " << maybeError.get("") << std::endl;
+  }
+
   router.addRoute("/bikes/{id}", [](auto const& req) {
     std::cout << req.path << std::endl;
     for(auto e: req.params) {
