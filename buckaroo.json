@@ -4,6 +4,7 @@
     "libuv/libuv": "1.11.0",
     "google/gtest": "1.8.0",
     "nodejs/http-parser": "2.7.1",
-    "github+loopperfect/neither": "0.3.0"
+    "github+loopperfect/neither": "0.3.0",
+    "c9s/r3": "2.0.0"
   }
 }

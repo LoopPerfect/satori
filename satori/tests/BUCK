@@ -1,4 +1,14 @@
 cxx_test(
+  name = 'router-tests',
+  srcs = [
+    'router-tests.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)
+
+cxx_test(
   name = 'url-parser-tests',
   srcs = [
     'url-parser-tests.cpp',
