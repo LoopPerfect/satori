@@ -10,7 +10,7 @@ namespace satori {
 
 struct Loop : uv_loop_t {
 
-  SmartRecycler<1024> pool;
+  SmartRecycler<512> pool;
 
   Loop(size_t const& num = 1024) : pool(num) { uv_loop_init(this); }
 
@@ -49,9 +49,9 @@ struct Loop : uv_loop_t {
     return pool.create<FSClose>(this, xs...);
   }
 
-  template <class... Xs>
-  FSWrite* newFSWrite(Xs... xs) {
-    return pool.create<FSWrite>(this, xs...);
+  template<class S>
+  FSWrite* newFSWrite(S*s, std::string & msg) {
+    return pool.create<FSWrite>(this, s, msg);
   }
 
   template <class... Xs>
@@ -103,13 +103,13 @@ struct Loop : uv_loop_t {
 
 template <class H>
 void release(H h) {
-  //std::cout << "handle: " << sizeof(*h) << std::endl;
+  // std::cout << "handle: " << sizeof(*h) << std::endl;
   ((Loop*)h->loop)->pool.destroy(h);
 }
 
 template <class R>
 void releaseRequest(R r) {
-  //std::cout << "request: " << sizeof(*r) << std::endl;
+  // std::cout << "request: " << sizeof(*r) << std::endl;
   ((Loop*)r->handle->loop)->pool.destroy(r);
   void release(Loop * loop, void* ptr);
 }

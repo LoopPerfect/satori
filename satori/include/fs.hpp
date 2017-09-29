@@ -29,8 +29,7 @@ struct FSClose : FS<FSClose> {
 
   FSClose(uv_loop_t* loop, ssize_t file) { close(loop, file); }
 
-
-  ~FSClose(){}
+  ~FSClose() {}
 
   int close(uv_loop_t* loop, ssize_t file) {
     return uv_fs_close(loop, (uv_fs_t*)this, file, [](uv_fs_t* r) {
@@ -49,18 +48,17 @@ struct FSOpen : FS<FSOpen> {
     open(loop, path, flags, mode);
   }
 
-
-  ~FSOpen(){}
+  ~FSOpen() {}
 
   int open(uv_loop_t* loop, std::string const& path, int flags, int mode) {
-    return uv_fs_open(
-      loop, (uv_fs_t*)this, path.c_str(), flags, mode, [](uv_fs_t* r) {
-        // assert(r == this);
-        ssize_t file = r->result;
-        auto* request = (FSOpen*)r;
-        request->onOpen(file);
-        request->cleanup();
-      });
+    return uv_fs_open(loop, (uv_fs_t*)this, path.c_str(), flags, mode,
+                      [](uv_fs_t* r) {
+                        // assert(r == this);
+                        ssize_t file = r->result;
+                        auto* request = (FSOpen*)r;
+                        request->onOpen(file);
+                        request->cleanup();
+                      });
   }
 
   std::function<void(ssize_t)> onOpen = [](ssize_t) {};
@@ -72,20 +70,20 @@ struct FSRead : FS<FSRead> {
     read(loop, fileID, bufSize);
   }
 
-  ~FSRead(){}
+  ~FSRead() {}
 
   int read(uv_loop_t* loop, ssize_t file, unsigned bufferSize) {
     buffer = uv_buf_init(new char[bufferSize], bufferSize);
 
-    return uv_fs_read(
-      loop, (uv_fs_t*)this, file, &buffer, 1, 0, [](uv_fs_t* r) {
-        // assert(r == this);
-        int result = r->result;
-        auto* request = (FSRead*)r;
-        request->onRead(result, request->buffer);
-        delete[] request->buffer.base;
-        request->cleanup();
-      });
+    return uv_fs_read(loop, (uv_fs_t*)this, file, &buffer, 1, 0,
+                      [](uv_fs_t* r) {
+                        // assert(r == this);
+                        int result = r->result;
+                        auto* request = (FSRead*)r;
+                        request->onRead(result, request->buffer);
+                        delete[] request->buffer.base;
+                        request->cleanup();
+                      });
   }
 
   uv_buf_t buffer;
@@ -98,8 +96,7 @@ struct FSWrite : FS<FSWrite> {
     write(loop, file);
   }
 
-
-  ~FSWrite(){}
+  ~FSWrite() {}
 
   int write(uv_loop_t* loop, ssize_t file) {
     uv_buf_t buf = uv_buf_init(&msg[0], msg.size());
@@ -143,14 +140,14 @@ struct FSUTime : FS<FSUTime> {
 
   int utime(uv_loop_t* loop, std::string const& path, double atime,
             double mtime) {
-    return uv_fs_utime(
-      loop, (uv_fs_t*)this, path.c_str(), atime, mtime, [](uv_fs_t* r) {
-        // assert(r == this);
-        int result = r->result;
-        auto* request = (FSUTime*)r;
-        request->onUtime(result);
-        request->cleanup();
-      });
+    return uv_fs_utime(loop, (uv_fs_t*)this, path.c_str(), atime, mtime,
+                       [](uv_fs_t* r) {
+                         // assert(r == this);
+                         int result = r->result;
+                         auto* request = (FSUTime*)r;
+                         request->onUtime(result);
+                         request->cleanup();
+                       });
   }
 
   std::function<void(int)> onUtime = [](int) {};
@@ -163,21 +160,21 @@ struct FSScanDir : FS<FSScanDir> {
   }
 
   int scandir(uv_loop_t* loop, std::string const& path, int flags) {
-    return uv_fs_scandir(
-      loop, (uv_fs_t*)this, path.c_str(), flags, [](uv_fs_t* r) {
-        auto result = r->result;
-        auto* request = (FSScanDir*)r;
-        request->onScandir(result);
-        uv_dirent_t ent;
-        while (true) {
-          int i = uv_fs_scandir_next(r, &ent);
-          auto keepGoing = request->onScandirNext(ent);
-          if (i == UV_EOF || !keepGoing) {
-            break;
-          }
-        }
-        request->cleanup();
-      });
+    return uv_fs_scandir(loop, (uv_fs_t*)this, path.c_str(), flags,
+                         [](uv_fs_t* r) {
+                           auto result = r->result;
+                           auto* request = (FSScanDir*)r;
+                           request->onScandir(result);
+                           uv_dirent_t ent;
+                           while (true) {
+                             int i = uv_fs_scandir_next(r, &ent);
+                             auto keepGoing = request->onScandirNext(ent);
+                             if (i == UV_EOF || !keepGoing) {
+                               break;
+                             }
+                           }
+                           request->cleanup();
+                         });
   }
 
   std::function<void(int)> onScandir = [](int) {};

@@ -43,7 +43,7 @@ int main() {
 
       loop->newFSOpen(file, O_RDONLY, S_IRUSR)
         ->onOpen = [=](auto fid) {
-          if(fid<0) {
+          if (fid<0) {
             loop->newWrite(client, "error reading file")
                ->onWriteEnd = [=](int s){
                  std::cout << "to many open files "<< s <<std::endl;

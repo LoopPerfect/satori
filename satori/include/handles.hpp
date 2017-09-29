@@ -58,14 +58,11 @@ struct Stream : Handle<B> {
   }
 
   int read() {
-    return uv_read_start((uv_stream_t*)this,
-                         allocBuffer,
+    return uv_read_start((uv_stream_t*)this, allocBuffer,
                          [](auto* h, ssize_t nread, uv_buf_t const* data) {
                            auto* stream = (B*)h;
                            if (nread < 0) {
                              stream->close();
-                           } else if (nread == UV_EOF) {
-                             stream->onDataEnd();
                            } else {
                              stream->onData(data->base, (size_t)nread);
                            }
@@ -93,7 +90,7 @@ struct Tcp : uv_tcp_t, Stream<Tcp>, TcpCB {
   }
 
   int keepAlive(unsigned delay = 0) {
-    return uv_tcp_keepalive((uv_tcp_t*)this, !delay, delay);
+    return uv_tcp_keepalive((uv_tcp_t*)this, delay, delay);
   }
 };
 

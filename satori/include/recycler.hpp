@@ -46,14 +46,14 @@ struct BlockRecycler {
   }
 
   void* allocate() {
-    if (pool.empty()) {
-      blocks.emplace_back();
-      return &blocks.back();
+    if (pool.size()) {
+      void* b = pool.top();
+      pool.pop();
+      return b;
     }
 
-    void* b = pool.top();
-    pool.pop();
-    return b;
+    blocks.emplace_back();
+    return &blocks.back();
   }
 
   void release(void* ptr) { pool.push((Block*)ptr); }
@@ -82,10 +82,8 @@ struct SmartRecycler : BlockRecycler<SmartBlock<minBlockSize>> {
 
   template <class T, class... Xs>
   T* create(Xs&&... xs) {
-    if (sizeof(T) > Block::size())
-      return nullptr;
     auto block = (Block*)Parent::allocate();
-    block->meta.free = Block::size() - sizeof(T);
+    //block->meta.free = Block::size() - sizeof(T);
     return new (block) T(std::forward<Xs>(xs)...);
   }
 
@@ -108,9 +106,7 @@ struct SmartRecycler : BlockRecycler<SmartBlock<minBlockSize>> {
     Parent::release(ptr);
   };
 
-  void release(void* ptr) {
-    Parent::release((Block*)ptr);
-  }
+  void release(void* ptr) { Parent::release((Block*)ptr); }
 };
 
 } // namespace satori

@@ -16,14 +16,6 @@ namespace satori {
 template <class R>
 void releaseRequest(R);
 
-static uv_buf_t createBuffer(char const* str, size_t const len) {
-  uv_buf_t buf;
-  buf.base = new char[len];
-  buf.len = len;
-  memcpy(buf.base, str, len);
-  return buf;
-}
-
 template <class B>
 struct Request {
   void cancel() { uv_cancel((uv_req_t*)this); }
@@ -40,15 +32,12 @@ struct Write : uv_write_t, Request<Write> {
   void write(uv_stream_t* stream) {
 
     uv_buf_t buf = uv_buf_init(&msg[0], msg.size());
-    uv_write((uv_write_t*)this,
-      (uv_stream_t*)stream,
-      &buf,
-      1,
-      [](uv_write_t* h, int status) {
-        auto* write = (Write*)h;
-        write->onWriteEnd(status);
-        releaseRequest(write);
-      });
+    uv_write((uv_write_t*)this, (uv_stream_t*)stream, &buf, 1,
+             [](uv_write_t* h, int status) {
+               auto* write = (Write*)h;
+               write->onWriteEnd(status);
+               releaseRequest(write);
+             });
   }
 
   std::string msg;
@@ -60,9 +49,7 @@ struct ConnectTcp : uv_connect_t, Request<ConnectTcp> {
 
   int connect(uv_tcp_t* tcp, addrinfo res) {
     return uv_tcp_connect(
-      (uv_connect_t*)this,
-      tcp,
-      new sockaddr(*res.ai_addr),
+      (uv_connect_t*)this, tcp, res.ai_addr,
       [](uv_connect_t* h, int status) { ((ConnectTcp*)h)->onConnect(status); });
   }
 
@@ -73,9 +60,7 @@ struct ConnectPipe : uv_connect_t, Request<ConnectPipe> {
   ConnectPipe(uv_pipe_t* pipe, char const* name) { connect(pipe, name); }
 
   int connect(uv_pipe_t* pipe, char const* name) {
-    uv_pipe_connect((uv_connect_t*)this,
-                    (uv_pipe_t*)pipe,
-                    name,
+    uv_pipe_connect((uv_connect_t*)this, (uv_pipe_t*)pipe, name,
                     [](uv_connect_t* h, int status) {
                       ((ConnectPipe*)h)->onConnect(status);
                     });
@@ -102,12 +87,8 @@ struct GetAddrInfo : uv_getaddrinfo_t, Request<GetAddrInfo> {
 
   int resolve(uv_loop_t* loop, char const* host, char const* port,
               ::addrinfo hints) {
-    return uv_getaddrinfo(loop,
-                          (uv_getaddrinfo_t*)this,
-                          GetAddrInfo::whenResolved,
-                          host,
-                          port,
-                          &hints);
+    return uv_getaddrinfo(loop, (uv_getaddrinfo_t*)this,
+                          GetAddrInfo::whenResolved, host, port, &hints);
   }
 
   static void whenResolved(uv_getaddrinfo_t* h, int status, ::addrinfo* res) {

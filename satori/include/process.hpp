@@ -41,12 +41,12 @@ struct Process : Handle<T> {
     // TODO: Not all of the options properties have been ported.
     delete_uv_process_options_t(&options);
     options = {};
-    options.exit_cb =
-      [](uv_process_t* h, int64_t exit_status, int term_signal) {
-        auto* handle = (Process*)h;
-        handle->onExit(exit_status, term_signal);
-        handle->close();
-      };
+    options.exit_cb = [](uv_process_t* h, int64_t exit_status,
+                         int term_signal) {
+      auto* handle = (Process*)h;
+      handle->onExit(exit_status, term_signal);
+      handle->close();
+    };
     options.file = file.c_str();
     options.flags = flags;
     options.env = nullptr;

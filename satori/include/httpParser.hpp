@@ -50,17 +50,17 @@ struct HttpParser : private http_parser {
       return self->onUrl(parser, at, length);
     };
 
-    settings.on_status =
-      [](http_parser* parser, const char* at, size_t length) {
-        HttpParser* self = (HttpParser*)parser;
-        return self->onStatus(parser, at, length);
-      };
+    settings.on_status = [](http_parser* parser, const char* at,
+                            size_t length) {
+      HttpParser* self = (HttpParser*)parser;
+      return self->onStatus(parser, at, length);
+    };
 
-    settings.on_header_value =
-      [](http_parser* parser, const char* at, size_t length) {
-        HttpParser* self = (HttpParser*)parser;
-        return self->onHeaderValue(parser, at, length);
-      };
+    settings.on_header_value = [](http_parser* parser, const char* at,
+                                  size_t length) {
+      HttpParser* self = (HttpParser*)parser;
+      return self->onHeaderValue(parser, at, length);
+    };
 
     settings.on_headers_complete = [](http_parser* parser) {
       HttpParser* self = (HttpParser*)parser;

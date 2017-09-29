@@ -18,15 +18,9 @@ int main() {
   using namespace std;
   using namespace satori;
 
-  auto loop = std::make_shared<Loop>();
 
-  using ConType = std::tuple<Tcp*, Tcp*>;
-
-  auto act = [=](auto client) {
-    client->read();
-    client->onData = [=](char const* data, size_t const len) {
-
-      char res[] = "HTTP/1.1 200 OK\r\n"
+  static auto loop = std::make_shared<Loop>();
+  static std::string const res = "HTTP/1.1 200 OK\r\n"
                //    "Server: nginx/1.13.5\r\n"
                    "Date: Wed, 13 Sep 2017 17:46:27 GMT\r\n"
                //    "Content-Type: text/html\r\n"
@@ -38,22 +32,21 @@ int main() {
                    "\r\n"
                    "hello world";
 
-      loop->newWrite(client, res)->onWriteEnd = [=](int status) {
-        client->close();
-      };
+  
 
-    };
-
-    client->onDataEnd = [] { std::cout << "data end" << std::endl; };
-
-  };
-
-  auto* server = loop->newTcp();
+  static auto* server = loop->newTcp();
   server->listen("127.0.0.1", 8080);
   server->onListen = [=](auto status) {
     auto* client = loop->newTcp();
     server->accept(client);
-    act(client);
+
+    client->read();
+
+    loop->newWrite(client, res);
+
+    client->onData = [client](char const* data, size_t const len) {
+      client->close();
+    };
   };
 
   loop->run();

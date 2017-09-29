@@ -194,8 +194,7 @@ static std::map<std::string, std::string> mimeMap = {
   {"xpm", "image/x-xpixmap"},
   {"xwd", "image/x-xwindowdump"},
   {"z", "application/x-compress"},
-  {"zip", "application/zip"}
-};
+  {"zip", "application/zip"}};
 
 } // namespace satori
 
