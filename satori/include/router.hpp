@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <tuple>
+#include <vector>
 #include <deque>
 #include <string>
 #include <iostream>
@@ -12,21 +13,37 @@
 
 namespace satori {
 
+  using Params = std::vector<std::string>;
+
+  struct Match {
+    std::string path;
+    Params params;
+  };
+
+  template<class T>
+  struct RouteData {
+    std::string route;
+    T callback;
+  };
+
+
+  template<class T = std::function<void(Match)> >
   struct Router {
 
+    using Data = RouteData<T>;
     r3::Tree tree;
-    std::deque<std::function<void()>> callbacks;
+    std::deque<Data> callbacks;
 
     Router() : tree(10) {}
 
-    neither::Maybe<std::string> addRoute(std::string const& route, std::function<void()> callback) {
-      callbacks.push_back(callback);
-      void* data = &callbacks.back();
+    neither::Maybe<std::string> addRoute(std::string const& route, T const& cb) {
+      callbacks.push_back({route, cb});
+      Data* data = &callbacks.back();
       char* errorString;
       r3::Node node = tree.insert_pathl(
-        route.c_str(),
-        strlen(route.c_str()),
-        data,
+        data->route.c_str(),
+        data->route.size(),
+        (void*)data,
         &errorString);
       // Failure?
       if (node == nullptr) {
@@ -55,20 +72,34 @@ namespace satori {
       return neither::Maybe<std::tuple<int, std::string>>({ errorCode, error });
     }
 
-    void match(std::string const& candidate) {
-      auto matchedNode = tree.matchl(candidate.c_str(), strlen(candidate.c_str()));
-      if (matchedNode) {
-        int ret = *static_cast<int*>(matchedNode.data());
-        std::cout << "match path ret: " << ret << std::endl;
-      }
-
-      r3::MatchEntry entry(candidate.c_str());
+    std::function<void()> match(std::string const& path) {
+      auto matchedNode = tree.matchl(path.c_str(), path.size());
+ 
+      r3::MatchEntry entry(path.c_str());
       matchedNode = tree.match_entry(entry);
-      if (matchedNode) {
-        int ret = *static_cast<int*>(matchedNode.data());
-        std::cout << "match entry ret: " << ret << std::endl;
+
+      if (!matchedNode) {
+        return {}; 
       }
 
+      Data* data = static_cast<Data*>(matchedNode.data());
+        
+      Params params;
+
+      match_entry* e = entry.get();
+
+   
+
+      for(int i=0;  i < e->vars.tokens.size; ++i) { 
+        auto const value = e->vars.tokens.entries[i];
+        params.push_back({value.base, value.len});
+      }
+
+      auto match = Match{path, params};
+
+      return [match = std::move(match), data] {
+        data->callback(match);
+      };
     }
   };
 
