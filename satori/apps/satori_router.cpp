@@ -15,12 +15,6 @@ int main() {
     }
   });
 
-
-
-  if (auto e = router.compile()) {
-    std::cout << "error"<< e << std::endl;
-  }
-
   router.addRoute("/bikes/{id}", [](auto const& req) {
     std::cout << req.path << std::endl;
     for(auto e: req.params) {

@@ -5,6 +5,7 @@
 #include <vector>
 #include <deque>
 #include <string>
+#include <neither/maybe.hpp>
 
 #include <r3.hpp>
 
