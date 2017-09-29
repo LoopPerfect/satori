@@ -41,5 +41,26 @@
     "dependencies": [
       "google.gtest//:gtest"
     ]
+  },
+  "c9s/r3": {
+    "source": {
+      "url": "https://github.com/c9s/r3/archive/0d78599a57aa7499b5f8f398ddf7860d7434dafd.zip",
+      "sha256": "94784accf5100b222a75432d01b85d08de0d8a8d6d5773042fd0db1b8eb607e2",
+      "subPath": "r3-0d78599a57aa7499b5f8f398ddf7860d7434dafd"
+    },
+    "dependencies": [
+      "pcre.pcre//:pcre"
+    ],
+    "buck": {
+      "url": "https://raw.githubusercontent.com/njlr/r3/330e9487df7390f06d964c5ba277e5dbc22cc41e/BUCK",
+      "sha256": "408f08e30064bbd3ac0944be5289b3a4c548da51389c3f86502e22f0afd87c17"
+    }
+  },
+  "pcre/pcre": {
+    "source": {
+      "url": "https://github.com/nikhedonia/pcre-1/archive/7619846506d1698619c4c19516ea87e316e5860b.zip",
+      "sha256": "2d0127569bb9321bae42fe6295e4dd732d65e5ec5dbbc9b8979ce67d31d71cc4",
+      "subPath": "pcre-1-7619846506d1698619c4c19516ea87e316e5860b"
+    }
   }
 }

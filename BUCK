@@ -223,3 +223,29 @@ cxx_binary(
     'PUBLIC',
   ],
 )
+
+cxx_binary(
+  name = 'r3_router',
+  srcs = [
+    'satori/apps/r3_router.cpp',
+  ],
+  deps = [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+cxx_binary(
+  name = 'satori_router',
+  srcs = [
+    'satori/apps/satori_router.cpp',
+  ],
+  deps = [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
