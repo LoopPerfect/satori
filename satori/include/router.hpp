@@ -2,13 +2,10 @@
 #define SATORI_ROUTER_HPP
 
 #include <functional>
-#include <tuple>
 #include <vector>
 #include <deque>
 #include <string>
-#include <iostream>
 
-#include <neither/maybe.hpp>
 #include <r3.hpp>
 
 namespace satori {
@@ -58,18 +55,8 @@ namespace satori {
       return neither::Maybe<std::string>();
     }
 
-    neither::Maybe<std::tuple<int, std::string>> compile() {
-      char* errorString;
-      int errorCode = tree.compile(&errorString);
-      // Success?
-      if (errorCode == 0) {
-        return neither::Maybe<std::tuple<int, std::string>>();
-      }
-      // Copy the error message into an std::string and delete the c-string.
-      // This is a bit slower, but it prevents memory leaks.
-      auto error = std::string(errorString);
-      delete [] errorString;
-      return neither::Maybe<std::tuple<int, std::string>>({ errorCode, error });
+    int compile() {
+      return tree.compile(nullptr);
     }
 
     std::function<void()> match(std::string const& path) {
@@ -82,20 +69,16 @@ namespace satori {
         return {}; 
       }
 
-      Data* data = static_cast<Data*>(matchedNode.data());
         
       Params params;
-
       match_entry* e = entry.get();
-
-   
-
       for(int i=0;  i < e->vars.tokens.size; ++i) { 
         auto const value = e->vars.tokens.entries[i];
         params.push_back({value.base, value.len});
       }
 
       auto match = Match{path, params};
+      Data* data = static_cast<Data*>(matchedNode.data());
 
       return [match = std::move(match), data] {
         data->callback(match);

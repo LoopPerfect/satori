@@ -10,25 +10,37 @@ int main() {
 
   auto maybeError = router.addRoute("/products/{category}/{id}", [](auto const& req) {
     std::cout << req.path << std::endl;
-
     for(auto e: req.params) {
       std::cout << e << std::endl;
     }
-
   });
 
-  if(maybeError) {
-      std::cout<< "error"<<std::endl;
+
+
+  if (auto e = router.compile()) {
+    std::cout << "error"<< e << std::endl;
   }
 
-  router.compile();
+  router.addRoute("/bikes/{id}", [](auto const& req) {
+    std::cout << req.path << std::endl;
+    for(auto e: req.params) {
+      std::cout << e << std::endl;
+    }
+  });
+
+  if (auto e = router.compile()) {
+    std::cout << "error"<< e << std::endl;
+  }
 
   router.tree.dump(0);
 
-  if(auto match = router.match("/products/bikes/merckx")) {
+  if (auto match = router.match("/products/bikes/merckx")) {
     match();
   }
 
+  if(auto match = router.match("/bikes/merckx")) {
+    match();
+  }
 
 
   return 0;
