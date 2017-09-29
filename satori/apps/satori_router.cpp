@@ -9,7 +9,7 @@ int main() {
 
   using namespace std;
 
-  satori::Router<std::function<void(std::string, std::vector<std::string>)>> router;
+  satori::Router<> router;
 
   auto maybeError = router.addRoute(
     "/products/{category}/{id}",

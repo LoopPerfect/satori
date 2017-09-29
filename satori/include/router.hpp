@@ -26,7 +26,7 @@ namespace satori {
     T data;
   };
 
-  template<class T>
+  template<class T=std::function<void(std::string, std::vector<std::string>)>>
   struct Router {
 
     using Data = RouteData<T>;
