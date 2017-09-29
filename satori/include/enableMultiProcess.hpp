@@ -4,12 +4,7 @@
 #include <uv.h>
 
 namespace satori {
-
-  namespace detail {
-
-    void enableMultiProcess(uv_loop_t* loop, uv_tcp_t* server);
-
-  }
+void enableMultiProcess(uv_loop_t* loop, uv_tcp_t* server);
 }
 
 #endif

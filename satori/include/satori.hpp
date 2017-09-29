@@ -6,11 +6,12 @@
 #include <satori/handles.hpp>
 #include <satori/httpParser.hpp>
 #include <satori/loop.hpp>
+#include <satori/promise.hpp>
 #include <satori/recycler.hpp>
 #include <satori/requests.hpp>
 #include <satori/router.hpp>
 #include <satori/url.hpp>
 #include <satori/url-parser.hpp>
-#include <satori/promise.hpp>
+#include <satori/url.hpp>
 
 #endif

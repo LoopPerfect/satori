@@ -1,20 +1,18 @@
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
-#include <uv.h>
 #include <satori/satori.hpp>
-
+#include <uv.h>
 
 std::string error_to_string(int error) {
-  return std::string(uv_err_name(error)) +
-    " " +
-    std::string(uv_strerror(error));
+  return std::string(uv_err_name(error)) + " " +
+         std::string(uv_strerror(error));
 }
 
-int main(int argc, const char ** argv) {
+int main(int argc, const char** argv) {
 
-  using namespace ;
+  using namespace satori;
 
   if (!argv[1]) {
     std::cout << "Usage: file_path " << std::endl;
@@ -23,10 +21,10 @@ int main(int argc, const char ** argv) {
 
   auto loop = std::make_shared<Loop>();
 
-  auto* fs = loop->newFS();
-
   double atime = 1000;
   double mtime = 2000;
+
+  auto* fs = loop->newFSUTime(argv[1], atime, mtime);
 
   fs->onUtime = [&](int result) {
     if (result < 0) {
@@ -35,8 +33,6 @@ int main(int argc, const char ** argv) {
     }
     std::cout << "atime " << atime << " mtime " << mtime << std::endl;
   };
-
-  fs->utime(argv[1], atime, mtime);
 
   loop->run();
 

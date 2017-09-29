@@ -62,18 +62,18 @@ int main(int argc, char* argv[]) {
   }
 
   switch (type[1]) {
-    /* in the case of "-", type[1] will be NUL */
-    case 'r':
-      file_type = HTTP_RESPONSE;
-      break;
-    case 'q':
-      file_type = HTTP_REQUEST;
-      break;
-    case 'b':
-      file_type = HTTP_BOTH;
-      break;
-    default:
-      usage(argv[0]);
+  /* in the case of "-", type[1] will be NUL */
+  case 'r':
+    file_type = HTTP_RESPONSE;
+    break;
+  case 'q':
+    file_type = HTTP_REQUEST;
+    break;
+  case 'b':
+    file_type = HTTP_BOTH;
+    break;
+  default:
+    usage(argv[0]);
   }
 
   char* filename = argv[2];

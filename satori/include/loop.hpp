@@ -1,87 +1,119 @@
 #ifndef SATORI_LOOP_HPP
 #define SATORI_LOOP_HPP
 
-#include <uv.h>
+#include <satori/fs.hpp>
 #include <satori/handles.hpp>
-#include <satori/requests.hpp>
 #include <satori/recycler.hpp>
+#include <satori/requests.hpp>
 
 namespace satori {
 
-  struct Loop : uv_loop_t {
+struct Loop : uv_loop_t {
 
-    SmartRecycler<1024> pool;
+  SmartRecycler<1024> pool;
 
-    Loop(size_t const& num = 1024)
-      : pool(num) {
-      uv_loop_init(this);
-    }
+  Loop(size_t const& num = 1024) : pool(num) { uv_loop_init(this); }
 
-    Handle* newHandle() {
-      return pool.create<Handle>(this);
-    }
+  Tcp* newTcp() { return pool.create<Tcp>(this); }
 
-    Stream* newStream() {
-      return pool.create<Stream>(this);
-    }
+  Async* newAsync() { return pool.create<Async>(this); }
 
-    Tcp* newTcp() {
-      return pool.create<Tcp>(this);
-    }
+  Pipe* newPipe(bool ipc = 0) { return pool.create<Pipe>(this, ipc); }
 
-    Write* newWrite() {
-      return pool.create<Write>(this);
-    }
+  template <class S>
+  Write* newWrite(S* stream, std::string const& msg) {
+    return pool.create<Write>((uv_stream_t*)stream, msg);
+  }
 
-    Async* newAsync() {
-      return pool.create<Async>(this);
-    }
+  template <class P>
+  ConnectPipe* newConnectPipe(P* pipe, const char* name) {
+    return pool.create<ConnectPipe>((uv_pipe_t*)pipe, name);
+  }
 
-    FS* newFS() {
-      return pool.create<FS>(this);
-    }
+  template <class T>
+  ConnectTcp* newConnectTcp(T* tcp, addrinfo const& addr) {
+    return pool.create<ConnectTcp>((uv_tcp_t*)tcp, addr);
+  }
 
-    Pipe* newPipe(bool ipc = 0) {
-      return pool.create<Pipe>(this, ipc);
-    }
+  GetAddrInfo* newGetAddrInfo(const char* host, const char* port) {
+    return pool.create<GetAddrInfo>(this, host, port);
+  }
 
-    Connect* newConnect() {
-      return pool.create<Connect>(this);
-    }
+  template <class... Xs>
+  FSOpen* newFSOpen(Xs... xs) {
+    return pool.create<FSOpen>(this, xs...);
+  }
 
-    GetAddrInfo* newGetAddrInfo() {
-      return pool.create<GetAddrInfo>(this);
-    }
+  template <class... Xs>
+  FSClose* newFSClose(Xs... xs) {
+    return pool.create<FSClose>(this, xs...);
+  }
 
-    Process* newProcess() {
-      return pool.create<Process>(this);
-    }
+  template <class... Xs>
+  FSWrite* newFSWrite(Xs... xs) {
+    return pool.create<FSWrite>(this, xs...);
+  }
 
-    template <typename T>
-    Actor<T>* newActor() {
-      return pool.create<Actor<T>>(this);
-    }
+  template <class... Xs>
+  FSRead* newFSRead(Xs... xs) {
+    return pool.create<FSRead>(this, xs...);
+  }
 
-    /*
-    Work newWork() {
-      return new (pool.aquire()) Work(this);
-    }
-    */
+  template <class... Xs>
+  FSStat* newFSStat(Xs... xs) {
+    return pool.create<FSStat>(this, xs...);
+  }
 
-    uint64_t now() {
-      return uv_now(this);
-    }
+  template <class... Xs>
+  FSScanDir* newFSScanDir(Xs... xs) {
+    return pool.create<FSScanDir>(this, xs...);
+  }
 
-    int run(uv_run_mode mode = UV_RUN_DEFAULT) {
-      return uv_run(this, mode);
-    }
+  template <class... Xs>
+  FSUTime* newFSUTime(Xs... xs) {
+    return pool.create<FSUTime>(this, xs...);
+  }
 
-    ~Loop() {
-      uv_loop_close(this);
-    }
-  };
+  template <class... Xs>
+  FSRealPath* newFSRealPath(Xs... xs) {
+    return pool.create<FSRealPath>(this, xs...);
+  }
 
-  void release(Loop* loop, void* ptr);
+  template <typename T>
+  Actor<T>* newActor() {
+    return pool.create<Actor<T>>(this);
+  }
+
+  /*
+  Process* newProcess() {
+    return pool.create<Process>(this);
+  }
+
+  Work newWork() {
+    return new (pool.aquire()) Work(this);
+  }
+  */
+
+  uint64_t now() { return uv_now(this); }
+
+  int run(uv_run_mode mode = UV_RUN_DEFAULT) { return uv_run(this, mode); }
+
+  ~Loop() { uv_loop_close(this); }
+};
+
+template <class H>
+void release(H h) {
+  //std::cout << "handle: " << sizeof(*h) << std::endl;
+  ((Loop*)h->loop)->pool.destroy(h);
 }
+
+template <class R>
+void releaseRequest(R r) {
+  //std::cout << "request: " << sizeof(*r) << std::endl;
+  ((Loop*)r->handle->loop)->pool.destroy(r);
+  void release(Loop * loop, void* ptr);
+}
+
+} // namespace satori
 
 #endif

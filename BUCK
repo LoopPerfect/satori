@@ -196,6 +196,21 @@ cxx_binary(
   ],
 )
 
+
+
+cxx_binary(
+  name = 'satori_filestream',
+  srcs = [
+    'satori/apps/satori_filestream.cpp',
+  ],
+  deps = [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
 cxx_binary(
   name = 'satori_promise',
   srcs = [

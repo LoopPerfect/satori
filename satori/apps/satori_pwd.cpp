@@ -1,35 +1,29 @@
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
-#include <uv.h>
 #include <satori/satori.hpp>
-
+#include <uv.h>
 
 std::string error_to_string(int error) {
-  return std::string(uv_err_name(error)) +
-    " " +
-    std::string(uv_strerror(error));
+  return std::string(uv_err_name(error)) + " " +
+         std::string(uv_strerror(error));
 }
 
-int main(int argc, const char ** argv) {
+int main(int argc, const char** argv) {
 
-  using namespace Satori;
+  using namespace satori;
 
   auto loop = std::make_shared<Loop>();
 
-  auto* fs = loop->newFS();
+  auto* fs = loop->newFSRealPath(".");
 
   fs->onError = [](int error) {
     std::cerr << error_to_string(error) << std::endl;
     exit(1);
   };
 
-  fs->onRealpath = [](std::string path) {
-    std::cout << path << std::endl;
-  };
-
-  fs->realpath(".");
+  fs->onRealpath = [](std::string path) { std::cout << path << std::endl; };
 
   loop->run();
 
