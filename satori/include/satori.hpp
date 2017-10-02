@@ -13,5 +13,7 @@
 #include <satori/url.hpp>
 #include <satori/url-parser.hpp>
 #include <satori/url.hpp>
+#include <satori/urlEncode.hpp>
+#include <satori/urlDecode.hpp>
 
 #endif

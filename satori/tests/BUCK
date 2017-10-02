@@ -17,3 +17,13 @@ cxx_test(
     '//:satori',
   ],
 )
+
+cxx_test(
+  name = 'url-encode-tests',
+  srcs = [
+    'urlEncodeTests.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)
