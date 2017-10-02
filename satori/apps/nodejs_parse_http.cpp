@@ -1,11 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
+#include <string>
 
 #include <http_parser.h>
 
-int on_message_begin(http_parser*) {
+int on_message_begin(http_parser* parser) {
   printf("\n***MESSAGE BEGIN***\n\n");
+  if (parser->method) {
+    std::cout << "method: " <<
+      std::string(http_method_str((http_method)parser->method)) << std::endl;
+  }
   return 0;
 }
 
