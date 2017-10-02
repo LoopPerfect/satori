@@ -249,3 +249,17 @@ cxx_binary(
     'PUBLIC',
   ],
 )
+
+
+cxx_binary(
+  name = 'satori_express',
+  srcs = [
+    'satori/apps/satori_express.cpp',
+  ],
+  deps = [
+    ':satori',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
