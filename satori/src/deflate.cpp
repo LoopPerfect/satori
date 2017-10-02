@@ -12,6 +12,7 @@ namespace satori {
     auto deflator = Deflator();
 
     deflator.feed(uncompressed);
+    deflator.finish();
 
     return deflator.result();
   }

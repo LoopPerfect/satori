@@ -20,6 +20,25 @@ private:
 
     std::shared_ptr<State> state;
 
+    void feed(std::string const& chunk, int const type) {
+
+      unsigned char out[CHUNK];
+
+      state->stream.avail_in = chunk.size();
+      state->stream.next_in = (Bytef*)chunk.c_str();
+
+      do {
+        state->stream.avail_out = CHUNK;
+        state->stream.next_out = out;
+        auto result = deflate(&state->stream, type);
+        assert(result != Z_STREAM_ERROR); // TODO: Find a better error-handling mechanism
+        auto have = CHUNK - state->stream.avail_out;
+        for (int i = 0; i < have; ++i) {
+          state->result += out[i];
+        }
+      } while (state->stream.avail_out == 0);
+    }
+
 public:
 
     Deflator() : state(std::make_shared<State>()) {
@@ -39,22 +58,11 @@ public:
     }
 
     void feed(std::string const& chunk) {
+      feed(chunk, Z_NO_FLUSH);
+    }
 
-      unsigned char out[CHUNK];
-
-      state->stream.avail_in = chunk.size();
-      state->stream.next_in = (Bytef*)chunk.c_str();
-
-      do {
-        state->stream.avail_out = CHUNK;
-        state->stream.next_out = out;
-        auto result = deflate(&state->stream, Z_FINISH);
-        assert(result != Z_STREAM_ERROR); // TODO: Find a better error-handling mechanism
-        auto have = CHUNK - state->stream.avail_out;
-        for (int i = 0; i < have; ++i) {
-          state->result += out[i];
-        }
-      } while (state->stream.avail_out == 0);
+    void finish() {
+      feed("", Z_FINISH);
     }
 
   };
