@@ -62,5 +62,16 @@
       "sha256": "2d0127569bb9321bae42fe6295e4dd732d65e5ec5dbbc9b8979ce67d31d71cc4",
       "subPath": "pcre-1-7619846506d1698619c4c19516ea87e316e5860b"
     }
+  },
+  "madler/zlib": {
+    "source": {
+      "url": "https://github.com/madler/zlib/archive/cacf7f1d4e3d44d871b605da3b647f07d718623f.zip",
+      "sha256": "1cce3828ec2ba80ff8a4cac0ab5aa03756026517154c4b450e617ede751d41bd",
+      "subPath": "zlib-cacf7f1d4e3d44d871b605da3b647f07d718623f"
+    },
+    "buck": {
+      "url": "https://raw.githubusercontent.com/njlr/zlib/c99d7665173f5b04f1aa106016c5df3632e1f8cd/BUCK",
+      "sha256": "39540f57581a5e63b3d4f0e17a2967ae8f9df3521b085cb6dc230a2e37f30466"
+    }
   }
 }

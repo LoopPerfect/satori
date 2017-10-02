@@ -249,3 +249,14 @@ cxx_binary(
     'PUBLIC',
   ],
 )
+
+cxx_binary(
+  name = 'zlib-pipe',
+  srcs = [
+    'satori/apps/zlib_pipe.cpp',
+  ],
+  deps = BUCKAROO_DEPS,
+  visibility = [
+    'PUBLIC',
+  ],
+)

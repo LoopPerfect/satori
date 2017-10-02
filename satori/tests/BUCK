@@ -27,3 +27,13 @@ cxx_test(
     '//:satori',
   ],
 )
+
+cxx_test(
+  name = 'inflate-deflate-tests',
+  srcs = [
+    'inflateDeflateTests.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)
