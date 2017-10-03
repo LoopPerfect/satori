@@ -14,6 +14,7 @@
 
 #include <satori/satori.hpp>
 #include <satori/router.hpp>
+#include <satori/status.hpp>
 
 using namespace std;
 using namespace satori;
@@ -27,6 +28,41 @@ struct Connection {
   Tcp* client;
 };
 
+
+struct Response {
+
+  Loop* loop;
+  Tcp* client;
+
+  std::map<std::string, std::string> headers;
+  int code;
+  std::string buffer;
+
+
+  Response& set(std::map<std::string, std::string> const& headers) {
+    for (auto const& e: headers) {
+      headers[e.first] = e.second;
+    }
+    return *this;
+  }
+
+
+  Response& status(unsigned short const& code) {
+    this->code = code;
+    return *this;
+
+  }
+  
+  Response& write(std::string const& str) {
+
+  }
+
+  Response& end(std::string const& str) {
+
+  }
+
+
+};
 
 template<class X>
 void chain(X) {}
@@ -86,8 +122,6 @@ struct AppRouter {
     router->compile();
 
 
-
-
     server->onListen = [=](auto status) {
       auto client = loop->newTcp();
       server->accept(client);
@@ -120,7 +154,7 @@ struct AppRouter {
           char const* at, 
           size_t len) {
 
-        std::cout << "header: "<<  *key <<"="<<  std::string(at, len) << std::endl;
+        //std::cout << "header: "<<  *key <<"="<<  std::string(at, len) << std::endl;
         (*headers)[*key] = std::string(at, len);
         return 0;
       };
@@ -163,22 +197,28 @@ struct AppRouter {
 
 int main() {
 
-
-
   auto loop = std::make_shared<Loop>();
 
   AppRouter<> app;
 
-  static std::string const res = 
-    "HTTP/1.1 200 OK\r\n"
-    "Date: Wed, 13 Sep 2017 17:46:27 GMT\r\n"
-    "\r\n"
-    "hello world";
+  app.get("/", 
+      //parseHeaders("contentType", "accept"), 
+      [=](auto con) {
+    loop->newWrite(con.client, "HTTP/1.0 200 OK\r\n\r\n");
+      
+    std::string res = "headers:\n";
+    for(auto h: con.headers) {
+      res += h.first + ": " + h.second + "\n";
+    }
+
+    loop->newWrite(con.client, res)
+      ->onWriteEnd = [con](auto) {
+      con.client->close();
+    };
+  });
 
 
-  app.get("/{id}", [](auto con, auto next){
-      next(con);
-    }, [=](auto con) {
+  app.get("/{id}", [=](auto con) {
     loop->newWrite(con.client, "HTTP/1.0 200 OK\r\n\r\n");
       
     std::string res = "headers:\n";
