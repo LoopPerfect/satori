@@ -49,11 +49,12 @@
       "subPath": "r3-0d78599a57aa7499b5f8f398ddf7860d7434dafd"
     },
     "dependencies": [
-      "pcre.pcre//:pcre"
+      "pcre.pcre//:pcre",
+      "jemalloc.jemalloc//:jemalloc"
     ],
     "buck": {
-      "url": "https://raw.githubusercontent.com/njlr/r3/330e9487df7390f06d964c5ba277e5dbc22cc41e/BUCK",
-      "sha256": "408f08e30064bbd3ac0944be5289b3a4c548da51389c3f86502e22f0afd87c17"
+      "url": "https://raw.githubusercontent.com/njlr/r3/bd50b739f28f227dbe40ec4f7bd23479e631852f/BUCK",
+      "sha256": "a7881b8b49c1597adf435dff215918161fcecd3d381a6890de1bfed0722f3ada"
     }
   },
   "pcre/pcre": {
@@ -61,6 +62,17 @@
       "url": "https://github.com/nikhedonia/pcre-1/archive/7619846506d1698619c4c19516ea87e316e5860b.zip",
       "sha256": "2d0127569bb9321bae42fe6295e4dd732d65e5ec5dbbc9b8979ce67d31d71cc4",
       "subPath": "pcre-1-7619846506d1698619c4c19516ea87e316e5860b"
+    }
+  },
+  "jemalloc/jemalloc": {
+    "source": {
+      "url": "https://github.com/jemalloc/jemalloc/archive/896ed3a8b3f41998d4fb4d625d30ac63ef2d51fb.zip",
+      "sha256": "5125461b26d56cbe8f305bbf187ae12dcb9fa8fb7966c37a7128f4c82326a57d",
+      "subPath": "jemalloc-896ed3a8b3f41998d4fb4d625d30ac63ef2d51fb"
+    },
+    "buck": {
+      "url": "https://raw.githubusercontent.com/njlr/jemalloc/7278584c29c5743db636866941d5bd3953aafcb8/BUCK",
+      "sha256": "ca5b0d556d86c21a1f102576b307eb2bc00cce57291d9399e1a019a9638db00d"
     }
   }
 }
