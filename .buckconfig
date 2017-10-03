@@ -4,5 +4,5 @@
 [cxx]
   gtest_dep = google.gtest//:gtest
   cxxflags = -std=c++14 -O3 -Ofast -Os
-  untraced_headers = warn
+  untracked_headers = warn
   untracked_headers_whitelist = /usr/include/.*, /usr/local/Cellar/llvm/.*, /usr/lib/gcc/x86_64-linux-gnu/.*

@@ -16,6 +16,7 @@
 #include <satori/urlEncode.hpp>
 #include <satori/urlDecode.hpp>
 #include <satori/inflate.hpp>
+#include <satori/inflator.hpp>
 #include <satori/deflate.hpp>
 #include <satori/deflator.hpp>
 

@@ -3,7 +3,6 @@
 #include <zlib.h>
 #include <satori/deflate.hpp>
 #include <satori/deflator.hpp>
-#include <satori/zlibError.hpp>
 
 namespace satori {
 

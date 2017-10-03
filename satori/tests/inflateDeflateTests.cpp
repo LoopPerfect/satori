@@ -31,11 +31,30 @@ TEST(satori, inflatedeflate) {
 TEST(satori, chunkeddeflate) {
 
   auto const repeat = [](std::string const& x, unsigned const n) {
-    std::vector<std::string> y;
+    std::string y;
     for (int i = 0; i < n; ++i) {
-      y.push_back(x);
+      y += x;
     }
     return y;
+  };
+
+  auto const chunk = [](std::string const& xs, unsigned const n) -> std::vector<std::string> {
+    std::vector<std::string> result;
+    std::string chunk;
+    int i = 0;
+    for (auto const& x : xs) {
+      chunk += x;
+      i = i + 1;
+      if (i == n) {
+        result.push_back(chunk);
+        chunk = "";
+        i = 0;
+      }
+    }
+    if (i > 0) {
+      result.push_back(chunk);
+    }
+    return result;
   };
 
   auto const join = [](std::vector<std::string> const& xs) {
@@ -46,7 +65,7 @@ TEST(satori, chunkeddeflate) {
     return y;
   };
 
-  auto const xs = repeat("The slow black dog bows before the regal fox. ", 2048 * 2);
+  auto const xs = chunk(repeat("The slow black dog bows before the regal fox. ", 2048 * 2), 1024);
 
   auto deflator = satori::Deflator();
 
@@ -57,4 +76,48 @@ TEST(satori, chunkeddeflate) {
   deflator.finish();
 
   EXPECT_EQ(join(xs), satori::inflate(deflator.result()));
+}
+
+TEST(satori, chunkedinflate) {
+
+  auto const repeat = [](std::string const& x, unsigned const n) {
+    std::string y;
+    for (int i = 0; i < n; ++i) {
+      y += x;
+    }
+    return y;
+  };
+
+  auto const chunk = [](std::string const& xs, unsigned const n) -> std::vector<std::string> {
+    std::vector<std::string> result;
+    std::string chunk;
+    int i = 0;
+    for (auto const& x : xs) {
+      chunk += x;
+      i = i + 1;
+      if (i == n) {
+        result.push_back(chunk);
+        chunk = "";
+        i = 0;
+      }
+    }
+    if (i > 0) {
+      result.push_back(chunk);
+    }
+    return result;
+  };
+
+  auto uncompressed = repeat("The slow black dog bows before the regal fox. ", 2048 * 2);
+
+  auto compressed = satori::deflate(uncompressed);
+
+  auto chunks = chunk(compressed, 1024);
+
+  auto inflator = satori::Inflator();
+
+  for (auto const& chunk : chunks) {
+    inflator.feed(chunk);
+  }
+
+  EXPECT_EQ(uncompressed, inflator.result());
 }
