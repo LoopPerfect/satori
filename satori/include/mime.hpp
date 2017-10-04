@@ -1,3 +1,6 @@
+#ifndef SATORI_MIME_HPP
+#define SATORI_MIME_HPP
+
 #include <map>
 #include <string>
 

@@ -1,8 +1,9 @@
 #ifndef SATORI_RESPONSE_BUFFER_HPP
 #define SATORI_RESPONSE_BUFFER_HPP
 
-
 #include <string>
+#include <map>
+
 #include <satori/loop.hpp>
 #include <satori/httpStatusCode.hpp>
 
@@ -32,9 +33,9 @@ struct ResponseBuffer {
     }
     return write("\r\n");
   }
-  
+
   ResponseBuffer& write(std::string const& str) {
-    buffer += str; 
+    buffer += str;
     return *this;
   }
 
@@ -47,7 +48,7 @@ struct ResponseBuffer {
   void end(std::string const& str = "") {
     write(str)
       .flush()->onWriteEnd = [client = this->client](auto) {
-        client->close();   
+        client->close();
     };
     client = nullptr;
   }

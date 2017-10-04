@@ -115,15 +115,6 @@ public:
     });
   }
 
-  template <typename F>
-  auto then(F f) const -> Promise<decltype(f(this->state->value))> {
-    return map(f);
-  }
-
-  template <typename F>
-  auto then(F f) const -> decltype(ensurePromise(f(this->state->value))) {
-    return flatMap(f);
-  }
 };
 
 } // namespace satori

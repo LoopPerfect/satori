@@ -1,25 +1,39 @@
 #ifndef SATORI_HTTP_ROUTER_HPP
 #define SATORI_HTTP_ROUTER_HPP
 
+#include <string>
+#include <utility>
+#include <memory>
+#include <functional>
+#include <vector>
+#include <map>
+
 #include <satori/loop.hpp>
 #include <satori/router.hpp>
 #include <satori/httpParser.hpp>
 #include <satori/httpRequest.hpp>
 #include <satori/httpResponse.hpp>
-#include <memory>
 
 namespace satori {
 
 constexpr unsigned convertToR3(unsigned const method) {
   switch (method) {
-    case HTTP_DELETE: return METHOD_DELETE;
-    case HTTP_PUT: return METHOD_PUT;
-    case HTTP_GET: return METHOD_GET;
-    case HTTP_POST: return METHOD_POST;
-    case HTTP_PATCH: return METHOD_PATCH;
-    case HTTP_HEAD: return METHOD_HEAD;
-    case HTTP_OPTIONS: return METHOD_OPTIONS;
-    default: return ~0;
+    case HTTP_DELETE:
+      return METHOD_DELETE;
+    case HTTP_PUT:
+      return METHOD_PUT;
+    case HTTP_GET:
+      return METHOD_GET;
+    case HTTP_POST:
+      return METHOD_POST;
+    case HTTP_PATCH:
+      return METHOD_PATCH;
+    case HTTP_HEAD:
+      return METHOD_HEAD;
+    case HTTP_OPTIONS:
+      return METHOD_OPTIONS;
+    default:
+      return ~0;
   }
 }
 
@@ -33,12 +47,12 @@ constexpr void chain(X&& req, Y&& res, F&& f) {
 
 template<class X, class Y, class F, class...Fs>
 constexpr void chain(X&& req, Y&& res, F&& f, Fs const&...fs) {
-  f(std::forward<X>(req), 
-    std::forward<Y>(res), 
+  f(std::forward<X>(req),
+    std::forward<Y>(res),
     [fs...](auto&& req, auto&& res) {
       chain(
-        std::forward<decltype(req)>(req), 
-        std::forward<decltype(res)>(res), 
+        std::forward<decltype(req)>(req),
+        std::forward<decltype(res)>(res),
         fs...);
   });
 }
@@ -50,8 +64,8 @@ struct Route {
   std::function<void(Req, Res)> handler;
 
   Route(
-      std::string const& route, 
-      int const method,  
+      std::string const& route,
+      int const method,
       std::function<void(Req, Res)> const& handler)
     : route{route}
     , method{method}
@@ -63,7 +77,7 @@ struct Route {
 template<class Req = HttpRequest, class Res = HttpResponse>
 struct AppRouter {
   std::vector<Route<Req, Res>> routes;
-  
+
   template<class F, class...Fs>
   AppRouter& get(std::string const& path, F f, Fs...fs) {
     return matching(METHOD_GET, path, f, fs...);
@@ -134,27 +148,27 @@ struct AppRouter {
 
       // TODO: make parser part of the connection/request state...
       auto parser = std::make_shared<satori::HttpParser>(HTTP_REQUEST);
-      
+
       client->onData = [parser](const char* str, size_t len) {
         parser->execute(std::string(str, len));
       };
-    
-      auto key = std::make_shared<std::string>(); 
+
+      auto key = std::make_shared<std::string>();
       auto url = std::make_shared<std::string>();
       auto headers = std::make_shared<
-        std::map<std::string, std::string>>(); 
+        std::map<std::string, std::string>>();
 
       parser->onHeaderField = [=](
-        http_parser const* parser, 
-        char const* at, 
+        http_parser const* parser,
+        char const* at,
         size_t len) {
         *key = std::string(at, len);
         return 0;
       };
 
       parser->onHeaderValue = [=](
-          http_parser const* parser, 
-          char const* at, 
+          http_parser const* parser,
+          char const* at,
           size_t len) {
 
         //TODO: avoid pointer indirection
@@ -189,8 +203,8 @@ struct AppRouter {
       };
 
       parser->onUrl = [=](
-          http_parser const* parser, 
-          char const* at, 
+          http_parser const* parser,
+          char const* at,
           size_t len) {
           *url = std::string(at, len);
         return 0;

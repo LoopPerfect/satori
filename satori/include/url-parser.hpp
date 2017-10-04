@@ -5,6 +5,7 @@
 #include <neither/either.hpp>
 #include <string>
 #include <vector>
+#include <string.h>
 
 #include <satori/url.hpp>
 
