@@ -9,11 +9,11 @@ int main() {
   using namespace satori;
 
   // Create a Satori event loop
-  auto loop = std::make_shared<Loop>();
+  auto satori = Satori();
 
   // Create two promises
-  auto p = Promise<std::string>(std::weak_ptr<Loop>(loop));
-  auto w = Promise<std::string>(std::weak_ptr<Loop>(loop));
+  auto p = satori.promise<std::string>();
+  auto w = satori.promise<std::string>();
 
   // q is a transformation of p
   auto q = p.map([=](std::string x) {
@@ -39,7 +39,7 @@ int main() {
   w.resolve("world. ");
 
   // Start the loop
-  loop->run();
+  satori.run();
 
   return 0;
 }
