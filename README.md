@@ -1,11 +1,18 @@
 # Satori
 
-Satori is an HTTP library built on top of libUV. It intends to be the Express / Node.js of the C++ ecosystem.
+An HTTP library built on top of libUV.
+
+
+## What is Satori?
+
+ - An asyncronous IO framework
+ - A C++ wrapper of libuv
+ - An attempt to build the Express / Node.js of the C++ ecosystem
 
 
 ## Project Status
 
-Satori is in development. Do not use this in production yet!
+Satori is in development. Do not use this in production quite yet!
 
 
 ## Design Goals
@@ -15,7 +22,7 @@ Satori is in development. Do not use this in production yet!
  * Cross platform (Linux, Windows and macOS)
  * Leverage C++ 14 for terse user-code (similar length to Express apps)
  * Commercial friendly license (MIT)
- * Easy builds and deployment using [Buck](https://buckbuild.com) and [Buckaroo](https://buckaroo.pm) 
+ * Easy builds and deployment using [Buck](https://buckbuild.com) and [Buckaroo](https://buckaroo.pm)
 
 
 ## TODO
@@ -25,7 +32,7 @@ Satori is in development. Do not use this in production yet!
  * Async file-system API
  * Benchmarks
  * Kafel integration for secure route-handling
- * ... and probably lots more! 
+ * ... and probably lots more!
 
 
 ## Building
@@ -42,3 +49,8 @@ buck build :satori
 # Run the example
 buck run :main
 ```
+
+
+## Examples
+
+There are many example projects in the examples folder. 

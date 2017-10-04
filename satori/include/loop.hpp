@@ -5,6 +5,7 @@
 #include <satori/handles.hpp>
 #include <satori/recycler.hpp>
 #include <satori/requests.hpp>
+#include <satori/promise.hpp>
 
 namespace satori {
 

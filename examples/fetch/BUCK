@@ -1,0 +1,9 @@
+cxx_binary(
+  name = 'fetch',
+  srcs = [
+    'fetch.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)

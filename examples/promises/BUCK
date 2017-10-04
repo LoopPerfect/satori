@@ -1,0 +1,9 @@
+cxx_binary(
+  name = 'promises',
+  srcs = [
+    'promises.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)
