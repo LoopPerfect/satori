@@ -53,4 +53,4 @@ buck run :main
 
 ## Examples
 
-There are many example projects in the examples folder. 
+There are many sample projects in the [examples](./examples) folder. 
