@@ -56,6 +56,12 @@ struct HttpParser : private http_parser {
       return self->onStatus(parser, at, length);
     };
 
+    settings.on_header_field = [](http_parser* parser, const char* at,
+                                  size_t length) {
+      HttpParser* self = (HttpParser*)parser;
+      return self->onHeaderField(parser, at, length);
+    };
+
     settings.on_header_value = [](http_parser* parser, const char* at,
                                   size_t length) {
       HttpParser* self = (HttpParser*)parser;

@@ -27,9 +27,6 @@ cxx_binary(
   deps = [
     ':satori',
   ],
-  visibility = [
-    'PUBLIC',
-  ],
 )
 
 cxx_binary(
@@ -40,9 +37,6 @@ cxx_binary(
   deps = [
     ':satori',
   ],
-  visibility = [
-    'PUBLIC',
-  ],
 )
 
 cxx_binary(
@@ -51,9 +45,6 @@ cxx_binary(
     'satori/apps/uv_readfile.cpp',
   ],
   deps = BUCKAROO_DEPS,
-  visibility = [
-    'PUBLIC',
-  ],
 )
 
 cxx_binary(
@@ -62,9 +53,6 @@ cxx_binary(
     'satori/apps/uv_readfile_reuse_req.cpp',
   ],
   deps = BUCKAROO_DEPS,
-  visibility = [
-    'PUBLIC',
-  ],
 )
 
 cxx_binary(
@@ -75,12 +63,7 @@ cxx_binary(
   deps = BUCKAROO_DEPS + [
     ':satori',
   ],
-  visibility = [
-    'PUBLIC',
-  ],
 )
-
-
 
 cxx_binary(
   name = 'satori_getrequest',
@@ -89,9 +72,6 @@ cxx_binary(
   ],
   deps = BUCKAROO_DEPS + [
     ':satori',
-  ],
-  visibility = [
-    'PUBLIC',
   ],
 )
 
@@ -104,9 +84,6 @@ cxx_binary(
   deps = BUCKAROO_DEPS + [
     ':satori',
   ],
-  visibility = [
-    'PUBLIC',
-  ],
 )
 
 cxx_binary(
@@ -116,9 +93,6 @@ cxx_binary(
   ],
   deps = BUCKAROO_DEPS + [
     ':satori',
-  ],
-  visibility = [
-    'PUBLIC',
   ],
 )
 
@@ -130,9 +104,6 @@ cxx_binary(
   deps = BUCKAROO_DEPS + [
     ':satori',
   ],
-  visibility = [
-    'PUBLIC',
-  ],
 )
 
 cxx_binary(
@@ -142,9 +113,6 @@ cxx_binary(
   ],
   deps = BUCKAROO_DEPS + [
     ':satori',
-  ],
-  visibility = [
-    'PUBLIC',
   ],
 )
 
@@ -156,9 +124,6 @@ cxx_binary(
   deps = BUCKAROO_DEPS + [
     ':satori',
   ],
-  visibility = [
-    'PUBLIC',
-  ],
 )
 
 cxx_binary(
@@ -167,9 +132,6 @@ cxx_binary(
     'satori/apps/uv_process.cpp',
   ],
   deps = BUCKAROO_DEPS,
-  visibility = [
-    'PUBLIC',
-  ],
 )
 
 cxx_binary(
@@ -178,9 +140,6 @@ cxx_binary(
     'satori/apps/nodejs_parse_http.cpp',
   ],
   deps = BUCKAROO_DEPS,
-  visibility = [
-    'PUBLIC',
-  ],
 )
 
 cxx_binary(
@@ -191,12 +150,7 @@ cxx_binary(
   deps = [
     ':satori',
   ],
-  visibility = [
-    'PUBLIC',
-  ],
 )
-
-
 
 cxx_binary(
   name = 'satori_filestream',
@@ -205,9 +159,6 @@ cxx_binary(
   ],
   deps = [
     ':satori',
-  ],
-  visibility = [
-    'PUBLIC',
   ],
 )
 
@@ -219,9 +170,6 @@ cxx_binary(
   deps = [
     ':satori',
   ],
-  visibility = [
-    'PUBLIC',
-  ],
 )
 
 cxx_binary(
@@ -231,9 +179,6 @@ cxx_binary(
   ],
   deps = [
     ':satori',
-  ],
-  visibility = [
-    'PUBLIC',
   ],
 )
 
@@ -245,18 +190,14 @@ cxx_binary(
   deps = [
     ':satori',
   ],
-  visibility = [
-    'PUBLIC',
-  ],
 )
 
 cxx_binary(
-  name = 'zlib-pipe',
+  name = 'satori_express',
   srcs = [
-    'satori/apps/zlib_pipe.cpp',
+    'satori/apps/satori_express.cpp',
   ],
-  deps = BUCKAROO_DEPS,
-  visibility = [
-    'PUBLIC',
+  deps = [
+    ':satori',
   ],
 )

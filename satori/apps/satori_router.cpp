@@ -49,8 +49,9 @@ int main() {
   }
 
   if (auto match = router.match("/bikes/merckx")) {
-    auto const action = match.map([](auto x) -> std::function<void()> {
-      return [=]() {
+    auto const action = match.map([](auto x) 
+        -> std::function<void()> {
+      return [=] {
         x.data(x.path, x.params);
       };
     }).get([]() {});
