@@ -1,11 +1,11 @@
-# 
+# Satori
 
- is an HTTP library built on top of libUV. It intends to be the Express / Node.js of the C++ ecosystem.
+Satori is an HTTP library built on top of libUV. It intends to be the Express / Node.js of the C++ ecosystem.
 
 
 ## Project Status
 
- is in development. Do not use this in production yet!
+Satori is in development. Do not use this in production yet!
 
 
 ## Design Goals
