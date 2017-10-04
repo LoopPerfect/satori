@@ -1,5 +1,5 @@
 {
-  "name": "platform",
+  "name": "satori",
   "dependencies": {
     "libuv/libuv": "1.11.0",
     "google/gtest": "1.8.0",
