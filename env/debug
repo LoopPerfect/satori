@@ -1,0 +1,2 @@
+--config
+*//cxx.cppflags= -O1 -pg

@@ -22,6 +22,8 @@ constexpr auto ensurePromise(P const& p)
   return p;
 }
 
+struct Loop;
+
 template <typename T>
 struct Promise {
 

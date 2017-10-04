@@ -1,0 +1,4 @@
+--config
+*//cxx.cxxflags= -O3 -Ofast -march=native -mfpmath=sse -funroll-loops 
+--config
+*//cxx.default_platform= linux-x86_64
