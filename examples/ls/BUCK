@@ -1,0 +1,9 @@
+cxx_binary(
+  name = 'ls',
+  srcs = [
+    'ls.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)

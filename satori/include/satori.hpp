@@ -3,6 +3,8 @@
 
 #include <satori/actor.hpp>
 #include <satori/enableMultiProcess.hpp>
+#include <satori/errors.hpp>
+#include <satori/directoryEntry.hpp>
 #include <satori/handles.hpp>
 #include <satori/httpParser.hpp>
 #include <satori/loop.hpp>

@@ -9,6 +9,7 @@
 #include <cassert>
 #include <uv.h>
 
+#include <satori/directoryEntry.hpp>
 #include <satori/requests.hpp>
 
 namespace satori {
@@ -168,7 +169,10 @@ struct FSScanDir : FS<FSScanDir> {
                            uv_dirent_t ent;
                            while (true) {
                              int i = uv_fs_scandir_next(r, &ent);
-                             auto keepGoing = request->onScandirNext(ent);
+                             auto keepGoing = request->onScandirNext({
+                               fromUVDirent(ent.type),
+                               std::string(ent.name)
+                             });
                              if (i == UV_EOF || !keepGoing) {
                                break;
                              }
@@ -178,7 +182,7 @@ struct FSScanDir : FS<FSScanDir> {
   }
 
   std::function<void(int)> onScandir = [](int) {};
-  std::function<bool(uv_dirent_t)> onScandirNext = [](uv_dirent_t) {
+  std::function<bool(DirectoryEntry)> onScandirNext = [](DirectoryEntry) {
     return false;
   };
 };
