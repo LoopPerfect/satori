@@ -38,12 +38,14 @@ namespace satori {
 
     Router() : tree(10) {}
 
-    neither::Maybe<std::string> addRoute(std::string const& route, T const& data) {
+    neither::Maybe<std::string> addRoute(int const method, std::string const& route, T const& data) {
       assert(!hasCompiled && "You cannot add routes after calling compile");
       callbacks.push_back({ route, data });
       auto* dataAddress = &callbacks.back();
       char* errorString;
-      r3::Node node = tree.insert_pathl(
+      //entry->request_method = METHOD_GET | METHOD_POST;
+      r3::Route node = tree.insert_routel(
+        method,
         dataAddress->route.c_str(),
         dataAddress->route.size(),
         (void*)dataAddress,
@@ -67,12 +69,13 @@ namespace satori {
       return tree.compile(nullptr);
     }
 
-    neither::Maybe<Match<T>> match(std::string const& path) {
+    neither::Maybe<Match<T>> match(int const method, std::string const& path) {
       assert(hasCompiled && "match must be called after compile");
 
       auto matchedNode = tree.matchl(path.c_str(), path.size());
 
       r3::MatchEntry entry(path.c_str());
+      entry.set_request_method(method);
       matchedNode = tree.match_entry(entry);
 
       if (!matchedNode) {

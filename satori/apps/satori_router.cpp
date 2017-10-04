@@ -12,6 +12,7 @@ int main() {
   satori::Router<> router;
 
   auto maybeError = router.addRoute(
+    METHOD_GET,
     "/products/{category}/{id}",
     [](auto const& path, auto const& params) {
       std::cout << path << std::endl;
@@ -25,7 +26,7 @@ int main() {
     exit(1);
   }
 
-  router.addRoute("/bikes/{id}", [](auto const& path, auto const& params) {
+  router.addRoute(METHOD_GET, "/bikes/{id}", [](auto const& path, auto const& params) {
     std::cout << path << std::endl;
     for (auto const& e : params) {
       std::cout << e << std::endl;
@@ -39,7 +40,7 @@ int main() {
 
   // router.tree.dump(0);
 
-  if (auto match = router.match("/products/bikes/merckx")) {
+  if (auto match = router.match(METHOD_GET, "/products/bikes/merckx")) {
     auto const action = match.map([](auto x) -> std::function<void()> {
       return [=]() {
         x.data(x.path, x.params);
@@ -48,7 +49,7 @@ int main() {
     action();
   }
 
-  if (auto match = router.match("/bikes/merckx")) {
+  if (auto match = router.match(METHOD_GET, "/bikes/merckx")) {
     auto const action = match.map([](auto x) 
         -> std::function<void()> {
       return [=] {

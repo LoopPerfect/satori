@@ -5,7 +5,7 @@
 
 namespace satori {
 
-constexpr char const* code2Msg(unsigned short const status) {
+constexpr char const* httpStatusCode(unsigned short const status) {
   switch (status) {
     case 100: return "100 Continue\r\n"; // [RFC7231, Section 6.2.1]
     case 101: return "101 Switching Protocols\r\n"; //  [RFC7231, Section 6.2.2]
