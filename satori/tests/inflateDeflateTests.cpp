@@ -30,7 +30,7 @@ TEST(satori, inflatedeflate) {
 
 TEST(satori, chunkeddeflate) {
 
-  auto const repeat = [](std::string const& x, unsigned const n) {
+  auto const repeat = [](std::string const& x, unsigned const n) -> std::string {
     std::string y;
     for (int i = 0; i < n; ++i) {
       y += x;
@@ -57,7 +57,7 @@ TEST(satori, chunkeddeflate) {
     return result;
   };
 
-  auto const join = [](std::vector<std::string> const& xs) {
+  auto const join = [](std::vector<std::string> const& xs) -> std::string {
     std::string y;
     for (auto const& x : xs) {
       y += x;
