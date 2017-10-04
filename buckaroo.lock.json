@@ -32,63 +32,15 @@
       "sha256": "8271da902bed90694ee5294e013abbaca27512ec6bdf734504b1b1d7cf6ec8ff"
     }
   },
-  "c9s/r3": {
-    "source": {
-      "url": "https://github.com/c9s/r3/archive/0d78599a57aa7499b5f8f398ddf7860d7434dafd.zip",
-      "sha256": "94784accf5100b222a75432d01b85d08de0d8a8d6d5773042fd0db1b8eb607e2",
-      "subPath": "r3-0d78599a57aa7499b5f8f398ddf7860d7434dafd"
-    },
-    "dependencies": [
-      "pcre.pcre//:pcre",
-      "jemalloc.jemalloc//:jemalloc",
-      "c9s.zmalloc//:zmalloc"
-    ],
-    "buck": {
-      "url": "https://raw.githubusercontent.com/njlr/r3/8751bed6f6326f82b39aaa6a865a8f5fecc6ef2f/BUCK",
-      "sha256": "a29d8b5eaf85bb3495a69d007ef66f7460731361babaa51a2135248c0d2943c2"
-    }
-  },
-  "pcre/pcre": {
-    "source": {
-      "url": "https://github.com/nikhedonia/pcre-1/archive/7619846506d1698619c4c19516ea87e316e5860b.zip",
-      "sha256": "2d0127569bb9321bae42fe6295e4dd732d65e5ec5dbbc9b8979ce67d31d71cc4",
-      "subPath": "pcre-1-7619846506d1698619c4c19516ea87e316e5860b"
-    }
-  },
-  "jemalloc/jemalloc": {
-    "source": {
-      "url": "https://github.com/jemalloc/jemalloc/archive/896ed3a8b3f41998d4fb4d625d30ac63ef2d51fb.zip",
-      "sha256": "5125461b26d56cbe8f305bbf187ae12dcb9fa8fb7966c37a7128f4c82326a57d",
-      "subPath": "jemalloc-896ed3a8b3f41998d4fb4d625d30ac63ef2d51fb"
-    },
-    "buck": {
-      "url": "https://raw.githubusercontent.com/njlr/jemalloc/7278584c29c5743db636866941d5bd3953aafcb8/BUCK",
-      "sha256": "ca5b0d556d86c21a1f102576b307eb2bc00cce57291d9399e1a019a9638db00d"
-    }
-  },
-  "c9s/zmalloc": {
-    "source": {
-      "url": "https://github.com/c9s/r3/archive/0d78599a57aa7499b5f8f398ddf7860d7434dafd.zip",
-      "sha256": "94784accf5100b222a75432d01b85d08de0d8a8d6d5773042fd0db1b8eb607e2",
-      "subPath": "r3-0d78599a57aa7499b5f8f398ddf7860d7434dafd"
-    },
-    "buck": {
-      "url": "https://raw.githubusercontent.com/njlr/r3/8751bed6f6326f82b39aaa6a865a8f5fecc6ef2f/BUCK",
-      "sha256": "a29d8b5eaf85bb3495a69d007ef66f7460731361babaa51a2135248c0d2943c2"
-    }
-  },
   "madler/zlib": {
     "source": {
       "url": "https://github.com/madler/zlib/archive/cacf7f1d4e3d44d871b605da3b647f07d718623f.zip",
       "sha256": "1cce3828ec2ba80ff8a4cac0ab5aa03756026517154c4b450e617ede751d41bd",
       "subPath": "zlib-cacf7f1d4e3d44d871b605da3b647f07d718623f"
     },
-    "dependencies": [
-      "c9s.zmalloc//:zmalloc"
-    ],
     "buck": {
-      "url": "https://raw.githubusercontent.com/njlr/zlib/bddc74df8c6e3f1ad78fa725de30d12054910045/BUCK",
-      "sha256": "f0eb636e146603be36c8efb76ca44f6591881014035a247af40a76714db83a8c"
+      "url": "https://raw.githubusercontent.com/njlr/zlib/ae69f4a45134c2c37c319581e640720fee3950e0/BUCK",
+      "sha256": "2db68199820486625a47728206ac426f8ed2f8351a3c1db4d3ab813e0104d686"
     }
   },
   "loopperfect/neither": {
@@ -96,6 +48,24 @@
       "url": "https://github.com/loopperfect/neither/archive/8d0725ce69849565c91fc091d94a8805c81c9f2c.zip",
       "sha256": "a14016d4221d32f25d35489fdd367b4719997c14690f1f78b2201e873a67f3c4",
       "subPath": "neither-8d0725ce69849565c91fc091d94a8805c81c9f2c"
+    }
+  },
+  "loopperfect/r3": {
+    "source": {
+      "url": "https://github.com/LoopPerfect/r3/archive/29c603b705c5292cd9dfc8327c54017a9f2d738c.zip",
+      "sha256": "467474a463a4deca1a9e092f7e97460d4b0d9e1c3d2660e0cff367c182c6db2f",
+      "subPath": "r3-29c603b705c5292cd9dfc8327c54017a9f2d738c"
+    },
+    "dependencies": [
+      "pcre.pcre//:pcre",
+      "madler.zlib//:zlib"
+    ]
+  },
+  "pcre/pcre": {
+    "source": {
+      "url": "https://github.com/nikhedonia/pcre-1/archive/7619846506d1698619c4c19516ea87e316e5860b.zip",
+      "sha256": "2d0127569bb9321bae42fe6295e4dd732d65e5ec5dbbc9b8979ce67d31d71cc4",
+      "subPath": "pcre-1-7619846506d1698619c4c19516ea87e316e5860b"
     }
   }
 }
