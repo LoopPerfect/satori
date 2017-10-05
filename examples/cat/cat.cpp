@@ -21,18 +21,23 @@ int main(int argc, const char** argv) {
   auto* fsOpen = loop->newFSOpen(filePath, O_RDONLY, S_IRUSR);
 
   fsOpen->onOpen = [=](ssize_t file) {
-    std::cout << "open" << std::endl;
 
     auto* fsRead = loop->newFSRead(file);
 
+    fsRead->read((uv_loop_t*)loop.get(), file);
+
     fsRead->onRead = [=](int result, uv_buf_t buffer) {
+
       if (result < 0) {
         std::cerr << errorName(result) << " " << errorMessage(result) << std::endl;
         exit(1);
-      } else if (result > 0) {
+      }
+
+      if (result < buffer.len) {
+        std::cout << std::string(buffer.base, result) << std::flush;
+      } else {
         std::cout << buffer.base;
-      } else if (result <= buffer.len) {
-        std::cout << buffer.base << std::endl;
+        fsRead->read((uv_loop_t*)loop.get(), file, result);
       }
     };
   };
