@@ -18,31 +18,24 @@ int main(int argc, const char** argv) {
 
   auto loop = std::make_shared<Loop>();
 
-  auto* open = loop->newFSOpen(filePath, O_RDONLY, S_IRUSR);
+  auto* fsOpen = loop->newFSOpen(filePath, O_RDONLY, S_IRUSR);
 
-  fs->onOpen = [=](ssize_t file) {
+  fsOpen->onOpen = [=](ssize_t file) {
     std::cout << "open" << std::endl;
 
-    // fs->onRead = [=](int result, uv_buf_t buffer) {
-    //   if (result < 0) {
-    //     std::cerr << errorName(result) << " " << errorMessage(result) << std::endl;
-    //     exit(1);
-    //   } else if (result > 0) {
-    //     std::cout << buffer.base;
-    //   }
-    //
-    //   if (result < buffer.len) {
-    //     fs->onClose = []() {
-    //       std::cout << "=================EOF=================" << std::endl;
-    //     };
-    //     fs->close(file);
-    //   }
-    // };
-    //
-    // fs->read(file);
-  };
+    auto* fsRead = loop->newFSRead(file);
 
-  // fs->open(loop.get(), filePath, O_RDONLY, S_IRUSR);
+    fsRead->onRead = [=](int result, uv_buf_t buffer) {
+      if (result < 0) {
+        std::cerr << errorName(result) << " " << errorMessage(result) << std::endl;
+        exit(1);
+      } else if (result > 0) {
+        std::cout << buffer.base;
+      } else if (result < buffer.len) {
+        std::cout << buffer.base << std::endl;
+      }
+    };
+  };
 
   loop->run();
 

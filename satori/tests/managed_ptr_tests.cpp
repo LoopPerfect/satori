@@ -9,10 +9,12 @@ TEST(satori, managed_ptr) {
   auto b = managed_ptr<std::string>(new std::string("abc"));
   auto c = managed_ptr<std::string>(a.get());
   auto d = managed_ptr<std::string>(nullptr);
+  auto e = a;
 
   EXPECT_EQ(a, c);
   EXPECT_NE(a, b);
   EXPECT_EQ(a.get(), c.get());
+  EXPECT_EQ(a, e);
 
   EXPECT_EQ(3, a->size());
   EXPECT_EQ(3, b->size());
@@ -28,4 +30,5 @@ TEST(satori, managed_ptr) {
   delete b.get();
   // c == a so c.get() is already deleted
   // d.get() == nullptr
+  // e == a so e.get() is already deleted
 }
