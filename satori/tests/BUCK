@@ -47,3 +47,14 @@ cxx_test(
     '//:satori',
   ],
 )
+
+
+cxx_test(
+  name = 'stringview-tests',
+  srcs = [
+    'stringviewTests.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)
