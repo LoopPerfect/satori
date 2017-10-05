@@ -22,17 +22,14 @@ namespace satori {
 
     ~managed_ptr() {}
 
-    T* get() const {
-      return pointer;
-    }
+    T* get() { return pointer; }
+    T const* get() const { return pointer; }
 
-    T operator * () const {
-      return *pointer;
-    }
+    T& operator * () { return *pointer; }
+    T const& operator * () const { return *pointer; }
 
-    T* operator -> () {
-      return pointer;
-    }
+    T* operator -> () { return pointer; }
+    T const* operator -> () const { return pointer; }
 
     operator bool () const {
       return pointer != nullptr;
