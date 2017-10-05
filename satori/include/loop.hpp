@@ -4,7 +4,6 @@
 #include <satori/fs.hpp>
 #include <satori/handles.hpp>
 #include <satori/managed_ptr.hpp>
-#include <satori/promise.hpp>
 #include <satori/recycler.hpp>
 #include <satori/requests.hpp>
 

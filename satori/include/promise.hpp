@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include <satori/loop.hpp>
 
 namespace satori {
 
@@ -21,8 +22,6 @@ constexpr auto ensurePromise(P const& p)
   -> decltype(ensurePromiseType<typename P::ValueType>(p)) {
   return p;
 }
-
-struct Loop;
 
 template <typename T>
 struct Promise {
