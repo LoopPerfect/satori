@@ -1,0 +1,9 @@
+cxx_binary(
+  name = 'cat',
+  srcs = [
+    'cat.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)

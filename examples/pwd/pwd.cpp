@@ -10,15 +10,16 @@ int main(int argc, const char** argv) {
 
   auto satori = Satori();
 
-  satori.realPath(
-    ".",
-    [](std::string const& path) {
-      std::cout << path << std::endl;
-    },
-    [](int const error) {
-      std::cerr << errorName(error) << " " << errorMessage(error) << std::endl;
-      exit(1);
-    });
+  auto const realPathCallback = [](std::string const& path) {
+    std::cout << path << std::endl;
+  };
+
+  auto const errorCallback = [](int const error) {
+    std::cerr << errorName(error) << " " << errorMessage(error) << std::endl;
+    exit(1);
+  };
+
+  satori.realPath(".", realPathCallback, errorCallback);
 
   satori.run();
 
