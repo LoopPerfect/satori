@@ -17,6 +17,7 @@ private:
 
 public:
   managed_ptr(T* pointer) : pointer(pointer) {}
+  managed_ptr(managed_ptr<T> const& ptr) : pointer(&*ptr) {}
 
   ~managed_ptr() {}
 
