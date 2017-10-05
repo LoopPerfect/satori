@@ -20,6 +20,10 @@ void release(R);
 template <class T>
 struct FS : uv_fs_t {
 
+  FS(uv_loop_t* loop) {
+    this->loop = loop;
+  }
+
   void cleanup() {
     uv_fs_req_cleanup((uv_fs_t*)this);
     release((T*)this);
@@ -28,7 +32,9 @@ struct FS : uv_fs_t {
 
 struct FSClose : FS<FSClose> {
 
-  FSClose(uv_loop_t* loop, ssize_t file) { close(loop, file); }
+  FSClose(uv_loop_t* loop, ssize_t file) : FS<FSClose>(loop) {
+    close(loop, file);
+  }
 
   ~FSClose() {}
 
@@ -45,7 +51,7 @@ struct FSClose : FS<FSClose> {
 
 struct FSOpen : FS<FSOpen> {
 
-  FSOpen(uv_loop_t* loop, std::string const& path, int flags, int mode) {
+  FSOpen(uv_loop_t* loop, std::string const& path, int flags, int mode) : FS<FSOpen>(loop) {
     open(loop, path, flags, mode);
   }
 
@@ -67,24 +73,30 @@ struct FSOpen : FS<FSOpen> {
 
 struct FSRead : FS<FSRead> {
 
-  FSRead(uv_loop_t* loop, ssize_t fileID, unsigned bufSize = 1024) {
-    read(loop, fileID, bufSize);
+  FSRead(uv_loop_t* loop, ssize_t fileID, unsigned bufferSize = 1024) : FS<FSRead>(loop) {
+    buffer = uv_buf_init(new char[bufferSize], bufferSize); // TODO: Memory pool
+    // read(loop, fileID, bufSize);
   }
 
-  ~FSRead() {}
+  ~FSRead() {
+    delete[] buffer.base;
+  }
 
-  int read(uv_loop_t* loop, ssize_t file, unsigned bufferSize) {
-    buffer = uv_buf_init(new char[bufferSize], bufferSize);
-
-    return uv_fs_read(loop, (uv_fs_t*)this, file, &buffer, 1, 0,
-                      [](uv_fs_t* r) {
-                        // assert(r == this);
-                        int result = r->result;
-                        auto* request = (FSRead*)r;
-                        request->onRead(result, request->buffer);
-                        delete[] request->buffer.base;
-                        request->cleanup();
-                      });
+  int read(uv_loop_t* loop, ssize_t file, unsigned offset = 0) {
+    // TODO: Support n buffers
+    return uv_fs_read(
+      loop,
+      (uv_fs_t*)this,
+      file,
+      &buffer,
+      1,
+      offset,
+      [](uv_fs_t* r) {
+        // assert(r == this);
+        int result = r->result;
+        auto* request = (FSRead*)r;
+        request->onRead(result, request->buffer);
+      });
   }
 
   uv_buf_t buffer;
@@ -93,7 +105,7 @@ struct FSRead : FS<FSRead> {
 
 struct FSWrite : FS<FSWrite> {
 
-  FSWrite(uv_loop_t* loop, ssize_t file, std::string const& msg) : msg{msg} {
+  FSWrite(uv_loop_t* loop, ssize_t file, std::string const& msg) : FS<FSWrite>(loop), msg{msg} {
     write(loop, file);
   }
 
@@ -116,7 +128,7 @@ struct FSWrite : FS<FSWrite> {
 
 struct FSStat : FS<FSStat> {
 
-  FSStat(uv_loop_t* loop, std::string const& path) { stat(loop, path); }
+  FSStat(uv_loop_t* loop, std::string const& path) : FS<FSStat>(loop) { stat(loop, path); }
 
   int stat(uv_loop_t* loop, std::string const& path) {
     return uv_fs_stat(loop, (uv_fs_t*)this, path.c_str(), [](uv_fs_t* r) {
@@ -135,7 +147,7 @@ struct FSStat : FS<FSStat> {
 struct FSUTime : FS<FSUTime> {
 
   FSUTime(uv_loop_t* loop, std::string const& path, double atime,
-          double mtime) {
+          double mtime) : FS<FSUTime>(loop) {
     utime(loop, path, atime, mtime);
   }
 
@@ -156,7 +168,7 @@ struct FSUTime : FS<FSUTime> {
 
 struct FSScanDir : FS<FSScanDir> {
 
-  FSScanDir(uv_loop_t* loop, std::string const& path, int flags) {
+  FSScanDir(uv_loop_t* loop, std::string const& path, int flags) : FS<FSScanDir>(loop) {
     scandir(loop, path, flags);
   }
 
@@ -187,7 +199,7 @@ struct FSScanDir : FS<FSScanDir> {
 
 struct FSRealPath : FS<FSRealPath> {
 
-  FSRealPath(uv_loop_t* loop, std::string const& path) { realpath(loop, path); }
+  FSRealPath(uv_loop_t* loop, std::string const& path) : FS<FSRealPath>(loop) { realpath(loop, path); }
 
   int realpath(uv_loop_t* loop, std::string const& path) {
     return uv_fs_realpath(loop, (uv_fs_t*)this, path.c_str(), [](uv_fs_t* r) {
