@@ -1,4 +1,14 @@
 cxx_test(
+  name = 'managed-ptr-tests',
+  srcs = [
+    'managed_ptr_tests.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)
+
+cxx_test(
   name = 'router-tests',
   srcs = [
     'router-tests.cpp',

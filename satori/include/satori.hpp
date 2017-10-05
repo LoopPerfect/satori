@@ -24,6 +24,7 @@
 #include <satori/inflator.hpp>
 #include <satori/deflate.hpp>
 #include <satori/deflator.hpp>
+#include <satori/managed_ptr.hpp>
 
 namespace satori {
 
