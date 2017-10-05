@@ -1,0 +1,9 @@
+cxx_binary(
+  name = 'pwd',
+  srcs = [
+    'pwd.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)

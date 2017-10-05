@@ -77,8 +77,8 @@ struct Loop : uv_loop_t {
   }
 
   template <class... Xs>
-  FSRealPath* newFSRealPath(Xs... xs) {
-    return pool.create<FSRealPath>(this, xs...);
+  managed_ptr<FSRealPath> newFSRealPath(Xs... xs) {
+    return managed_ptr<FSRealPath>(pool.create<FSRealPath>(this, xs...));
   }
 
   template <typename T>

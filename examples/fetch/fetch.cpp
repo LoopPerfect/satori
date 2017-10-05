@@ -25,7 +25,7 @@ int main() {
 
       tcp->read();
       tcp->onData = [=](char const* base, unsigned len) {
-        std::cout << base;
+        std::cout << base << std::flush;
         tcp->close();
       };
 

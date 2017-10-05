@@ -97,26 +97,6 @@ cxx_binary(
 )
 
 cxx_binary(
-  name = 'satori_ls',
-  srcs = [
-    'satori/apps/satori_ls.cpp',
-  ],
-  deps = BUCKAROO_DEPS + [
-    ':satori',
-  ],
-)
-
-cxx_binary(
-  name = 'satori_pwd',
-  srcs = [
-    'satori/apps/satori_pwd.cpp',
-  ],
-  deps = BUCKAROO_DEPS + [
-    ':satori',
-  ],
-)
-
-cxx_binary(
   name = 'satori_process',
   srcs = [
     'satori/apps/satori_process.cpp',

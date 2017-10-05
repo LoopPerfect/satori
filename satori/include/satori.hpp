@@ -2,6 +2,7 @@
 #define SATORI_SATORI_HPP
 
 #include <memory>
+#include <string>
 #include <uv.h>
 
 #include <satori/actor.hpp>
@@ -52,6 +53,16 @@ namespace satori {
       auto fs = loop->newFSScanDir(path, 0);
       fs->onScandir = onScan;
       fs->onScandirNext = onNext;
+      return fs;
+    }
+
+    managed_ptr<FSRealPath> realPath(
+      std::string const& path,
+      std::function<void(std::string const&)> const& onRealPath,
+      std::function<void(int const)> const& onError) {
+      auto fs = loop->newFSRealPath(path);
+      fs->onRealpath = onRealPath;
+      fs->onError = onError;
       return fs;
     }
 
