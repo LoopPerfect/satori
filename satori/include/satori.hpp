@@ -45,6 +45,16 @@ namespace satori {
       return Promise<T>(std::weak_ptr<Loop>(loop));
     }
 
+    managed_ptr<FSScanDir> scanDirectory(
+      std::string const& path,
+      std::function<void(int const)> const& onScan = [](auto...) {},
+      std::function<bool(DirectoryEntry const&)> const& onNext = [](auto...) { return false; }) {
+      auto fs = loop->newFSScanDir(path, 0);
+      fs->onScandir = onScan;
+      fs->onScandirNext = onNext;
+      return fs;
+    }
+
     void run(uv_run_mode mode = UV_RUN_DEFAULT) {
       loop->run(mode);
     }

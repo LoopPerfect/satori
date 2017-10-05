@@ -6,6 +6,7 @@
 #include <satori/recycler.hpp>
 #include <satori/requests.hpp>
 #include <satori/promise.hpp>
+#include <satori/managed_ptr.hpp>
 
 namespace satori {
 
@@ -66,8 +67,8 @@ struct Loop : uv_loop_t {
   }
 
   template <class... Xs>
-  FSScanDir* newFSScanDir(Xs... xs) {
-    return pool.create<FSScanDir>(this, xs...);
+  managed_ptr<FSScanDir> newFSScanDir(Xs... xs) {
+    return managed_ptr<FSScanDir>(pool.create<FSScanDir>(this, xs...));
   }
 
   template <class... Xs>
