@@ -5,8 +5,7 @@
 
 namespace satori {
 
-  std::string urlEncode(std::string const& value);
-
+std::string urlEncode(std::string const& value);
 }
 
 #endif

@@ -34,43 +34,39 @@ int main() {
       client->stop();
     };
 
-
-   parser->onUrl = [=](
-      http_parser const* parser, 
-      char const* at, size_t length) {
+    parser->onUrl = [=](http_parser const* parser, char const* at,
+                        size_t length) {
       auto path = std::string(at, length);
-      auto file = "/home/gaetano/Projects/satori"+path;
+      auto file = "/home/gaetano/Projects/satori" + path;
 
-      loop->newFSOpen(file, O_RDONLY, S_IRUSR)
-        ->onOpen = [=](auto fid) {
-          if (fid<0) {
-            loop->newWrite(client, "error reading file")
-               ->onWriteEnd = [=](int s){
-                 std::cout << "to many open files "<< s <<std::endl;
-                 client->close();
-                 loop->newFSClose(fid);
-               };
-            return;
-          }
-          loop->newFSRead(fid)
-            ->onRead = [=](int bytes, auto buf) {
-              if (bytes>=0) {
-                auto chunk = std::string(buf.base, buf.len);
-                auto write = loop->newWrite(client, chunk);
-
-                if(bytes <= buf.len) {
-                  write->onWriteEnd = [=](int){
-                    client->close();
-                    loop->newFSClose(fid);
-                  };
-                }
-
-              } else {
-                std::cout << "read error" << std::endl;
-                client->close();
-              }   
+      loop->newFSOpen(file, O_RDONLY, S_IRUSR)->onOpen = [=](auto fid) {
+        if (fid < 0) {
+          loop->newWrite(client, "error reading file")->onWriteEnd =
+            [=](int s) {
+              std::cout << "to many open files " << s << std::endl;
+              client->close();
+              loop->newFSClose(fid);
             };
+          return;
+        }
+        loop->newFSRead(fid)->onRead = [=](int bytes, auto buf) {
+          if (bytes >= 0) {
+            auto chunk = std::string(buf.base, buf.len);
+            auto write = loop->newWrite(client, chunk);
+
+            if (bytes <= buf.len) {
+              write->onWriteEnd = [=](int) {
+                client->close();
+                loop->newFSClose(fid);
+              };
+            }
+
+          } else {
+            std::cout << "read error" << std::endl;
+            client->close();
+          }
         };
+      };
       return 1;
     };
 
@@ -79,7 +75,7 @@ int main() {
   auto* server = loop->newTcp();
   server->listen("127.0.0.1", 8080);
   server->onListen = [=](auto status) {
-    if(status<0) {
+    if (status < 0) {
       std::cout << "flaky client" << std::endl;
       return;
     }

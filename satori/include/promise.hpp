@@ -114,7 +114,6 @@ public:
       return p;
     });
   }
-
 };
 
 } // namespace satori

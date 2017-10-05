@@ -1,8 +1,8 @@
 #ifndef SATORI_HTTP_REQUEST_HPP
 #define SATORI_HTTP_REQUEST_HPP
 
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
 namespace satori {
@@ -14,6 +14,6 @@ struct HttpRequest {
   std::vector<std::string> params;
 };
 
-}
+} // namespace satori
 
 #endif

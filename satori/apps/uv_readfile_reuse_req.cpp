@@ -54,13 +54,9 @@ void open_cb(uv_fs_t* req) {
 
   buffer = uv_buf_init(data, sizeof(data));
 
-  int uv_fs_read_result = uv_fs_read(loop,
-                                     &all_req,
-                                     file,
-                                     &buffer,
+  int uv_fs_read_result = uv_fs_read(loop, &all_req, file, &buffer,
                                      1, // buffer.len,
-                                     0,
-                                     read_cb);
+                                     0, read_cb);
 
   if (uv_fs_read_result < 0) {
     std::cerr << error_to_string(uv_fs_read_result) << std::endl;

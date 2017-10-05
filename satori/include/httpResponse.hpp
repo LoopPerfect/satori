@@ -1,11 +1,11 @@
 #ifndef SATORI_HTTP_RESPONSE_HPP
 #define SATORI_HTTP_RESPONSE_HPP
 
-#include <satori/responseBuffer.hpp>
-#include <satori/loop.hpp>
-#include <string>
-#include <memory>
 #include <map>
+#include <memory>
+#include <satori/loop.hpp>
+#include <satori/responseBuffer.hpp>
+#include <string>
 
 namespace satori {
 
@@ -18,22 +18,17 @@ struct HttpResponse {
   std::string protocol = "HTTP/1.0";
 
   HttpResponse(Loop* loop, Tcp* tcp)
-    : buffer(std::make_shared<ResponseBuffer>(loop, tcp))
-  {}
+    : buffer(std::make_shared<ResponseBuffer>(loop, tcp)) {}
 
-  HttpResponse(HttpResponse const& r) 
-    : buffer(r.buffer)
-  {}
+  HttpResponse(HttpResponse const& r) : buffer(r.buffer) {}
 
-  HttpResponse(HttpResponse && r) 
-    : buffer(std::move(r.buffer))
-  {}
+  HttpResponse(HttpResponse&& r) : buffer(std::move(r.buffer)) {}
 
   HttpResponse() = delete;
-  ~HttpResponse(){}
+  ~HttpResponse() {}
 
   HttpResponse http(std::string const& str) {
-    protocol = "HTTP/"+str;
+    protocol = "HTTP/" + str;
     return *this;
   }
 
@@ -57,10 +52,7 @@ struct HttpResponse {
   HttpResponse& write(std::string const& str) {
     assert(buffer && "write after close");
     if (!headersSent) {
-      buffer
-        ->protocol(protocol)
-        .status(statusCode)
-        .set(headers);
+      buffer->protocol(protocol).status(statusCode).set(headers);
       headersSent = true;
     }
 
@@ -73,17 +65,14 @@ struct HttpResponse {
     return *this;
   }
 
-  HttpResponse& end(std::string const& str="") {
+  HttpResponse& end(std::string const& str = "") {
     buffer->end(str);
     return *this;
   }
 
-  void close() {
-    buffer.reset();
-  }
-
+  void close() { buffer.reset(); }
 };
 
-}
+} // namespace satori
 
 #endif

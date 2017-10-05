@@ -1,8 +1,8 @@
-#include <string>
-#include <memory>
 #include <cassert>
-#include <zlib.h>
+#include <memory>
 #include <satori/inflator.hpp>
+#include <string>
+#include <zlib.h>
 
 using namespace satori;
 
@@ -24,9 +24,7 @@ Inflator::Inflator() : state(std::make_shared<State>()) {
   assert(result == Z_OK); // TODO: Find a better error-handling mechanism
 }
 
-Inflator::~Inflator() {
-  inflateEnd(&state->stream);
-}
+Inflator::~Inflator() { inflateEnd(&state->stream); }
 
 std::string Inflator::result() const {
   assert(state->finished && "This stream has not yet been finished");
@@ -48,13 +46,13 @@ bool Inflator::feed(std::string const& chunk) {
     ret = inflate(&state->stream, Z_NO_FLUSH);
     assert(ret != Z_STREAM_ERROR);
     switch (ret) {
-      case Z_NEED_DICT:
-        ret = Z_DATA_ERROR;
-      case Z_DATA_ERROR:
-      case Z_MEM_ERROR:
-        state->finished = true;
-        inflateEnd(&state->stream);
-        return true;
+    case Z_NEED_DICT:
+      ret = Z_DATA_ERROR;
+    case Z_DATA_ERROR:
+    case Z_MEM_ERROR:
+      state->finished = true;
+      inflateEnd(&state->stream);
+      return true;
     }
     auto have = CHUNK - state->stream.avail_out;
     for (int i = 0; i < have; ++i) {

@@ -83,7 +83,7 @@ struct SmartRecycler : BlockRecycler<SmartBlock<minBlockSize>> {
   template <class T, class... Xs>
   T* create(Xs&&... xs) {
     auto block = (Block*)Parent::allocate();
-    //block->meta.free = Block::size() - sizeof(T);
+    // block->meta.free = Block::size() - sizeof(T);
     return new (block) T(std::forward<Xs>(xs)...);
   }
 

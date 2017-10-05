@@ -1,6 +1,6 @@
-#include <string>
 #include <gtest/gtest.h>
 #include <satori/satori.hpp>
+#include <string>
 
 TEST(satori, urlencode) {
 

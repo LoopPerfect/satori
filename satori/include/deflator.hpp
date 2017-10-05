@@ -1,35 +1,32 @@
 #ifndef SATORI_DEFLATOR_HPP
 #define SATORI_DEFLATOR_HPP
 
-#include <string>
 #include <memory>
+#include <string>
 
 namespace satori {
 
-  struct Deflator {
+struct Deflator {
 
-  private:
+private:
+  struct State;
 
-    struct State;
+  std::shared_ptr<State> state;
 
-    std::shared_ptr<State> state;
+  void feed(std::string const& chunk, int const type);
 
-    void feed(std::string const& chunk, int const type);
+public:
+  Deflator();
 
-  public:
+  ~Deflator();
 
-    Deflator();
+  std::string result() const;
 
-    ~Deflator();
+  void feed(std::string const& chunk);
 
-    std::string result() const;
+  void finish();
+};
 
-    void feed(std::string const& chunk);
-
-    void finish();
-
-  };
-
-}
+} // namespace satori
 
 #endif

@@ -3,9 +3,9 @@
 
 #include <http_parser.h>
 #include <neither/either.hpp>
+#include <string.h>
 #include <string>
 #include <vector>
-#include <string.h>
 
 #include <satori/url.hpp>
 

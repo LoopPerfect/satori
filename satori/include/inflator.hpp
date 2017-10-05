@@ -1,30 +1,28 @@
 #ifndef SATORI_INFLATOR_HPP
 #define SATORI_INFLATOR_HPP
 
-#include <string>
 #include <memory>
+#include <string>
 
 namespace satori {
 
-  struct Inflator {
+struct Inflator {
 
-  private:
+private:
+  struct State;
 
-    struct State;
+  std::shared_ptr<State> state;
 
-    std::shared_ptr<State> state;
+public:
+  Inflator();
 
-  public:
+  ~Inflator();
 
-    Inflator();
+  std::string result() const;
 
-    ~Inflator();
+  bool feed(std::string const& chunk);
+};
 
-    std::string result() const;
-
-    bool feed(std::string const& chunk);
-  };
-
-}
+} // namespace satori
 
 #endif

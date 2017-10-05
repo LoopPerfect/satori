@@ -3,10 +3,10 @@
 
 #include <satori/fs.hpp>
 #include <satori/handles.hpp>
+#include <satori/managed_ptr.hpp>
+#include <satori/promise.hpp>
 #include <satori/recycler.hpp>
 #include <satori/requests.hpp>
-#include <satori/promise.hpp>
-#include <satori/managed_ptr.hpp>
 
 namespace satori {
 
@@ -51,8 +51,8 @@ struct Loop : uv_loop_t {
     return pool.create<FSClose>(this, xs...);
   }
 
-  template<class S>
-  FSWrite* newFSWrite(S*s, std::string & msg) {
+  template <class S>
+  FSWrite* newFSWrite(S* s, std::string& msg) {
     return pool.create<FSWrite>(this, s, msg);
   }
 

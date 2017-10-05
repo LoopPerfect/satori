@@ -1,8 +1,8 @@
-#include <string>
-#include <memory>
 #include <cassert>
-#include <zlib.h>
+#include <memory>
 #include <satori/deflator.hpp>
+#include <string>
+#include <zlib.h>
 
 using namespace satori;
 
@@ -24,7 +24,8 @@ void Deflator::feed(std::string const& chunk, int const type) {
     state->stream.avail_out = CHUNK;
     state->stream.next_out = out;
     auto result = deflate(&state->stream, type);
-    assert(result != Z_STREAM_ERROR); // TODO: Find a better error-handling mechanism
+    assert(result !=
+           Z_STREAM_ERROR); // TODO: Find a better error-handling mechanism
     auto have = CHUNK - state->stream.avail_out;
     for (int i = 0; i < have; ++i) {
       state->result += out[i];
@@ -40,18 +41,10 @@ Deflator::Deflator() : state(std::make_shared<State>()) {
   assert(result == Z_OK); // TODO: Find a better error-handling mechanism
 }
 
-Deflator::~Deflator() {
-  deflateEnd(&state->stream);
-}
+Deflator::~Deflator() { deflateEnd(&state->stream); }
 
-std::string Deflator::result() const {
-  return state->result;
-}
+std::string Deflator::result() const { return state->result; }
 
-void Deflator::feed(std::string const& chunk) {
-  feed(chunk, Z_NO_FLUSH);
-}
+void Deflator::feed(std::string const& chunk) { feed(chunk, Z_NO_FLUSH); }
 
-void Deflator::finish() {
-  feed("", Z_FINISH);
-}
+void Deflator::finish() { feed("", Z_FINISH); }

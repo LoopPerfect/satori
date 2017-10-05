@@ -1,9 +1,10 @@
-#include <stdio.h>
-#include <string.h>  // for strlen
 #include <assert.h>
+#include <stdio.h>
+#include <string.h> // for strlen
 #include <zlib.h>
 
-// adapted from: http://stackoverflow.com/questions/7540259/deflate-and-inflate-zlib-h-in-c
+// adapted from:
+// http://stackoverflow.com/questions/7540259/deflate-and-inflate-zlib-h-in-c
 int main(int argc, char* argv[]) {
 
   // original string len = 36
@@ -29,10 +30,11 @@ int main(int argc, char* argv[]) {
   defstream.zfree = Z_NULL;
   defstream.opaque = Z_NULL;
   // setup "a" as the input and "b" as the compressed output
-  defstream.avail_in = (uInt)strlen(a)+1; // size of input, string + terminator
-  defstream.next_in = (Bytef *)a; // input char array
+  defstream.avail_in =
+    (uInt)strlen(a) + 1;                 // size of input, string + terminator
+  defstream.next_in = (Bytef*)a;         // input char array
   defstream.avail_out = (uInt)sizeof(b); // size of output
-  defstream.next_out = (Bytef *)b; // output char array
+  defstream.next_out = (Bytef*)b;        // output char array
 
   // the actual compression work.
   deflateInit(&defstream, Z_BEST_COMPRESSION);
@@ -55,9 +57,9 @@ int main(int argc, char* argv[]) {
 
   // setup "b" as the input and "c" as the compressed output
   infstream.avail_in = (uInt)((char*)defstream.next_out - b); // size of input
-  infstream.next_in = (Bytef *)b; // input char array
+  infstream.next_in = (Bytef*)b;         // input char array
   infstream.avail_out = (uInt)sizeof(c); // size of output
-  infstream.next_out = (Bytef *)c; // output char array
+  infstream.next_out = (Bytef*)c;        // output char array
 
   // the actual DE-compression work.
   inflateInit(&infstream);

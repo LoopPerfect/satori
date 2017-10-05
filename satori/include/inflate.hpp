@@ -5,8 +5,7 @@
 
 namespace satori {
 
-  std::string inflate(std::string const& compressed);
-
+std::string inflate(std::string const& compressed);
 }
 
 #endif

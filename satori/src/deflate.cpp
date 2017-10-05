@@ -1,19 +1,19 @@
-#include <string>
 #include <cassert>
-#include <zlib.h>
 #include <satori/deflate.hpp>
 #include <satori/deflator.hpp>
+#include <string>
+#include <zlib.h>
 
 namespace satori {
 
-  std::string deflate(std::string const& uncompressed) {
+std::string deflate(std::string const& uncompressed) {
 
-    auto deflator = Deflator();
+  auto deflator = Deflator();
 
-    deflator.feed(uncompressed);
-    deflator.finish();
+  deflator.feed(uncompressed);
+  deflator.finish();
 
-    return deflator.result();
-  }
-
+  return deflator.result();
 }
+
+} // namespace satori

@@ -1,8 +1,8 @@
-#include <string>
 #include <functional>
-#include <vector>
 #include <gtest/gtest.h>
 #include <satori/satori.hpp>
+#include <string>
+#include <vector>
 
 TEST(satori, inflatedeflate) {
 
@@ -25,12 +25,14 @@ TEST(satori, inflatedeflate) {
   inflateDeflate("a   b");
   inflateDeflate("ab\"cd");
   inflateDeflate("hello\nworld");
-  inflateDeflate(repeat("The slow black dog bows before the regal fox. ", 2048));
+  inflateDeflate(
+    repeat("The slow black dog bows before the regal fox. ", 2048));
 }
 
 TEST(satori, chunkeddeflate) {
 
-  auto const repeat = [](std::string const& x, unsigned const n) -> std::string {
+  auto const repeat = [](std::string const& x,
+                         unsigned const n) -> std::string {
     std::string y;
     for (int i = 0; i < n; ++i) {
       y += x;
@@ -38,7 +40,8 @@ TEST(satori, chunkeddeflate) {
     return y;
   };
 
-  auto const chunk = [](std::string const& xs, unsigned const n) -> std::vector<std::string> {
+  auto const chunk = [](std::string const& xs,
+                        unsigned const n) -> std::vector<std::string> {
     std::vector<std::string> result;
     std::string chunk;
     int i = 0;
@@ -65,7 +68,8 @@ TEST(satori, chunkeddeflate) {
     return y;
   };
 
-  auto const xs = chunk(repeat("The slow black dog bows before the regal fox. ", 2048 * 2), 1024);
+  auto const xs = chunk(
+    repeat("The slow black dog bows before the regal fox. ", 2048 * 2), 1024);
 
   auto deflator = satori::Deflator();
 
@@ -88,7 +92,8 @@ TEST(satori, chunkedinflate) {
     return y;
   };
 
-  auto const chunk = [](std::string const& xs, unsigned const n) -> std::vector<std::string> {
+  auto const chunk = [](std::string const& xs,
+                        unsigned const n) -> std::vector<std::string> {
     std::vector<std::string> result;
     std::string chunk;
     int i = 0;
@@ -107,7 +112,8 @@ TEST(satori, chunkedinflate) {
     return result;
   };
 
-  auto uncompressed = repeat("The slow black dog bows before the regal fox. ", 2048 * 2);
+  auto uncompressed =
+    repeat("The slow black dog bows before the regal fox. ", 2048 * 2);
 
   auto compressed = satori::deflate(uncompressed);
 

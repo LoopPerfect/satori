@@ -1,18 +1,18 @@
-#include <string>
 #include <cassert>
-#include <zlib.h>
 #include <satori/inflate.hpp>
 #include <satori/inflator.hpp>
+#include <string>
+#include <zlib.h>
 
 namespace satori {
 
-  std::string inflate(std::string const& compressed) {
+std::string inflate(std::string const& compressed) {
 
-    auto inflator = Inflator();
+  auto inflator = Inflator();
 
-    inflator.feed(compressed);
+  inflator.feed(compressed);
 
-    return inflator.result();
-  }
-
+  return inflator.result();
 }
+
+} // namespace satori

@@ -6,72 +6,67 @@
 #include <uv.h>
 
 #include <satori/actor.hpp>
+#include <satori/deflate.hpp>
+#include <satori/deflator.hpp>
+#include <satori/directoryEntry.hpp>
 #include <satori/enableMultiProcess.hpp>
 #include <satori/errors.hpp>
-#include <satori/directoryEntry.hpp>
 #include <satori/handles.hpp>
 #include <satori/httpParser.hpp>
+#include <satori/inflate.hpp>
+#include <satori/inflator.hpp>
 #include <satori/loop.hpp>
+#include <satori/managed_ptr.hpp>
 #include <satori/promise.hpp>
 #include <satori/recycler.hpp>
 #include <satori/requests.hpp>
 #include <satori/router.hpp>
-#include <satori/url.hpp>
 #include <satori/url-parser.hpp>
 #include <satori/url.hpp>
-#include <satori/urlEncode.hpp>
 #include <satori/urlDecode.hpp>
-#include <satori/inflate.hpp>
-#include <satori/inflator.hpp>
-#include <satori/deflate.hpp>
-#include <satori/deflator.hpp>
-#include <satori/managed_ptr.hpp>
+#include <satori/urlEncode.hpp>
 
 namespace satori {
 
-  struct Satori {
+struct Satori {
 
-  private:
+private:
+  std::shared_ptr<Loop> loop;
 
-    std::shared_ptr<Loop> loop;
+public:
+  Satori() : loop(std::make_shared<Loop>()) {}
 
-  public:
+  ~Satori() {}
 
-    Satori() : loop(std::make_shared<Loop>()) {}
+  template <typename T>
+  Promise<T> promise() {
+    return Promise<T>(std::weak_ptr<Loop>(loop));
+  }
 
-    ~Satori() {}
+  managed_ptr<FSScanDir>
+  scanDirectory(std::string const& path,
+                std::function<void(int const)> const& onScan = [](auto...) {},
+                std::function<bool(DirectoryEntry const&)> const& onNext =
+                  [](auto...) { return false; }) {
+    auto fs = loop->newFSScanDir(path, 0);
+    fs->onScandir = onScan;
+    fs->onScandirNext = onNext;
+    return fs;
+  }
 
-    template <typename T>
-    Promise<T> promise() {
-      return Promise<T>(std::weak_ptr<Loop>(loop));
-    }
+  managed_ptr<FSRealPath>
+  realPath(std::string const& path,
+           std::function<void(std::string const&)> const& onRealPath,
+           std::function<void(int const)> const& onError) {
+    auto fs = loop->newFSRealPath(path);
+    fs->onRealpath = onRealPath;
+    fs->onError = onError;
+    return fs;
+  }
 
-    managed_ptr<FSScanDir> scanDirectory(
-      std::string const& path,
-      std::function<void(int const)> const& onScan = [](auto...) {},
-      std::function<bool(DirectoryEntry const&)> const& onNext = [](auto...) { return false; }) {
-      auto fs = loop->newFSScanDir(path, 0);
-      fs->onScandir = onScan;
-      fs->onScandirNext = onNext;
-      return fs;
-    }
+  void run(uv_run_mode mode = UV_RUN_DEFAULT) { loop->run(mode); }
+};
 
-    managed_ptr<FSRealPath> realPath(
-      std::string const& path,
-      std::function<void(std::string const&)> const& onRealPath,
-      std::function<void(int const)> const& onError) {
-      auto fs = loop->newFSRealPath(path);
-      fs->onRealpath = onRealPath;
-      fs->onError = onError;
-      return fs;
-    }
-
-    void run(uv_run_mode mode = UV_RUN_DEFAULT) {
-      loop->run(mode);
-    }
-
-  };
-
-}
+} // namespace satori
 
 #endif

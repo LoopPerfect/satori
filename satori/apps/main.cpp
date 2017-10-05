@@ -18,9 +18,8 @@ int main() {
   using namespace std;
   using namespace satori;
 
-
   static auto loop = std::make_shared<Loop>();
-  static std::string const res = 
+  static std::string const res =
     "HTTP/1.1 200 OK\r\n"
     //"Server: nginx/1.13.5\r\n"
     "Date: Wed, 13 Sep 2017 17:46:27 GMT\r\n"
@@ -32,8 +31,6 @@ int main() {
     //"Accept-Ranges: bytes\r\n"
     "\r\n"
     "hello world";
-
-  
 
   static auto* server = loop->newTcp();
   server->listen("127.0.0.1", 8080);

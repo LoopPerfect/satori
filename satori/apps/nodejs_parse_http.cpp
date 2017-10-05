@@ -1,7 +1,7 @@
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <iostream>
 #include <string>
 
 #include <http_parser.h>
@@ -9,8 +9,9 @@
 int on_message_begin(http_parser* parser) {
   printf("\n***MESSAGE BEGIN***\n\n");
   if (parser->method) {
-    std::cout << "method: " <<
-      std::string(http_method_str((http_method)parser->method)) << std::endl;
+    std::cout << "method: "
+              << std::string(http_method_str((http_method)parser->method))
+              << std::endl;
   }
   return 0;
 }
@@ -123,8 +124,7 @@ int main(int argc, char* argv[]) {
   free(data);
 
   if (nparsed != (size_t)file_length) {
-    fprintf(stderr,
-            "Error: %s (%s)\n",
+    fprintf(stderr, "Error: %s (%s)\n",
             http_errno_description(HTTP_PARSER_ERRNO(&parser)),
             http_errno_name(HTTP_PARSER_ERRNO(&parser)));
     fclose(file);

@@ -2,10 +2,10 @@
 #define SATORI_PROCESS_H
 
 #include <cstring>
+#include <functional>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <functional>
 
 #include <uv.h>
 
