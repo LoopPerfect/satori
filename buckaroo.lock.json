@@ -39,8 +39,8 @@
       "subPath": "zlib-cacf7f1d4e3d44d871b605da3b647f07d718623f"
     },
     "buck": {
-      "url": "https://raw.githubusercontent.com/njlr/zlib/ae69f4a45134c2c37c319581e640720fee3950e0/BUCK",
-      "sha256": "2db68199820486625a47728206ac426f8ed2f8351a3c1db4d3ab813e0104d686"
+      "url": "https://raw.githubusercontent.com/njlr/zlib/1125cc71912fab57eb4f438a0056a9651600e6fe/BUCK",
+      "sha256": "5fffcaa57d95b1f9d81ecd512c0a976448f4b304805711cc88b611e87e51af69"
     }
   },
   "loopperfect/neither": {
@@ -52,9 +52,9 @@
   },
   "loopperfect/r3": {
     "source": {
-      "url": "https://github.com/loopperfect/r3/archive/ce77a31dd5321cfee7d8befe481fcc7b1e742937.zip",
-      "sha256": "f3ae016a31994dbf02016b0897ba3c423043fcd0fcfb12a7bf13b3d1ae7a0dec",
-      "subPath": "r3-ce77a31dd5321cfee7d8befe481fcc7b1e742937"
+      "url": "https://github.com/LoopPerfect/r3/archive/29c603b705c5292cd9dfc8327c54017a9f2d738c.zip",
+      "sha256": "467474a463a4deca1a9e092f7e97460d4b0d9e1c3d2660e0cff367c182c6db2f",
+      "subPath": "r3-29c603b705c5292cd9dfc8327c54017a9f2d738c"
     },
     "dependencies": [
       "pcre.pcre//:pcre",

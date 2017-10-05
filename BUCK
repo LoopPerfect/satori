@@ -30,16 +30,6 @@ cxx_binary(
 )
 
 cxx_binary(
-  name = 'satori_readfile',
-  srcs = [
-    'satori/apps/satori_readfile.cpp',
-  ],
-  deps = [
-    ':satori',
-  ],
-)
-
-cxx_binary(
   name = 'uv_readfile',
   srcs = [
     'satori/apps/uv_readfile.cpp',
@@ -136,16 +126,6 @@ cxx_binary(
   name = 'satori_filestream',
   srcs = [
     'satori/apps/satori_filestream.cpp',
-  ],
-  deps = [
-    ':satori',
-  ],
-)
-
-cxx_binary(
-  name = 'satori_promise',
-  srcs = [
-    'satori/apps/satori_promise.cpp',
   ],
   deps = [
     ':satori',
