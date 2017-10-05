@@ -31,7 +31,7 @@ int main(int argc, const char** argv) {
         exit(1);
       } else if (result > 0) {
         std::cout << buffer.base;
-      } else if (result < buffer.len) {
+      } else if (result <= buffer.len) {
         std::cout << buffer.base << std::endl;
       }
     };

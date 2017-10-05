@@ -74,16 +74,17 @@ struct FSRead : FS<FSRead> {
   ~FSRead() {}
 
   int read(uv_loop_t* loop, ssize_t file, unsigned bufferSize) {
-    buffer = uv_buf_init(new char[bufferSize], bufferSize);
+    buffer = uv_buf_init(new char[bufferSize], bufferSize); //TODO: use memory pool
 
     return uv_fs_read(loop, (uv_fs_t*)this, file, &buffer, 1, 0,
                       [](uv_fs_t* r) {
                         // assert(r == this);
                         int result = r->result;
                         auto* request = (FSRead*)r;
+                        std::cout << "################################################"<< result << std::endl;
                         request->onRead(result, request->buffer);
-                        delete[] request->buffer.base;
-                        request->cleanup();
+                        //delete[] request->buffer.base;
+                        //request->cleanup();
                       });
   }
 
