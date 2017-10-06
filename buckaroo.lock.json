@@ -52,9 +52,9 @@
   },
   "loopperfect/r3": {
     "source": {
-      "url": "https://github.com/LoopPerfect/r3/archive/29c603b705c5292cd9dfc8327c54017a9f2d738c.zip",
-      "sha256": "467474a463a4deca1a9e092f7e97460d4b0d9e1c3d2660e0cff367c182c6db2f",
-      "subPath": "r3-29c603b705c5292cd9dfc8327c54017a9f2d738c"
+      "url": "https://github.com/loopperfect/r3/archive/d218ac8cd72aea25fac5297c7135ff2799f57839.zip",
+      "sha256": "6b17313ea262e4739a8eb7feb054f982ce355de685ce9e7ec3568d7463624646",
+      "subPath": "r3-d218ac8cd72aea25fac5297c7135ff2799f57839"
     },
     "dependencies": [
       "pcre.pcre//:pcre",
