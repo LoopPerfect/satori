@@ -74,11 +74,11 @@ struct FSOpen : FS<FSOpen> {
 
 struct FSRead : FS<FSRead> {
 
-  FSRead(uv_loop_t* loop, ssize_t fileID, unsigned bufferSize = 4096) 
-    : FS<FSRead>(loop) 
+  FSRead(uv_loop_t* loop, ssize_t fileID, unsigned bufferSize = 4096)
+    : FS<FSRead>(loop)
     , file(fileID) {
     buffer = uv_buf_init(new char[bufferSize], bufferSize); // TODO: Memory pool
-      
+
   }
 
   ~FSRead() {
@@ -102,9 +102,9 @@ struct FSRead : FS<FSRead> {
         auto* request = (FSRead*)r;
 
         request->onRead(
-          (result<0) ? result : 0, 
+          (result<0) ? result : 0,
           request->buffer
-        );  
+        );
 
         if (result<=0) {
           request->stop();
@@ -112,7 +112,7 @@ struct FSRead : FS<FSRead> {
           return;
         }
 
-        if (result>0) { 
+        if (result>0) {
           request->seek(request->offset + result);
         }
 
@@ -122,7 +122,7 @@ struct FSRead : FS<FSRead> {
       });
   }
 
-  unsigned stop() {
+  void stop() {
     reading = false;
   }
 
@@ -234,7 +234,7 @@ struct FSScanDir : FS<FSScanDir> {
 struct FSRealPath : FS<FSRealPath> {
 
   FSRealPath(uv_loop_t* loop, std::string const& path) : FS<FSRealPath>(loop) {
-    realpath(loop, path); 
+    realpath(loop, path);
   }
 
   int realpath(uv_loop_t* loop, std::string const& path) {

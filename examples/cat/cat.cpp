@@ -28,6 +28,10 @@ int main(int argc, const char** argv) {
 
     fsRead->onRead = [=](int error, StringView const buffer) {
       std::cout << buffer.toString() << std::flush;
+
+      // if (!buffer) {
+      //   fsRead->stop();
+      // }
     };
 
   };
