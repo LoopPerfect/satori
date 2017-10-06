@@ -26,6 +26,7 @@
 #include <satori/urlDecode.hpp>
 #include <satori/urlEncode.hpp>
 #include <satori/stringview.hpp>
+#include <satori/runMode.hpp>
 
 namespace satori {
 
@@ -64,7 +65,7 @@ public:
     return fs;
   }
 
-  void run(uv_run_mode mode = UV_RUN_DEFAULT) { loop->run(mode); }
+  void run(RunMode const mode = RunMode::Default) { loop->run(mode); }
 };
 
 } // namespace satori

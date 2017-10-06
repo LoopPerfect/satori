@@ -7,6 +7,7 @@
 #include <satori/recycler.hpp>
 #include <satori/requests.hpp>
 #include <satori/actor.hpp>
+#include <satori/runMode.hpp>
 
 namespace satori {
 
@@ -98,7 +99,22 @@ struct Loop : uv_loop_t {
 
   uint64_t now() { return uv_now(this); }
 
-  int run(uv_run_mode mode = UV_RUN_DEFAULT) { return uv_run(this, mode); }
+  int run(RunMode const mode = RunMode::Default) {
+
+    auto const toUVRunMode = [](RunMode const mode) -> uv_run_mode {
+      switch (mode) {
+        default:
+        case satori::RunMode::Default:
+          return UV_RUN_DEFAULT;
+        case satori::RunMode::Once:
+          return UV_RUN_ONCE;
+        case satori::RunMode::NoWait:
+          return UV_RUN_NOWAIT;
+      }
+    };
+
+    return uv_run(this, toUVRunMode(mode));
+  }
 
   ~Loop() { uv_loop_close(this); }
 };
