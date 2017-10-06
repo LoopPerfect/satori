@@ -6,6 +6,7 @@
 #include <string>
 
 #include <http_parser.h>
+#include <satori/stringview.hpp>
 
 namespace satori {
 
@@ -98,8 +99,8 @@ struct HttpParser : private http_parser {
     return http_parser_execute(this, &settings, data, length);
   }
 
-  size_t execute(std::string const& data) {
-    return execute(data.c_str(), strlen(data.c_str()));
+  size_t execute(StringView sv) {
+    return execute(sv.begin(), sv.size());
   }
 };
 

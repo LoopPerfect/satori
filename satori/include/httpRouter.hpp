@@ -139,8 +139,8 @@ struct AppRouter {
       // TODO: make parser part of the connection/request state...
       auto parser = std::make_shared<satori::HttpParser>(HTTP_REQUEST);
 
-      client->onData = [parser](const char* str, size_t len) {
-        parser->execute(std::string(str, len));
+      client->onData = [parser](int status, StringView buffer) {
+        parser->execute(buffer);
       };
 
       auto key = std::make_shared<std::string>();

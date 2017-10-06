@@ -15,6 +15,11 @@ struct StringView {
   constexpr StringView(char const* b, char const* e) : b{b}, e{e} {}
   constexpr StringView(char const* b, size_t size) : b{b}, e{b+size} {}
 
+  template<class T>
+  constexpr StringView(T const& buf) 
+    : b{buf.base}, e{buf.base+buf.len} 
+  {}
+
   template <size_t n>
   constexpr StringView(char (&cstr)[n]) : b(cstr), e(cstr + n) {}
 
@@ -29,7 +34,7 @@ struct StringView {
   }
 
   std::string toString() const {
-    return {b,e};
+    return {b, e};
   }
 
   explicit operator std::string() const {
@@ -49,7 +54,6 @@ bool operator < (StringView const lhs, StringView const rhs) {
   return compare(lhs, rhs) < 0;
 }
 
-
 bool operator > (StringView const lhs, StringView const rhs) {
   return compare(lhs, rhs) > 0;
 }
@@ -58,11 +62,9 @@ bool operator == (StringView const lhs, StringView const rhs) {
   return compare(lhs, rhs) == 0;
 }
 
-
 bool operator <= (StringView const lhs, StringView const rhs) {
   return compare(lhs, rhs) <= 0;
 }
-
 
 bool operator >= (StringView const lhs, StringView const rhs) {
   return compare(lhs, rhs) >= 0;

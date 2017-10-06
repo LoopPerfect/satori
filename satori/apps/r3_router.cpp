@@ -41,7 +41,7 @@ int main() {
   int err = tree.compile(&compileerrstr);
   if (err != 0) {
     cout << "error: " << compileerrstr << endl;
-    free(compileerrstr); // errstr is created from `asprintf`, so you have to
+    //free(compileerrstr); // errstr is created from `asprintf`, so you have to
                          // free it manually.
   }
 

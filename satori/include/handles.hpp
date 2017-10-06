@@ -5,6 +5,7 @@
 #include <cstring>
 #include <functional>
 #include <memory>
+#include <satori/stringview.hpp>
 
 #include <uv.h>
 
@@ -26,8 +27,7 @@ struct HandleCB {
 };
 
 struct StreamCB : HandleCB {
-  std::function<void()> onDataEnd = [] {};
-  std::function<void(char* str, size_t len)> onData = [](char*, size_t) {};
+  std::function<void(int status, StringView)> onData = [](int, StringView) {};
 };
 
 struct TcpCB : StreamCB {
@@ -59,12 +59,12 @@ struct Stream : Handle<B> {
 
   int read() {
     return uv_read_start((uv_stream_t*)this, allocBuffer,
-                         [](auto* h, ssize_t nread, uv_buf_t const* data) {
+                         [](auto* h, ssize_t nread, uv_buf_t const* buffer) {
                            auto* stream = (B*)h;
                            if (nread < 0) {
-                             stream->close();
+                             stream->onData(nread, {});
                            } else {
-                             stream->onData(data->base, (size_t)nread);
+                             stream->onData(nread, *buffer);
                            }
                          });
   }
