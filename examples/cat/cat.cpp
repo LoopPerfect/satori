@@ -26,7 +26,7 @@ int main(int argc, const char** argv) {
 
     fsRead->read();
 
-    fsRead->onRead = [=](StringView const buffer) {
+    fsRead->onRead = [=](int error, StringView const buffer) {
       std::cout << buffer.toString() << std::flush;
     };
 

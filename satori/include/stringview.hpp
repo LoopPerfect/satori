@@ -24,6 +24,10 @@ struct StringView {
   char const* end() const { return e; }
   size_t size() const { return e - b; }
 
+  constexpr operator bool() const {
+    return b < e;
+  }
+
   std::string toString() const {
     return {b,e};
   }
