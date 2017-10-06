@@ -24,22 +24,12 @@ int main(int argc, const char** argv) {
 
     auto* fsRead = loop->newFSRead(file);
 
-    fsRead->read((uv_loop_t*)loop.get(), file);
+    fsRead->read();
 
-    fsRead->onRead = [=](int result, uv_buf_t buffer) {
-
-      if (result < 0) {
-        std::cerr << errorName(result) << " " << errorMessage(result) << std::endl;
-        exit(1);
-      }
-
-      if (result < buffer.len) {
-        std::cout << std::string(buffer.base, result) << std::flush;
-      } else {
-        std::cout << buffer.base;
-        fsRead->read((uv_loop_t*)loop.get(), file, result);
-      }
+    fsRead->onRead = [=](StringView const buffer) {
+      std::cout << buffer.toString() << std::flush;
     };
+
   };
 
   loop->run();

@@ -11,6 +11,7 @@
 
 #include <satori/directoryEntry.hpp>
 #include <satori/requests.hpp>
+#include <satori/stringview.hpp>
 
 namespace satori {
 
@@ -73,17 +74,21 @@ struct FSOpen : FS<FSOpen> {
 
 struct FSRead : FS<FSRead> {
 
-  FSRead(uv_loop_t* loop, ssize_t fileID, unsigned bufferSize = 1024) : FS<FSRead>(loop) {
+  FSRead(uv_loop_t* loop, ssize_t fileID, unsigned bufferSize = 4096) 
+    : FS<FSRead>(loop) 
+    , file(fileID) {
     buffer = uv_buf_init(new char[bufferSize], bufferSize); // TODO: Memory pool
-    // read(loop, fileID, bufSize);
+      
   }
 
   ~FSRead() {
     delete[] buffer.base;
   }
 
-  int read(uv_loop_t* loop, ssize_t file, unsigned offset = 0) {
+
+  int read() {
     // TODO: Support n buffers
+    reading = true;
     return uv_fs_read(
       loop,
       (uv_fs_t*)this,
@@ -95,12 +100,43 @@ struct FSRead : FS<FSRead> {
         // assert(r == this);
         int result = r->result;
         auto* request = (FSRead*)r;
-        request->onRead(result, request->buffer);
+
+        request->onRead({
+          request->buffer.base, 
+          request->buffer.base + result
+        });  
+
+        if (result<=0) {
+          request->stop();
+          request->cleanup();
+          return;
+        }
+
+        if (result>0) { 
+          request->seek(request->offset + result);
+        }
+
+        if (request->reading) {
+          std::cout << "reading" << std::endl;
+           request->read();
+        }
+
       });
   }
 
+  unsigned stop() {
+    reading = false;
+  }
+
+  void seek(unsigned const newOffset) {
+    offset = newOffset;
+  }
+
+  ssize_t file;
+  unsigned offset = 0;
+  bool reading = true;
   uv_buf_t buffer;
-  std::function<void(int, uv_buf_t)> onRead = [](int, uv_buf_t) {};
+  std::function<void(StringView)> onRead = [](StringView) {};
 };
 
 struct FSWrite : FS<FSWrite> {
