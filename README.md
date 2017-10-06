@@ -12,7 +12,7 @@ An HTTP library built on top of libUV.
 
 ## Project Status
 
-Satori is in development. Do not use this in production quite yet!
+Satori is in development. Do not use this in production *quite* yet!
 
 
 ## Design Goals
