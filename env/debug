@@ -1,2 +1,4 @@
 --config
 *//cxx.cppflags= -O1 -pg
+--config
+*//cxx.default_platform= linux-x86_64

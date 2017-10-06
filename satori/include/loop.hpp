@@ -6,6 +6,7 @@
 #include <satori/managed_ptr.hpp>
 #include <satori/recycler.hpp>
 #include <satori/requests.hpp>
+#include <satori/actor.hpp>
 
 namespace satori {
 

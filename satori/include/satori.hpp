@@ -56,11 +56,10 @@ public:
 
   managed_ptr<FSRealPath>
   realPath(std::string const& path,
-           std::function<void(std::string const&)> const& onRealPath,
-           std::function<void(int const)> const& onError) {
+    std::function<void(int, StringView)> const& onRealPath
+  ) {
     auto fs = loop->newFSRealPath(path);
     fs->onRealpath = onRealPath;
-    fs->onError = onError;
     return fs;
   }
 

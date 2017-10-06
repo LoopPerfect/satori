@@ -32,19 +32,27 @@ int main() {
     "\r\n"
     "hello world";
 
+
   static auto* server = loop->newTcp();
   server->listen("127.0.0.1", 8080);
-  server->onListen = [=](auto status) {
+  int i=0;
+  server->onListen = [=](auto status) mutable {
     auto* client = loop->newTcp();
     server->accept(client);
 
+    //std::cout << "opening: " << i << std::endl;
     client->read();
 
-    loop->newWrite(client, res);
+    loop->newWrite(client, res)
+      ->onWriteEnd = [i](int) {
+      //std::cout << "writeEnd: " << i << std::endl;
+    };
 
-    client->onData = [client](char const* data, size_t const len) {
+    client->onData = [client, i](int status, StringView sv) {
+      //std::cout << "closing: " << i << std::endl;
       client->close();
     };
+    ++i;
   };
 
   loop->run();

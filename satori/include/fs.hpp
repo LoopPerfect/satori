@@ -101,10 +101,10 @@ struct FSRead : FS<FSRead> {
         int result = r->result;
         auto* request = (FSRead*)r;
 
-        request->onRead((result<0) ? result : 0, {
-          request->buffer.base, 
-          request->buffer.base + result
-        });  
+        request->onRead(
+          (result<0) ? result : 0, 
+          request->buffer
+        );  
 
         if (result<=0) {
           request->stop();
@@ -119,7 +119,6 @@ struct FSRead : FS<FSRead> {
         if (request->reading) {
           request->read();
         }
-
       });
   }
 
@@ -234,23 +233,20 @@ struct FSScanDir : FS<FSScanDir> {
 
 struct FSRealPath : FS<FSRealPath> {
 
-  FSRealPath(uv_loop_t* loop, std::string const& path) : FS<FSRealPath>(loop) { realpath(loop, path); }
+  FSRealPath(uv_loop_t* loop, std::string const& path) : FS<FSRealPath>(loop) {
+    realpath(loop, path); 
+  }
 
   int realpath(uv_loop_t* loop, std::string const& path) {
     return uv_fs_realpath(loop, (uv_fs_t*)this, path.c_str(), [](uv_fs_t* r) {
       auto result = r->result;
       auto* request = (FSRealPath*)r;
-      if (result < 0) {
-        request->onError(result);
-      } else {
-        request->onRealpath(std::string((char*)r->ptr));
-      }
+      request->onRealpath((result<0)? result: 0, {(char*)r->ptr, (char*)r->ptr+result});
       request->cleanup();
     });
   }
 
-  std::function<void(std::string)> onRealpath = [](std::string) {};
-  std::function<void(ssize_t)> onError = [](ssize_t) {};
+  std::function<void(int, StringView)> onRealpath = [](int, StringView) {};
 };
 
 } // namespace satori
