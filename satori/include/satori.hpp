@@ -25,6 +25,7 @@
 #include <satori/url.hpp>
 #include <satori/urlDecode.hpp>
 #include <satori/urlEncode.hpp>
+#include <satori/stringview.hpp>
 
 namespace satori {
 
