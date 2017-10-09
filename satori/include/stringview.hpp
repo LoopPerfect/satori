@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <string>
+#include <ostream>
 
 namespace satori {
 
@@ -72,6 +73,11 @@ bool operator >= (StringView const lhs, StringView const rhs) {
 
 constexpr StringView operator ""_sv (char const* str , size_t const size) {
   return StringView(str, size);
+}
+
+std::ostream& operator<< (std::ostream& os, StringView const sv) {
+  os.write(sv.begin(), sv.size());
+  return os;
 }
 
 }

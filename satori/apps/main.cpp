@@ -41,15 +41,16 @@ int main() {
     server->accept(client);
 
     //std::cout << "opening: " << i << std::endl;
-    client->read();
 
     loop->newWrite(client, res)
-      ->onWriteEnd = [i](int) {
+      ->onWriteEnd = [i, client](int) {
+
+    client->read();
       //std::cout << "writeEnd: " << i << std::endl;
     };
 
     client->onData = [client, i](int status, StringView sv) {
-      //std::cout << "closing: " << i << std::endl;
+      //std::cout << sv << std::endl;
       client->close();
     };
     ++i;

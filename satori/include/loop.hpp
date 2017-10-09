@@ -13,7 +13,7 @@ namespace satori {
 
 struct Loop : uv_loop_t {
 
-  SmartRecycler<1024> pool;
+  SmartRecycler<512> pool;
 
   Loop(size_t const& num = 1024) : pool(num) { uv_loop_init(this); }
 
