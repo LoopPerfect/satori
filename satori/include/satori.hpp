@@ -8,6 +8,7 @@
 #include <satori/actor.hpp>
 #include <satori/deflate.hpp>
 #include <satori/deflator.hpp>
+#include <satori/dns.hpp>
 #include <satori/directoryEntry.hpp>
 #include <satori/enableMultiProcess.hpp>
 #include <satori/errors.hpp>

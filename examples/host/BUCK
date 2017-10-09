@@ -1,0 +1,9 @@
+cxx_binary(
+  name = 'host',
+  srcs = [
+    'host.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)

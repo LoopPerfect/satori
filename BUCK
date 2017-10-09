@@ -161,3 +161,11 @@ cxx_binary(
     ':satori',
   ],
 )
+
+cxx_binary(
+  name = 'uv_dns',
+  srcs = [
+    'satori/apps/uv_dns.cpp',
+  ],
+  deps = BUCKAROO_DEPS,
+)

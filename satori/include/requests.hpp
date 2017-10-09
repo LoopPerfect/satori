@@ -4,6 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <vector>
 #include <string>
 
 #include <uv.h>
@@ -70,15 +71,19 @@ struct ConnectPipe : uv_connect_t, Request<ConnectPipe> {
   std::function<void(int status)> onConnect = [](int) {};
 };
 
+using uv_addrinfo = ::addrinfo;
+
 struct GetAddrInfo : uv_getaddrinfo_t, Request<GetAddrInfo> {
-  GetAddrInfo(uv_loop_t* loop, char const* host, char const* port,
-              ::addrinfo hints = defaultHints()) {
-    resolve(loop, host, port, hints);
+
+  GetAddrInfo(uv_loop_t* loop, std::string const& host, std::string const& port,
+              uv_addrinfo hints = defaultHints()) : host(host), port(port) {
+    resolve(loop, host.c_str(), port.c_str(), hints);
   }
 
-  static ::addrinfo defaultHints() {
-    ::addrinfo hints;
-    hints.ai_family = PF_INET;
+  static uv_addrinfo defaultHints() {
+    uv_addrinfo hints;
+    // hints.ai_family = AF_INET, AF_INET6;
+    hints.ai_family = 0;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
     hints.ai_flags = 0;
@@ -86,19 +91,23 @@ struct GetAddrInfo : uv_getaddrinfo_t, Request<GetAddrInfo> {
   }
 
   int resolve(uv_loop_t* loop, char const* host, char const* port,
-              ::addrinfo hints) {
+              uv_addrinfo hints) {
     return uv_getaddrinfo(
       loop,
       (uv_getaddrinfo_t*)this,
-      [](uv_getaddrinfo_t* h, int status, ::addrinfo* res) {
+      [](uv_getaddrinfo_t* h, int status, uv_addrinfo* res) {
         auto* request = (satori::GetAddrInfo*)h;
-
         if (res == nullptr) {
-          request->onResolved(status, defaultHints()); // TODO: ::addrinfo for error
+          request->onResolved(status, {});
         } else {
-          request->onResolved(status, *res);
+          std::vector<uv_addrinfo> results;
+          auto* next = res;
+          while (next != nullptr) {
+            results.push_back(*next);
+            next = next->ai_next;
+          }
+          request->onResolved(status, results);
         }
-
         uv_freeaddrinfo(res);
       },
       host,
@@ -106,7 +115,10 @@ struct GetAddrInfo : uv_getaddrinfo_t, Request<GetAddrInfo> {
       &hints);
   }
 
-  std::function<void(int, ::addrinfo)> onResolved = [](int, ::addrinfo) {};
+  std::string host;
+  std::string port;
+
+  std::function<void(int const, std::vector<uv_addrinfo> const&)> onResolved = [](auto...) {};
 };
 
 /*

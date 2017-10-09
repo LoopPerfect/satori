@@ -41,7 +41,7 @@ struct Loop : uv_loop_t {
     return pool.create<ConnectTcp>((uv_tcp_t*)tcp, addr);
   }
 
-  managed_ptr<GetAddrInfo> newGetAddrInfo(const char* host, const char* port) {
+  managed_ptr<GetAddrInfo> newGetAddrInfo(std::string const& host, std::string const& port) {
     return managed_ptr<GetAddrInfo>(pool.create<GetAddrInfo>(this, host, port));
   }
 
