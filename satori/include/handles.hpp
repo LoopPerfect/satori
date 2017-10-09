@@ -28,6 +28,7 @@ struct HandleCB {
 
 struct StreamCB : HandleCB {
   std::function<void(int status, StringView)> onData = [](int, StringView) {};
+  std::function<void()> onDataEnd = []() {};
 };
 
 struct TcpCB : StreamCB {
@@ -65,6 +66,9 @@ struct Stream : Handle<B> {
                              stream->onData(nread, {});
                            } else {
                              stream->onData(nread, *buffer);
+                             if (nread < buffer->len) {
+                               stream->onDataEnd();
+                             }
                            }
                          });
   }

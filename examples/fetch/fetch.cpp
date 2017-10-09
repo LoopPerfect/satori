@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <functional>
 
 #include <satori/satori.hpp>
 
@@ -10,12 +11,18 @@ int main() {
 
   auto loop = std::make_shared<Loop>();
 
-  loop->newGetAddrInfo("http://www.google.com/", "80")->onResolved = [=](auto s, auto addr) {
+  auto getAddrInfo = loop->newGetAddrInfo("google.com", "80");
+
+  getAddrInfo->onResolved = [=](auto status, auto addr) {
+
+    if (status < 0) {
+      std::cerr << "Non-zero status (" << status << ")" << std::endl;
+      exit(1);
+    }
 
     auto* tcp = loop->newTcp();
 
     loop->newConnectTcp(tcp, addr)->onConnect = [=](int status) {
-      std::cout << "connected " << status << std::endl;
 
       auto message = "GET / HTTP/1.1\nHost: google.com:80\r\n\r\n";
 
@@ -23,16 +30,21 @@ int main() {
         std::cout << std::endl;
       };
 
-      tcp->read();
-      tcp->onData = [=](char const* base, unsigned len) {
-        std::cout << base << std::flush;
-        tcp->close();
+      tcp->onData = [=](int const result, StringView const& data) {
+        // A negative result is an error
+        if (result < 0) {
+          std::cerr << errorName(result) << " " << errorMessage(result) << std::endl;
+          exit(1);
+        }
+        std::cout << data;
       };
 
-      tcp->onDataEnd = [=] {
+      tcp->onDataEnd = [=]() {
         std::cout << std::endl;
         tcp->close();
       };
+
+      tcp->read();
 
     };
   };

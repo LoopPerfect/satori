@@ -87,13 +87,23 @@ struct GetAddrInfo : uv_getaddrinfo_t, Request<GetAddrInfo> {
 
   int resolve(uv_loop_t* loop, char const* host, char const* port,
               ::addrinfo hints) {
-    return uv_getaddrinfo(loop, (uv_getaddrinfo_t*)this,
-                          GetAddrInfo::whenResolved, host, port, &hints);
-  }
+    return uv_getaddrinfo(
+      loop,
+      (uv_getaddrinfo_t*)this,
+      [](uv_getaddrinfo_t* h, int status, ::addrinfo* res) {
+        auto* request = (satori::GetAddrInfo*)h;
 
-  static void whenResolved(uv_getaddrinfo_t* h, int status, ::addrinfo* res) {
-    ((GetAddrInfo*)h)->onResolved(status, *res);
-    uv_freeaddrinfo(res);
+        if (res == nullptr) {
+          request->onResolved(status, defaultHints()); // TODO: ::addrinfo for error
+        } else {
+          request->onResolved(status, *res);
+        }
+
+        uv_freeaddrinfo(res);
+      },
+      host,
+      port,
+      &hints);
   }
 
   std::function<void(int, ::addrinfo)> onResolved = [](int, ::addrinfo) {};

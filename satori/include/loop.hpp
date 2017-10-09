@@ -16,7 +16,7 @@ namespace satori {
 
 struct Loop : uv_loop_t {
 
-  SmartRecycler<512> pool;
+  SmartRecycler<1024> pool;
 
   Loop(size_t const& num = 1024) : pool(num) { uv_loop_init(this); }
 
@@ -41,8 +41,8 @@ struct Loop : uv_loop_t {
     return pool.create<ConnectTcp>((uv_tcp_t*)tcp, addr);
   }
 
-  GetAddrInfo* newGetAddrInfo(const char* host, const char* port) {
-    return pool.create<GetAddrInfo>(this, host, port);
+  managed_ptr<GetAddrInfo> newGetAddrInfo(const char* host, const char* port) {
+    return managed_ptr<GetAddrInfo>(pool.create<GetAddrInfo>(this, host, port));
   }
 
   template <class... Xs>
