@@ -83,7 +83,7 @@ struct Tcp : uv_tcp_t, Stream<Tcp>, TcpCB {
     sockaddr_in address;
     uv_ip4_addr(ip, port, &address);
     uv_tcp_bind((uv_tcp_t*)this, (const sockaddr*)&address, 0);
-    return uv_listen((uv_stream_t*)this, 1024, [](uv_stream_t* h, int status) {
+    return uv_listen((uv_stream_t*)this, 10000, [](uv_stream_t* h, int status) {
       auto* tcp = (Tcp*)h;
       tcp->onListen(status);
     });
