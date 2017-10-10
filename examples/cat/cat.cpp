@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <functional>
 #include <string>
 
 #include <satori/satori.hpp>
@@ -9,34 +10,40 @@ int main(int argc, const char** argv) {
 
   using namespace satori;
 
+  // Take a path from the command-line arguments
   if (!argv[1]) {
-    std::cout << "Usage: file_path " << std::endl;
+    std::cerr << "Usage: file_path " << std::endl;
     return 1;
   }
 
   auto filePath = std::string(argv[1]);
 
-  auto loop = std::make_shared<Loop>();
+  // Create a Satori event loop
+  auto satori = Satori();
 
-  auto* fsOpen = loop->newFSOpen(filePath, O_RDONLY, S_IRUSR);
+  auto const onOpen = [=](ssize_t const file) mutable {
 
-  fsOpen->onOpen = [=](ssize_t file) {
-
-    auto* fsRead = loop->newFSRead(file);
-
-    fsRead->read();
-
-    fsRead->onRead = [=](int error, StringView const buffer) {
-      std::cout << buffer.toString() << std::flush;
-
-      // if (!buffer) {
-      //   fsRead->stop();
-      // }
+    auto const onRead = [=](int error, StringView const buffer) mutable {
+      if (error < 0) {
+        std::cerr << errorName(error) << " " << errorMessage(error) << std::endl;
+        exit(1);
+        return;
+      }
+      std::cout << buffer;
     };
 
+    auto const onReadEnd = [=]() mutable {
+      std::cout << std::flush;
+      satori.closeFile(file);
+    };
+
+    satori.readFile(file, onRead, onReadEnd);
   };
 
-  loop->run();
+  satori.openFile(filePath, O_RDONLY, S_IRUSR, onOpen);
+
+  // Start the loop
+  satori.run();
 
   return 0;
 }

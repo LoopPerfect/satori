@@ -66,6 +66,28 @@ public:
     return fs;
   }
 
+  /**
+   *  Opens the file at the given Unix path.
+   */
+  managed_ptr<FSOpen> openFile(std::string const& path, int flags, int mode, std::function<void(size_t)> const& onOpen) {
+    auto fs = loop->newFSOpen(path, flags, mode);
+    fs->onOpen = onOpen;
+    return fs;
+  }
+
+  managed_ptr<FSRead> readFile(size_t const fileDescriptor, std::function<void(int const, StringView const)> onRead, std::function<void()> onReadEnd) {
+    auto fs = loop->newFSRead(fileDescriptor);
+    fs->onRead = onRead;
+    fs->onReadEnd = onReadEnd;
+    fs->read();
+    return fs;
+  }
+
+  managed_ptr<FSClose> closeFile(size_t const fileDescriptor) {
+    auto fs = loop->newFSClose(fileDescriptor);
+    return fs;
+  }
+
   void run(RunMode const mode = RunMode::Default) { loop->run(mode); }
 };
 

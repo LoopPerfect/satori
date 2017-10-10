@@ -106,6 +106,10 @@ struct FSRead : FS<FSRead> {
           request->buffer
         );
 
+        if (result == 0) {
+          request->onReadEnd();
+        }
+
         if (result<=0) {
           request->stop();
           request->cleanup();
@@ -134,7 +138,8 @@ struct FSRead : FS<FSRead> {
   unsigned offset = 0;
   bool reading = true;
   uv_buf_t buffer;
-  std::function<void(int, StringView)> onRead = [](int, StringView) {};
+  std::function<void(int, StringView)> onRead = [](auto...) {};
+  std::function<void()> onReadEnd = [](auto...) {};
 };
 
 struct FSWrite : FS<FSWrite> {

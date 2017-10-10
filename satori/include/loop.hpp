@@ -46,13 +46,13 @@ struct Loop : uv_loop_t {
   }
 
   template <class... Xs>
-  FSOpen* newFSOpen(Xs... xs) {
-    return pool.create<FSOpen>(this, xs...);
+  managed_ptr<FSOpen> newFSOpen(Xs... xs) {
+    return managed_ptr<FSOpen>(pool.create<FSOpen>(this, xs...));
   }
 
   template <class... Xs>
-  FSClose* newFSClose(Xs... xs) {
-    return pool.create<FSClose>(this, xs...);
+  managed_ptr<FSClose> newFSClose(Xs... xs) {
+    return managed_ptr<FSClose>(pool.create<FSClose>(this, xs...));
   }
 
   template <class S>
@@ -61,8 +61,8 @@ struct Loop : uv_loop_t {
   }
 
   template <class... Xs>
-  FSRead* newFSRead(Xs... xs) {
-    return pool.create<FSRead>(this, xs...);
+  managed_ptr<FSRead> newFSRead(Xs... xs) {
+    return managed_ptr<FSRead>(pool.create<FSRead>(this, xs...));
   }
 
   template <class... Xs>
