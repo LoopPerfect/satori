@@ -10,7 +10,7 @@ std::string error_to_string(int error) {
          std::string(uv_strerror(error));
 }
 
-int main(int argc, const char** argv) {
+int main(int argc, const char **argv) {
 
   using namespace satori;
 
@@ -21,7 +21,7 @@ int main(int argc, const char** argv) {
 
   auto loop = std::make_shared<Loop>();
 
-  auto* fs = loop->newFSStat(argv[1]);
+  auto *fs = loop->newFSStat(argv[1]);
 
   fs->onStat = [](int result, uv_stat_t statbuf) {
     if (result < 0) {

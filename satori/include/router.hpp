@@ -13,15 +13,13 @@ namespace satori {
 
 using Params = std::vector<std::string>;
 
-template <class T>
-struct Match {
+template <class T> struct Match {
   std::string path;
   Params params;
   T data;
 };
 
-template <class T>
-struct RouteData {
+template <class T> struct RouteData {
   std::string route;
   T data;
 };
@@ -39,15 +37,15 @@ struct Router {
   Router() : tree(10) {}
 
   neither::Maybe<std::string>
-  addRoute(int const method, std::string const& route, T const& data) {
+  addRoute(int const method, std::string const &route, T const &data) {
     assert(!hasCompiled && "You cannot add routes after calling compile");
     callbacks.push_back({route, data});
-    auto* dataAddress = &callbacks.back();
-    char* errorString;
+    auto *dataAddress = &callbacks.back();
+    char *errorString;
     // entry->request_method = METHOD_GET | METHOD_POST;
     r3::Route node = tree.insert_routel(method, dataAddress->route.c_str(),
                                         dataAddress->route.size(),
-                                        (void*)dataAddress, &errorString);
+                                        (void *)dataAddress, &errorString);
     // Failure?
     if (node == nullptr) {
       // Remove the callback
@@ -67,7 +65,7 @@ struct Router {
     return tree.compile(nullptr);
   }
 
-  neither::Maybe<Match<T>> match(int const method, std::string const& path) {
+  neither::Maybe<Match<T>> match(int const method, std::string const &path) {
     assert(hasCompiled && "match must be called after compile");
 
     auto matchedNode = tree.matchl(path.c_str(), path.size());
@@ -81,13 +79,13 @@ struct Router {
     }
 
     Params params;
-    match_entry* e = entry.get();
+    match_entry *e = entry.get();
     for (int i = 0; i < e->vars.tokens.size; ++i) {
       auto const value = e->vars.tokens.entries[i];
       params.push_back({value.base, value.len});
     }
 
-    auto* routeData = static_cast<Data*>(matchedNode.data());
+    auto *routeData = static_cast<Data *>(matchedNode.data());
 
     auto match = Match<T>{path, params, routeData->data};
 

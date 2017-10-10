@@ -20,7 +20,7 @@ public:
 
   std::string result() const;
 
-  bool feed(std::string const& chunk);
+  bool feed(std::string const &chunk);
 };
 
 } // namespace satori

@@ -31,7 +31,7 @@ std::string Inflator::result() const {
   return state->result;
 }
 
-bool Inflator::feed(std::string const& chunk) {
+bool Inflator::feed(std::string const &chunk) {
   assert(!state->finished && "This stream has already been finished");
   int ret;
   unsigned char out[CHUNK];
@@ -39,7 +39,7 @@ bool Inflator::feed(std::string const& chunk) {
   if (state->stream.avail_in == 0) {
     return false;
   }
-  state->stream.next_in = (Bytef*)chunk.c_str();
+  state->stream.next_in = (Bytef *)chunk.c_str();
   do {
     state->stream.avail_out = CHUNK;
     state->stream.next_out = out;

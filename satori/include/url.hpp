@@ -11,11 +11,11 @@ struct Url {
   std::vector<std::string> parts;
 };
 
-bool operator==(Url const& lhs, Url const& rhs) {
+bool operator==(Url const &lhs, Url const &rhs) {
   return lhs.port == rhs.port && lhs.parts == rhs.parts;
 }
 
-bool operator!=(Url const& lhs, Url const& rhs) { return !(lhs == rhs); }
+bool operator!=(Url const &lhs, Url const &rhs) { return !(lhs == rhs); }
 
 } // namespace satori
 

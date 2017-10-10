@@ -6,7 +6,7 @@
 
 #include <http_parser.h>
 
-int on_message_begin(http_parser* parser) {
+int on_message_begin(http_parser *parser) {
   printf("\n***MESSAGE BEGIN***\n\n");
   if (parser->method) {
     std::cout << "method: "
@@ -16,46 +16,45 @@ int on_message_begin(http_parser* parser) {
   return 0;
 }
 
-int on_headers_complete(http_parser*) {
+int on_headers_complete(http_parser *) {
   printf("\n***HEADERS COMPLETE***\n\n");
   return 0;
 }
 
-int on_message_complete(http_parser*) {
+int on_message_complete(http_parser *) {
   printf("\n***MESSAGE COMPLETE***\n\n");
   return 0;
 }
 
-int on_url(http_parser*, const char* at, size_t length) {
+int on_url(http_parser *, const char *at, size_t length) {
   printf("Url: %.*s\n", (int)length, at);
   return 0;
 }
 
-int on_header_field(http_parser*, const char* at, size_t length) {
+int on_header_field(http_parser *, const char *at, size_t length) {
   printf("Header field: %.*s\n", (int)length, at);
   return 0;
 }
 
-int on_header_value(http_parser*, const char* at, size_t length) {
+int on_header_value(http_parser *, const char *at, size_t length) {
   printf("Header value: %.*s\n", (int)length, at);
   return 0;
 }
 
-int on_body(http_parser*, const char* at, size_t length) {
+int on_body(http_parser *, const char *at, size_t length) {
   printf("Body: %.*s\n", (int)length, at);
   return 0;
 }
 
-void usage(const char* name) {
-  fprintf(stderr,
-          "Usage: %s $type $filename\n"
-          "  type: -x, where x is one of {r,b,q}\n"
-          "  parses file as a Response, reQuest, or Both\n",
+void usage(const char *name) {
+  fprintf(stderr, "Usage: %s $type $filename\n"
+                  "  type: -x, where x is one of {r,b,q}\n"
+                  "  parses file as a Response, reQuest, or Both\n",
           name);
   exit(EXIT_FAILURE);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 
   enum http_parser_type file_type;
 
@@ -63,7 +62,7 @@ int main(int argc, char* argv[]) {
     usage(argv[0]);
   }
 
-  char* type = argv[1];
+  char *type = argv[1];
   if (type[0] != '-') {
     usage(argv[0]);
   }
@@ -83,8 +82,8 @@ int main(int argc, char* argv[]) {
     usage(argv[0]);
   }
 
-  char* filename = argv[2];
-  FILE* file = fopen(filename, "r");
+  char *filename = argv[2];
+  FILE *file = fopen(filename, "r");
   if (file == NULL) {
     perror("fopen");
     fclose(file);
@@ -100,7 +99,7 @@ int main(int argc, char* argv[]) {
   }
   fseek(file, 0, SEEK_SET);
 
-  char* data = new char[file_length];
+  char *data = new char[file_length];
   if (fread(data, 1, file_length, file) != (size_t)file_length) {
     fprintf(stderr, "couldn't read entire file\n");
     free(data);

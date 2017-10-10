@@ -12,9 +12,9 @@ int main() {
   satori::Router<> router;
 
   auto maybeError = router.addRoute(METHOD_GET, "/products/{category}/{id}",
-                                    [](auto const& path, auto const& params) {
+                                    [](auto const &path, auto const &params) {
                                       std::cout << path << std::endl;
-                                      for (auto const& e : params) {
+                                      for (auto const &e : params) {
                                         std::cout << e << std::endl;
                                       }
                                     });
@@ -25,9 +25,9 @@ int main() {
   }
 
   router.addRoute(METHOD_GET, "/bikes/{id}",
-                  [](auto const& path, auto const& params) {
+                  [](auto const &path, auto const &params) {
                     std::cout << path << std::endl;
-                    for (auto const& e : params) {
+                    for (auto const &e : params) {
                       std::cout << e << std::endl;
                     }
                   });
@@ -41,19 +41,19 @@ int main() {
 
   if (auto match = router.match(METHOD_GET, "/products/bikes/merckx")) {
     auto const action = match
-                          .map([](auto x) -> std::function<void()> {
-                            return [=]() { x.data(x.path, x.params); };
-                          })
-                          .get([]() {});
+                            .map([](auto x) -> std::function<void()> {
+                              return [=]() { x.data(x.path, x.params); };
+                            })
+                            .get([]() {});
     action();
   }
 
   if (auto match = router.match(METHOD_GET, "/bikes/merckx")) {
     auto const action = match
-                          .map([](auto x) -> std::function<void()> {
-                            return [=] { x.data(x.path, x.params); };
-                          })
-                          .get([]() {});
+                            .map([](auto x) -> std::function<void()> {
+                              return [=] { x.data(x.path, x.params); };
+                            })
+                            .get([]() {});
     action();
   }
 

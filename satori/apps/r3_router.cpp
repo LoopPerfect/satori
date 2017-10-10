@@ -37,12 +37,12 @@ int main() {
   // }
 
   // let's compile the tree!
-  char* compileerrstr;
+  char *compileerrstr;
   int err = tree.compile(&compileerrstr);
   if (err != 0) {
     cout << "error: " << compileerrstr << endl;
-    //free(compileerrstr); // errstr is created from `asprintf`, so you have to
-                         // free it manually.
+    // free(compileerrstr); // errstr is created from `asprintf`, so you have to
+    // free it manually.
   }
 
   // dump the compiled tree
@@ -51,14 +51,14 @@ int main() {
   // match a route
   r3::Node matched_node = tree.matchl("/foo/bar", strlen("/foo/bar"));
   if (matched_node) {
-    int ret = *static_cast<int*>(matched_node.data());
+    int ret = *static_cast<int *>(matched_node.data());
     cout << "match path ret: " << ret << endl;
   }
 
   r3::MatchEntry entry("/foo/bar");
   matched_node = tree.match_entry(entry);
   if (matched_node) {
-    int ret = *static_cast<int*>(matched_node.data());
+    int ret = *static_cast<int *>(matched_node.data());
     cout << "match entry ret: " << ret << endl;
   }
 

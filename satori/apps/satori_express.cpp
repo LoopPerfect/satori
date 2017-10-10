@@ -21,12 +21,12 @@ int main() {
   app.get("/{id}", [](auto req, auto res) {
 
     std::string response = "headers:\n";
-    for (auto const& h : req.headers) {
+    for (auto const &h : req.headers) {
       response += h.first + ": " + h.second + "\n";
     }
 
     response += "params: ";
-    for (auto const& p : req.params) {
+    for (auto const &p : req.params) {
       response += p;
     }
 

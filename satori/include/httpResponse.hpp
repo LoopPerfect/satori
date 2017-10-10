@@ -17,39 +17,39 @@ struct HttpResponse {
   bool headersSent = false;
   std::string protocol = "HTTP/1.0";
 
-  HttpResponse(Loop* loop, Tcp* tcp)
-    : buffer(std::make_shared<ResponseBuffer>(loop, tcp)) {}
+  HttpResponse(Loop *loop, Tcp *tcp)
+      : buffer(std::make_shared<ResponseBuffer>(loop, tcp)) {}
 
-  HttpResponse(HttpResponse const& r) : buffer(r.buffer) {}
+  HttpResponse(HttpResponse const &r) : buffer(r.buffer) {}
 
-  HttpResponse(HttpResponse&& r) : buffer(std::move(r.buffer)) {}
+  HttpResponse(HttpResponse &&r) : buffer(std::move(r.buffer)) {}
 
   HttpResponse() = delete;
   ~HttpResponse() {}
 
-  HttpResponse http(std::string const& str) {
+  HttpResponse http(std::string const &str) {
     protocol = "HTTP/" + str;
     return *this;
   }
 
-  HttpResponse& status(unsigned short const status) {
+  HttpResponse &status(unsigned short const status) {
     statusCode = status;
     return *this;
   }
 
-  HttpResponse& set(std::string const& key, std::string const& value) {
+  HttpResponse &set(std::string const &key, std::string const &value) {
     headers[key] = value;
     return *this;
   }
 
-  HttpResponse& set(std::map<std::string, std::string> const& hdrs) {
-    for (auto const& e : hdrs) {
+  HttpResponse &set(std::map<std::string, std::string> const &hdrs) {
+    for (auto const &e : hdrs) {
       set(e.first, e.second);
     }
     return *this;
   }
 
-  HttpResponse& write(std::string const& str) {
+  HttpResponse &write(std::string const &str) {
     assert(buffer && "write after close");
     if (!headersSent) {
       buffer->protocol(protocol).status(statusCode).set(headers);
@@ -60,12 +60,12 @@ struct HttpResponse {
     return flush();
   }
 
-  HttpResponse& flush() {
+  HttpResponse &flush() {
     buffer->flush();
     return *this;
   }
 
-  HttpResponse& end(std::string const& str = "") {
+  HttpResponse &end(std::string const &str = "") {
     buffer->end(str);
     return *this;
   }

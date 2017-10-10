@@ -14,7 +14,7 @@ TEST(satori, urlencode) {
 
 TEST(satori, urlencodedecode) {
 
-  auto const encodeDecode = [](std::string const& x) {
+  auto const encodeDecode = [](std::string const &x) {
     EXPECT_EQ(x, satori::urlDecode(satori::urlEncode(x)));
   };
 

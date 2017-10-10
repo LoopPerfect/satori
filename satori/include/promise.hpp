@@ -4,27 +4,24 @@
 #include <cassert>
 #include <functional>
 #include <memory>
-#include <vector>
 #include <satori/loop.hpp>
+#include <vector>
 
 namespace satori {
 
-template <typename T>
-struct Promise;
+template <typename T> struct Promise;
 
-template <typename T>
-constexpr auto ensurePromiseType(Promise<T> const& p) {
+template <typename T> constexpr auto ensurePromiseType(Promise<T> const &p) {
   return p;
 }
 
 template <typename P>
-constexpr auto ensurePromise(P const& p)
-  -> decltype(ensurePromiseType<typename P::ValueType>(p)) {
+constexpr auto ensurePromise(P const &p)
+    -> decltype(ensurePromiseType<typename P::ValueType>(p)) {
   return p;
 }
 
-template <typename T>
-struct Promise {
+template <typename T> struct Promise {
 
 private:
   struct State {
@@ -36,7 +33,7 @@ private:
 
     State() {}
 
-    State(State const& rhs) = delete;
+    State(State const &rhs) = delete;
 
     ~State() {
       if (isDone) {
@@ -45,7 +42,7 @@ private:
       }
     }
 
-    void setValue(T const& x) {
+    void setValue(T const &x) {
       assert(!isDone && "Cannot set value more than once");
       new (&value) T(x);
       isDone = true;
@@ -60,16 +57,16 @@ public:
   std::weak_ptr<Loop> loop;
 
   Promise(std::weak_ptr<Loop> loop)
-    : loop(loop), state(std::make_shared<State>()) {}
+      : loop(loop), state(std::make_shared<State>()) {}
 
-  Promise(Promise const& rhs) = default;
+  Promise(Promise const &rhs) = default;
 
   ~Promise() = default;
 
   void executeCallback(T result, std::function<void(T)> callback) const {
     auto l = loop.lock();
     assert(l && "loop has already been destroyed");
-    auto* async = l->newAsync();
+    auto *async = l->newAsync();
     async->job = [=]() {
       callback(result);
       async->close();
@@ -79,7 +76,7 @@ public:
 
   void resolve(T result) {
     state->setValue(result);
-    for (auto const& callback : state->callbacks) {
+    for (auto const &callback : state->callbacks) {
       executeCallback(result, callback);
     }
     state->callbacks.clear();

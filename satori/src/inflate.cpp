@@ -6,7 +6,7 @@
 
 namespace satori {
 
-std::string inflate(std::string const& compressed) {
+std::string inflate(std::string const &compressed) {
 
   auto inflator = Inflator();
 

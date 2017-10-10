@@ -10,7 +10,7 @@ std::string error_to_string(int error) {
          std::string(uv_strerror(error));
 }
 
-int main(int argc, const char** argv) {
+int main(int argc, const char **argv) {
 
   using namespace satori;
 
@@ -29,10 +29,10 @@ int main(int argc, const char** argv) {
       std::cout << "connected " << status << std::endl;
 
       loop->newWrite(tcp, "GET / HTTP/1.1\nHost: google.com:80\r\n\r\n")
-        ->onWriteEnd = [](auto...) { std::cout << "write end" << std::endl; };
+          ->onWriteEnd = [](auto...) { std::cout << "write end" << std::endl; };
 
       tcp->read();
-      tcp->onData = [=](char const* base, unsigned len) {
+      tcp->onData = [=](char const *base, unsigned len) {
         std::cout << base << std::endl;
         tcp->close();
       };

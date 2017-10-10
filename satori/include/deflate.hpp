@@ -5,7 +5,7 @@
 
 namespace satori {
 
-std::string deflate(std::string const& uncompressed);
+std::string deflate(std::string const &uncompressed);
 }
 
 #endif

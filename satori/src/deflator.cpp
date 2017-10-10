@@ -13,12 +13,12 @@ struct Deflator::State {
   std::string result;
 };
 
-void Deflator::feed(std::string const& chunk, int const type) {
+void Deflator::feed(std::string const &chunk, int const type) {
 
   unsigned char out[CHUNK];
 
   state->stream.avail_in = chunk.size();
-  state->stream.next_in = (Bytef*)chunk.c_str();
+  state->stream.next_in = (Bytef *)chunk.c_str();
 
   do {
     state->stream.avail_out = CHUNK;
@@ -45,6 +45,6 @@ Deflator::~Deflator() { deflateEnd(&state->stream); }
 
 std::string Deflator::result() const { return state->result; }
 
-void Deflator::feed(std::string const& chunk) { feed(chunk, Z_NO_FLUSH); }
+void Deflator::feed(std::string const &chunk) { feed(chunk, Z_NO_FLUSH); }
 
 void Deflator::finish() { feed("", Z_FINISH); }

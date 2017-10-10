@@ -19,7 +19,7 @@ enum class DirectoryEntryType {
   Block
 };
 
-DirectoryEntryType fromUVDirent(uv_dirent_type_t const& type) {
+DirectoryEntryType fromUVDirent(uv_dirent_type_t const &type) {
   switch (type) {
   case UV_DIRENT_FILE:
     return DirectoryEntryType::File;
@@ -41,7 +41,7 @@ DirectoryEntryType fromUVDirent(uv_dirent_type_t const& type) {
   }
 }
 
-std::string directoryEntryTypeToString(DirectoryEntryType const& type) {
+std::string directoryEntryTypeToString(DirectoryEntryType const &type) {
   switch (type) {
   case DirectoryEntryType::File:
     return "File";

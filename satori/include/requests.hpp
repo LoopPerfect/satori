@@ -4,8 +4,8 @@
 #include <functional>
 #include <iostream>
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include <uv.h>
 
@@ -14,28 +14,26 @@
 
 namespace satori {
 
-template <class R>
-void releaseRequest(R);
+template <class R> void releaseRequest(R);
 
-template <class B>
-struct Request {
-  void cancel() { uv_cancel((uv_req_t*)this); }
+template <class B> struct Request {
+  void cancel() { uv_cancel((uv_req_t *)this); }
 };
 
 struct Write : uv_write_t, Request<Write> {
 
-  Write(uv_stream_t* stream, std::string const& msg) : msg{msg} {
+  Write(uv_stream_t *stream, std::string const &msg) : msg{msg} {
     write(stream);
   }
 
   ~Write() {}
 
-  void write(uv_stream_t* stream) {
+  void write(uv_stream_t *stream) {
 
     uv_buf_t buf = uv_buf_init(&msg[0], msg.size());
-    uv_write((uv_write_t*)this, (uv_stream_t*)stream, &buf, 1,
-             [](uv_write_t* h, int status) {
-               auto* write = (Write*)h;
+    uv_write((uv_write_t *)this, (uv_stream_t *)stream, &buf, 1,
+             [](uv_write_t *h, int status) {
+               auto *write = (Write *)h;
                write->onWriteEnd(status);
                releaseRequest(write);
              });
@@ -46,24 +44,25 @@ struct Write : uv_write_t, Request<Write> {
 };
 
 struct ConnectTcp : uv_connect_t, Request<ConnectTcp> {
-  ConnectTcp(uv_tcp_t* tcp, addrinfo const& addr) { connect(tcp, addr); }
+  ConnectTcp(uv_tcp_t *tcp, addrinfo const &addr) { connect(tcp, addr); }
 
-  int connect(uv_tcp_t* tcp, addrinfo res) {
-    return uv_tcp_connect(
-      (uv_connect_t*)this, tcp, res.ai_addr,
-      [](uv_connect_t* h, int status) { ((ConnectTcp*)h)->onConnect(status); });
+  int connect(uv_tcp_t *tcp, addrinfo res) {
+    return uv_tcp_connect((uv_connect_t *)this, tcp, res.ai_addr,
+                          [](uv_connect_t *h, int status) {
+                            ((ConnectTcp *)h)->onConnect(status);
+                          });
   }
 
   std::function<void(int status)> onConnect = [](int) {};
 };
 
 struct ConnectPipe : uv_connect_t, Request<ConnectPipe> {
-  ConnectPipe(uv_pipe_t* pipe, char const* name) { connect(pipe, name); }
+  ConnectPipe(uv_pipe_t *pipe, char const *name) { connect(pipe, name); }
 
-  int connect(uv_pipe_t* pipe, char const* name) {
-    uv_pipe_connect((uv_connect_t*)this, (uv_pipe_t*)pipe, name,
-                    [](uv_connect_t* h, int status) {
-                      ((ConnectPipe*)h)->onConnect(status);
+  int connect(uv_pipe_t *pipe, char const *name) {
+    uv_pipe_connect((uv_connect_t *)this, (uv_pipe_t *)pipe, name,
+                    [](uv_connect_t *h, int status) {
+                      ((ConnectPipe *)h)->onConnect(status);
                     });
     return 0;
   }
@@ -75,8 +74,9 @@ using uv_addrinfo = ::addrinfo;
 
 struct GetAddrInfo : uv_getaddrinfo_t, Request<GetAddrInfo> {
 
-  GetAddrInfo(uv_loop_t* loop, std::string const& host, std::string const& port,
-              uv_addrinfo hints = defaultHints()) : host(host), port(port) {
+  GetAddrInfo(uv_loop_t *loop, std::string const &host, std::string const &port,
+              uv_addrinfo hints = defaultHints())
+      : host(host), port(port) {
     resolve(loop, host.c_str(), port.c_str(), hints);
   }
 
@@ -90,35 +90,33 @@ struct GetAddrInfo : uv_getaddrinfo_t, Request<GetAddrInfo> {
     return hints;
   }
 
-  int resolve(uv_loop_t* loop, char const* host, char const* port,
+  int resolve(uv_loop_t *loop, char const *host, char const *port,
               uv_addrinfo hints) {
     return uv_getaddrinfo(
-      loop,
-      (uv_getaddrinfo_t*)this,
-      [](uv_getaddrinfo_t* h, int status, uv_addrinfo* res) {
-        auto* request = (satori::GetAddrInfo*)h;
-        if (res == nullptr) {
-          request->onResolved(status, {});
-        } else {
-          std::vector<uv_addrinfo> results;
-          auto* next = res;
-          while (next != nullptr) {
-            results.push_back(*next);
-            next = next->ai_next;
+        loop, (uv_getaddrinfo_t *)this,
+        [](uv_getaddrinfo_t *h, int status, uv_addrinfo *res) {
+          auto *request = (satori::GetAddrInfo *)h;
+          if (res == nullptr) {
+            request->onResolved(status, {});
+          } else {
+            std::vector<uv_addrinfo> results;
+            auto *next = res;
+            while (next != nullptr) {
+              results.push_back(*next);
+              next = next->ai_next;
+            }
+            request->onResolved(status, results);
           }
-          request->onResolved(status, results);
-        }
-        uv_freeaddrinfo(res);
-      },
-      host,
-      port,
-      &hints);
+          uv_freeaddrinfo(res);
+        },
+        host, port, &hints);
   }
 
   std::string host;
   std::string port;
 
-  std::function<void(int const, std::vector<uv_addrinfo> const&)> onResolved = [](auto...) {};
+  std::function<void(int const, std::vector<uv_addrinfo> const &)> onResolved =
+      [](auto...) {};
 };
 
 /*

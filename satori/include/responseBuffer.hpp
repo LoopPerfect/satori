@@ -10,39 +10,39 @@
 namespace satori {
 
 struct ResponseBuffer {
-  Loop* loop;
-  Tcp* client;
+  Loop *loop;
+  Tcp *client;
   std::string buffer = "";
 
-  ResponseBuffer(Loop* loop, Tcp* client) : loop{loop}, client{client} {}
+  ResponseBuffer(Loop *loop, Tcp *client) : loop{loop}, client{client} {}
 
-  ResponseBuffer& protocol(std::string const& proto = "HTTP/1.0") {
+  ResponseBuffer &protocol(std::string const &proto = "HTTP/1.0") {
     return write(proto + " ");
   }
 
-  ResponseBuffer& status(unsigned short const code) {
+  ResponseBuffer &status(unsigned short const code) {
     return write(httpStatusCode(code));
   }
 
-  ResponseBuffer& set(std::map<std::string, std::string> const& headers) {
-    for (auto const& e : headers) {
+  ResponseBuffer &set(std::map<std::string, std::string> const &headers) {
+    for (auto const &e : headers) {
       write(e.first + ": " + e.second + "\r\n");
     }
     return write("\r\n");
   }
 
-  ResponseBuffer& write(std::string const& str) {
+  ResponseBuffer &write(std::string const &str) {
     buffer += str;
     return *this;
   }
 
-  Write* flush() {
+  Write *flush() {
     auto w = loop->newWrite(client, buffer);
     buffer = "";
     return w;
   }
 
-  void end(std::string const& str = "") {
+  void end(std::string const &str = "") {
     write(str).flush()->onWriteEnd = [client = this->client](auto) {
       client->close();
     };

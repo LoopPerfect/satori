@@ -21,7 +21,7 @@ AlwaysBreakTemplateDeclarations: true
 BreakBeforeInheritanceComma: true
 BinPackArguments: true
 BinPackParameters: true
-BraceWrapping:   
+BraceWrapping:
   AfterClass:      true
   AfterControlStatement: false
   AfterEnum:       false
@@ -55,11 +55,11 @@ DerivePointerAlignment: false
 DisableFormat:   false
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
-ForEachMacros:   
+ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
-IncludeCategories: 
+IncludeCategories:
   - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'
     Priority:        2
   - Regex:           '^(<|"(gtest|gmock|isl|json)/)'
@@ -106,4 +106,3 @@ Standard:        Cpp11
 TabWidth:        2
 UseTab:          Never
 ...
-

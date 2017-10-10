@@ -11,7 +11,7 @@
 
 namespace satori {
 
-neither::Either<int, Url> parseUrl(std::string const& maybeUrl) {
+neither::Either<int, Url> parseUrl(std::string const &maybeUrl) {
 
   http_parser_url parser;
 
@@ -21,7 +21,7 @@ neither::Either<int, Url> parseUrl(std::string const& maybeUrl) {
   int const connect = 0;
 
   int const result =
-    http_parser_parse_url(maybeUrl.c_str(), len, connect, &parser);
+      http_parser_parse_url(maybeUrl.c_str(), len, connect, &parser);
 
   // Error?
   if (result != 0) {

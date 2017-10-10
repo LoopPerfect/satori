@@ -5,7 +5,7 @@
 
 namespace satori {
 
-std::string urlDecode(std::string const& str);
+std::string urlDecode(std::string const &str);
 }
 
 #endif

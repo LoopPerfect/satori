@@ -5,7 +5,7 @@
 
 namespace satori {
 
-constexpr char const* httpStatusCode(unsigned short const status) {
+constexpr char const *httpStatusCode(unsigned short const status) {
   switch (status) {
   case 100:
     return "100 Continue\r\n"; // [RFC7231, Section 6.2.1]
@@ -137,20 +137,20 @@ constexpr char const* httpStatusCode(unsigned short const status) {
   case 511:
     return "511 Network Authentication Required\r\n"; //  [RFC6585]
 
-    /*
-    103-199 Unassigned
-    209-225 Unassigned
-    227-299 Unassigned
-    309-399 Unassigned
-    418-420 Unassigned
-    425 Unassigned
-    427 Unassigned
-    430 Unassigned
-    432-450  Unassigned
-    452-499 Unassigned
-    509 Unassigned
-    512-599 Unassigned
-    */
+  /*
+  103-199 Unassigned
+  209-225 Unassigned
+  227-299 Unassigned
+  309-399 Unassigned
+  418-420 Unassigned
+  425 Unassigned
+  427 Unassigned
+  430 Unassigned
+  432-450  Unassigned
+  452-499 Unassigned
+  509 Unassigned
+  512-599 Unassigned
+  */
 
   default:
     return "";

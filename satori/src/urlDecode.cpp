@@ -4,7 +4,7 @@
 namespace satori {
 
 // From https://stackoverflow.com/a/29962178/1256041
-std::string urlDecode(std::string const& str) {
+std::string urlDecode(std::string const &str) {
   std::string ret;
   char ch;
   int i;

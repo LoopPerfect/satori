@@ -6,14 +6,14 @@
 
 namespace satori {
 
-std::string urlEncode(std::string const& value) {
+std::string urlEncode(std::string const &value) {
 
   std::ostringstream escaped;
 
   escaped.fill('0');
   escaped << std::hex;
 
-  for (auto const& c : value) {
+  for (auto const &c : value) {
 
     // Keep alphanumeric and other accepted characters intact
     if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {

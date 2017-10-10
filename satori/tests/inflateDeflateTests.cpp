@@ -6,11 +6,11 @@
 
 TEST(satori, inflatedeflate) {
 
-  auto const inflateDeflate = [](std::string const& x) {
+  auto const inflateDeflate = [](std::string const &x) {
     EXPECT_EQ(x, satori::inflate(satori::deflate(x)));
   };
 
-  auto const repeat = [](std::string const& x, unsigned const n) {
+  auto const repeat = [](std::string const &x, unsigned const n) {
     std::string y;
     for (int i = 0; i < n; ++i) {
       y += x;
@@ -26,12 +26,12 @@ TEST(satori, inflatedeflate) {
   inflateDeflate("ab\"cd");
   inflateDeflate("hello\nworld");
   inflateDeflate(
-    repeat("The slow black dog bows before the regal fox. ", 2048));
+      repeat("The slow black dog bows before the regal fox. ", 2048));
 }
 
 TEST(satori, chunkeddeflate) {
 
-  auto const repeat = [](std::string const& x,
+  auto const repeat = [](std::string const &x,
                          unsigned const n) -> std::string {
     std::string y;
     for (int i = 0; i < n; ++i) {
@@ -40,12 +40,12 @@ TEST(satori, chunkeddeflate) {
     return y;
   };
 
-  auto const chunk = [](std::string const& xs,
+  auto const chunk = [](std::string const &xs,
                         unsigned const n) -> std::vector<std::string> {
     std::vector<std::string> result;
     std::string chunk;
     int i = 0;
-    for (auto const& x : xs) {
+    for (auto const &x : xs) {
       chunk += x;
       i = i + 1;
       if (i == n) {
@@ -60,20 +60,20 @@ TEST(satori, chunkeddeflate) {
     return result;
   };
 
-  auto const join = [](std::vector<std::string> const& xs) -> std::string {
+  auto const join = [](std::vector<std::string> const &xs) -> std::string {
     std::string y;
-    for (auto const& x : xs) {
+    for (auto const &x : xs) {
       y += x;
     }
     return y;
   };
 
   auto const xs = chunk(
-    repeat("The slow black dog bows before the regal fox. ", 2048 * 2), 1024);
+      repeat("The slow black dog bows before the regal fox. ", 2048 * 2), 1024);
 
   auto deflator = satori::Deflator();
 
-  for (auto const& x : xs) {
+  for (auto const &x : xs) {
     deflator.feed(x);
   }
 
@@ -84,7 +84,7 @@ TEST(satori, chunkeddeflate) {
 
 TEST(satori, chunkedinflate) {
 
-  auto const repeat = [](std::string const& x, unsigned const n) {
+  auto const repeat = [](std::string const &x, unsigned const n) {
     std::string y;
     for (int i = 0; i < n; ++i) {
       y += x;
@@ -92,12 +92,12 @@ TEST(satori, chunkedinflate) {
     return y;
   };
 
-  auto const chunk = [](std::string const& xs,
+  auto const chunk = [](std::string const &xs,
                         unsigned const n) -> std::vector<std::string> {
     std::vector<std::string> result;
     std::string chunk;
     int i = 0;
-    for (auto const& x : xs) {
+    for (auto const &x : xs) {
       chunk += x;
       i = i + 1;
       if (i == n) {
@@ -113,7 +113,7 @@ TEST(satori, chunkedinflate) {
   };
 
   auto uncompressed =
-    repeat("The slow black dog bows before the regal fox. ", 2048 * 2);
+      repeat("The slow black dog bows before the regal fox. ", 2048 * 2);
 
   auto compressed = satori::deflate(uncompressed);
 
@@ -121,7 +121,7 @@ TEST(satori, chunkedinflate) {
 
   auto inflator = satori::Inflator();
 
-  for (auto const& chunk : chunks) {
+  for (auto const &chunk : chunks) {
     inflator.feed(chunk);
   }
 

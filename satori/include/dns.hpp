@@ -6,9 +6,9 @@
 
 namespace satori {
 
-  std::string ipv4Name(sockaddr const& in);
+std::string ipv4Name(sockaddr const &in);
 
-  std::string ipv6Name(sockaddr const& in);
+std::string ipv6Name(sockaddr const &in);
 }
 
 #endif

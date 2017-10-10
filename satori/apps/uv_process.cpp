@@ -5,35 +5,35 @@
 
 #include <uv.h>
 
-char* a;
-char* b;
+char *a;
+char *b;
 
-char** args;
+char **args;
 
-std::string error_to_string(int const& error) {
+std::string error_to_string(int const &error) {
   return std::string(uv_err_name(error)) + " " +
          std::string(uv_strerror(error));
 }
 
-void on_exit(uv_process_t* req, int64_t exit_status, int term_signal) {
+void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
   std::cout << "I'm back! " << std::endl;
   std::cout << "exit_status " << exit_status << " term_signal " << term_signal
             << std::endl;
 
-  uv_close((uv_handle_t*)req, nullptr);
+  uv_close((uv_handle_t *)req, nullptr);
 
   delete a;
   delete b;
   delete args;
 }
 
-int main(int argc, const char** argv) {
+int main(int argc, const char **argv) {
 
-  auto* loop = new uv_loop_t();
+  auto *loop = new uv_loop_t();
 
   uv_loop_init(loop);
 
-  auto* process = new uv_process_t();
+  auto *process = new uv_process_t();
 
   uv_process_options_t options = {};
 
@@ -43,7 +43,7 @@ int main(int argc, const char** argv) {
   strcpy(a, "sleep");
   strcpy(b, "1");
 
-  args = new char*[3];
+  args = new char *[3];
   args[0] = a;
   args[1] = b;
   args[2] = nullptr;

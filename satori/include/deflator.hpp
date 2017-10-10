@@ -13,7 +13,7 @@ private:
 
   std::shared_ptr<State> state;
 
-  void feed(std::string const& chunk, int const type);
+  void feed(std::string const &chunk, int const type);
 
 public:
   Deflator();
@@ -22,7 +22,7 @@ public:
 
   std::string result() const;
 
-  void feed(std::string const& chunk);
+  void feed(std::string const &chunk);
 
   void finish();
 };
