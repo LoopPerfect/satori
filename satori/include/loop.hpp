@@ -90,6 +90,11 @@ struct Loop : uv_loop_t {
     return managed_ptr<FSUnlink>(pool.create<FSUnlink>(this, xs...));
   }
 
+  template <class... Xs>
+  managed_ptr<FSPoll> newFSPoll(Xs... xs) {
+    return managed_ptr<FSPoll>(pool.create<FSPoll>(this, xs...));
+  }
+
   template <typename T>
   Actor<T>* newActor() {
     return pool.create<Actor<T>>(this);

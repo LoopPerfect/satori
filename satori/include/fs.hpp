@@ -276,6 +276,44 @@ struct FSUnlink : FS<FSUnlink> {
   std::function<void(int)> onUnlink = [](auto...) {};
 };
 
+struct FSPoll : uv_fs_poll_t {
+
+  FSPoll(uv_loop_t* loop) {
+    uv_fs_poll_init(loop, (uv_fs_poll_t*)this);
+  }
+
+  // (uv_fs_poll_t* handle,
+  //                               int status,
+  //                               const uv_stat_t* prev,
+  //                               const uv_stat_t* curr)
+
+  // UV_EXTERN int uv_fs_poll_start(uv_fs_poll_t* handle,
+  //                                uv_fs_poll_cb poll_cb,
+  //                                const char* path,
+  //                                unsigned int interval);
+
+  ~FSPoll() {
+    stop();
+  }
+
+  int start(std::string const& path, unsigned const interval) {
+    return uv_fs_poll_start(
+      (uv_fs_poll_t*)this,
+      [](uv_fs_poll_t* handle, int status, const uv_stat_t* prev, const uv_stat_t* curr) {
+        auto* fsPoll = (FSPoll*)handle;
+        fsPoll->onPoll(status, *prev, *curr);
+      },
+      path.c_str(),
+      interval);
+  }
+
+  int stop() {
+    return uv_fs_poll_stop((uv_fs_poll_t*)this);
+  }
+
+  std::function<void(int, uv_stat_t const&, uv_stat_t const&)> onPoll = [](auto...) {};
+};
+
 } // namespace satori
 
 #endif
