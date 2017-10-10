@@ -76,13 +76,18 @@ struct Loop : uv_loop_t {
   }
 
   template <class... Xs>
-  FSUTime* newFSUTime(Xs... xs) {
-    return pool.create<FSUTime>(this, xs...);
+  managed_ptr<FSUTime> newFSUTime(Xs... xs) {
+    return managed_ptr<FSUTime>(pool.create<FSUTime>(this, xs...));
   }
 
   template <class... Xs>
   managed_ptr<FSRealPath> newFSRealPath(Xs... xs) {
     return managed_ptr<FSRealPath>(pool.create<FSRealPath>(this, xs...));
+  }
+
+  template <class... Xs>
+  managed_ptr<FSUnlink> newFSUnlink(Xs... xs) {
+    return managed_ptr<FSUnlink>(pool.create<FSUnlink>(this, xs...));
   }
 
   template <typename T>

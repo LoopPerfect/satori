@@ -75,7 +75,7 @@ public:
     return fs;
   }
 
-  managed_ptr<FSRead> readFile(size_t const fileDescriptor, std::function<void(int const, StringView const)> onRead, std::function<void()> onReadEnd) {
+  managed_ptr<FSRead> readFile(size_t const fileDescriptor, std::function<void(int const, StringView const)> const& onRead, std::function<void()> const& onReadEnd) {
     auto fs = loop->newFSRead(fileDescriptor);
     fs->onRead = onRead;
     fs->onReadEnd = onReadEnd;
@@ -85,6 +85,12 @@ public:
 
   managed_ptr<FSClose> closeFile(size_t const fileDescriptor) {
     auto fs = loop->newFSClose(fileDescriptor);
+    return fs;
+  }
+
+  managed_ptr<FSUnlink> unlink(std::string const& path, std::function<void(int)> const& onUnlink) {
+    auto fs = loop->newFSUnlink(path);
+    fs->onUnlink = onUnlink;
     return fs;
   }
 

@@ -251,7 +251,29 @@ struct FSRealPath : FS<FSRealPath> {
     });
   }
 
-  std::function<void(int, StringView)> onRealpath = [](int, StringView) {};
+  std::function<void(int, StringView)> onRealpath = [](auto...) {};
+};
+
+struct FSUnlink : FS<FSUnlink> {
+
+  FSUnlink(uv_loop_t* loop, std::string const& path) : FS<FSUnlink>(loop) {
+    unlink(loop, path);
+  }
+
+  int unlink(uv_loop_t* loop, std::string const& path) {
+    return uv_fs_unlink(
+      loop,
+      (uv_fs_t*)this,
+      path.c_str(),
+      [](uv_fs_t* r) {
+        auto result = r->result;
+        auto* request = (FSUnlink*)r;
+        request->onUnlink(result);
+        request->cleanup();
+      });
+  }
+
+  std::function<void(int)> onUnlink = [](auto...) {};
 };
 
 } // namespace satori

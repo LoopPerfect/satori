@@ -1,0 +1,9 @@
+cxx_binary(
+  name = 'unlink',
+  srcs = [
+    'unlink.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)
