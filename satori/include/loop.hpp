@@ -109,6 +109,18 @@ struct Loop : uv_loop_t {
   }
   */
 
+  /**
+   * Forwards to uv_update_time.
+   *
+   * From the libuv docs:
+   *  Update the event loop’s concept of “now”. Libuv caches the current time
+   *  at the start of the event loop tick in order to reduce the number of
+   *  time-related system calls.
+   */
+  void updateTime() {
+    uv_update_time(this);
+  }
+
   uint64_t now() { return uv_now(this); }
 
   int run(RunMode const mode = RunMode::Default) {
