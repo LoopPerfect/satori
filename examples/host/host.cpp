@@ -13,11 +13,9 @@ int main(int argc, const char** argv) {
 
   auto url = std::string(argv[1]);
 
-  auto loop = std::make_shared<satori::Loop>();
+  auto satori = satori::Satori();
 
-  auto getAddrInfo = loop->newGetAddrInfo(url, "80");
-
-  getAddrInfo->onResolved = [=](int const status, std::vector<satori::uv_addrinfo> const& addrinfos) {
+  auto const onResolved = [=](int const status, std::vector<satori::uv_addrinfo> const& addrinfos) {
     if (status < 0) {
       std::cerr << "Non-zero status (" << status << ")" << std::endl;
       exit(1);
@@ -35,7 +33,9 @@ int main(int argc, const char** argv) {
     }
   };
 
-  loop->run();
+  satori.resolve(url, 80, onResolved);
+
+  satori.run();
 
   return 0;
 }

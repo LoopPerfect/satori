@@ -97,6 +97,16 @@ public:
     return fs;
   }
 
+  using ResolveCallback = std::function<void(int const, std::vector<satori::uv_addrinfo> const&)>;
+
+  managed_ptr<GetAddrInfo> resolve(std::string const& url,
+                                   int const port,
+                                   ResolveCallback const& onResolve) {
+    auto getAddrInfo = loop->newGetAddrInfo(url, std::to_string(port));
+    getAddrInfo->onResolved = onResolve;
+    return getAddrInfo;
+  }
+
   void run(RunMode const mode = RunMode::Default) { loop->run(mode); }
 };
 
