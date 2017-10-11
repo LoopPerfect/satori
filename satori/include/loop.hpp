@@ -20,13 +20,16 @@ struct Loop : uv_loop_t {
 
   Loop(size_t const &num = 1024) : pool(num) { uv_loop_init(this); }
 
-  Tcp *newTcp() { return pool.create<Tcp>(this); }
+  managed_ptr<Tcp> newTcp() {
+    return managed_ptr<Tcp>(pool.create<Tcp>(this));
+  }
 
   Async *newAsync() { return pool.create<Async>(this); }
 
   Pipe *newPipe(bool ipc = 0) { return pool.create<Pipe>(this, ipc); }
 
-  template <class S> Write *newWrite(S *stream, std::string const &msg) {
+  template <class S>
+  Write *newWrite(S *stream, std::string const &msg) {
     return pool.create<Write>((uv_stream_t *)stream, msg);
   }
 
@@ -34,8 +37,9 @@ struct Loop : uv_loop_t {
     return pool.create<ConnectPipe>((uv_pipe_t *)pipe, name);
   }
 
-  template <class T> ConnectTcp *newConnectTcp(T *tcp, addrinfo const &addr) {
-    return pool.create<ConnectTcp>((uv_tcp_t *)tcp, addr);
+  template <class T>
+  managed_ptr<ConnectTcp> newConnectTcp(T *tcp, addrinfo const &addr) {
+    return managed_ptr<ConnectTcp>(pool.create<ConnectTcp>((uv_tcp_t *)tcp, addr));
   }
 
   managed_ptr<GetAddrInfo> newGetAddrInfo(std::string const &host,
