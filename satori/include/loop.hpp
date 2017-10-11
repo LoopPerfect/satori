@@ -67,15 +67,23 @@ struct Loop : uv_loop_t {
     return pool.create<FSStat>(this, xs...);
   }
 
-  template <class... Xs> managed_ptr<FSScanDir> newFSScanDir(Xs... xs) {
+  template <class... Xs>
+  managed_ptr<FSMkdir> newFSMkdir(Xs... xs) {
+    return managed_ptr<FSMkdir>(pool.create<FSMkdir>(this, xs...));
+  }
+
+  template <class... Xs>
+  managed_ptr<FSScanDir> newFSScanDir(Xs... xs) {
     return managed_ptr<FSScanDir>(pool.create<FSScanDir>(this, xs...));
   }
 
-  template <class... Xs> managed_ptr<FSUTime> newFSUTime(Xs... xs) {
+  template <class... Xs>
+  managed_ptr<FSUTime> newFSUTime(Xs... xs) {
     return managed_ptr<FSUTime>(pool.create<FSUTime>(this, xs...));
   }
 
-  template <class... Xs> managed_ptr<FSRealPath> newFSRealPath(Xs... xs) {
+  template <class... Xs>
+  managed_ptr<FSRealPath> newFSRealPath(Xs... xs) {
     return managed_ptr<FSRealPath>(pool.create<FSRealPath>(this, xs...));
   }
 

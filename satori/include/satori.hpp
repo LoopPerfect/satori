@@ -107,7 +107,17 @@ public:
     return getAddrInfo;
   }
 
-  void run(RunMode const mode = RunMode::Default) { loop->run(mode); }
+  managed_ptr<FSMkdir> mkdir(std::string const& directoryName,
+                             int const mode, 
+                             std::function<void(int)> const& onMkdir) {
+    auto fsMkdir = loop->newFSMkdir(directoryName, mode);
+    fsMkdir->onMkdir = onMkdir;
+    return fsMkdir;
+  }
+
+  void run(RunMode const mode = RunMode::Default) {
+    loop->run(mode);
+  }
 };
 
 } // namespace satori

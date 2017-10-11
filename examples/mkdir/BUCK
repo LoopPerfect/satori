@@ -1,0 +1,9 @@
+cxx_binary(
+  name = 'mkdir',
+  srcs = [
+    'mkdir.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)

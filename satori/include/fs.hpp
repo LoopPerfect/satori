@@ -15,9 +15,11 @@
 
 namespace satori {
 
-template <class R> void release(R);
+template <class R>
+void release(R);
 
-template <class T> struct FS : uv_fs_t {
+template <class T>
+struct FS : uv_fs_t {
 
   FS(uv_loop_t *loop) { this->loop = loop; }
 
@@ -185,6 +187,28 @@ struct FSUTime : FS<FSUTime> {
   }
 
   std::function<void(int)> onUtime = [](int) {};
+};
+
+struct FSMkdir : FS<FSMkdir> {
+
+  FSMkdir(uv_loop_t* loop, std::string const& path, int mode) : FS<FSMkdir>(loop) {
+    uv_fs_mkdir(
+      loop,
+      (uv_fs_t*)this,
+      path.c_str(),
+      mode,
+      [](uv_fs_t* r) {
+        int result = r->result;
+        auto* request = (FSMkdir*)r;
+        request->onMkdir(result);
+      });
+  }
+
+  ~FSMkdir() {
+
+  }
+
+  std::function<void(int)> onMkdir = [](auto...) {};
 };
 
 struct FSScanDir : FS<FSScanDir> {
