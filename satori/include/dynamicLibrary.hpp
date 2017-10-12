@@ -29,14 +29,15 @@ namespace satori {
       return neither::Maybe<std::string>(state->dlerror());
     }
 
-    neither::Either<std::string, Symbol> find(std::string const& symbolName) {
+    template <typename T>
+    neither::Either<std::string, Symbol<T>> find(std::string const& symbolName) {
       void* data = nullptr;
       int result = state->dlsyn(symbolName, &data);
       if (result == 0) {
-        auto symbol = Symbol(state, data);
-        return neither::Either<std::string, Symbol>::rightOf(symbol);
+        auto symbol = Symbol<T>(state, (T*)data);
+        return neither::Either<std::string, Symbol<T>>::rightOf(symbol);
       }
-      return neither::Either<std::string, Symbol>::leftOf(state->dlerror());
+      return neither::Either<std::string, Symbol<T>>::leftOf(state->dlerror());
     }
 
   };
