@@ -109,6 +109,10 @@ struct Loop : uv_loop_t {
   }
   */
 
+  // managed_ptr<Lib> newLib() {
+  //   return managed_ptr<Lib>(pool.create<Lib>());
+  // }
+
   /**
    * Forwards to uv_update_time.
    *

@@ -1,0 +1,9 @@
+cxx_binary(
+  name = 'lib',
+  srcs = [
+    'lib.cpp',
+  ],
+  deps = [
+    '//:satori',
+  ],
+)

@@ -10,12 +10,14 @@
 #include <satori/deflator.hpp>
 #include <satori/directoryEntry.hpp>
 #include <satori/dns.hpp>
+#include <satori/dynamicLibrary.hpp>
 #include <satori/enableMultiProcess.hpp>
 #include <satori/errors.hpp>
 #include <satori/handles.hpp>
 #include <satori/httpParser.hpp>
 #include <satori/inflate.hpp>
 #include <satori/inflator.hpp>
+#include <satori/lib.hpp>
 #include <satori/loop.hpp>
 #include <satori/managed_ptr.hpp>
 #include <satori/promise.hpp>
@@ -24,6 +26,7 @@
 #include <satori/router.hpp>
 #include <satori/runMode.hpp>
 #include <satori/stringview.hpp>
+#include <satori/symbol.hpp>
 #include <satori/url-parser.hpp>
 #include <satori/url.hpp>
 #include <satori/urlDecode.hpp>
@@ -108,7 +111,7 @@ public:
   }
 
   managed_ptr<FSMkdir> mkdir(std::string const& directoryName,
-                             int const mode, 
+                             int const mode,
                              std::function<void(int)> const& onMkdir) {
     auto fsMkdir = loop->newFSMkdir(directoryName, mode);
     fsMkdir->onMkdir = onMkdir;
