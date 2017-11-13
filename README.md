@@ -1,3 +1,7 @@
+<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/hq7GXSxnYW3qEM98fqMVob9v/LoopPerfect/satori'>
+  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/hq7GXSxnYW3qEM98fqMVob9v/LoopPerfect/satori.svg' />
+</a>
+
 # Satori
 
 An HTTP library built on top of libUV.
@@ -22,7 +26,8 @@ Satori is in development. Do not use this in production *quite* yet!
  * Cross platform (Linux, Windows and macOS)
  * Leverage C++ 14 for terse user-code (similar length to Express apps)
  * Commercial friendly license (MIT)
- * Easy builds and deployment using [Buck](https://buckbuild.com) and [Buckaroo](https://buckaroo.pm)
+ * Easy builds and dependency management using [Buck](https://buckbuild.com) and [Buckaroo](https://buckaroo.pm)
+ * Zero dependencies at deployment-time
 
 
 ## TODO
@@ -54,3 +59,7 @@ buck run :main
 ## Examples
 
 There are many sample projects in the [examples](./examples) folder. 
+
+<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/hq7GXSxnYW3qEM98fqMVob9v/LoopPerfect/satori'>
+  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/hq7GXSxnYW3qEM98fqMVob9v/LoopPerfect/satori.svg' />
+</a>
