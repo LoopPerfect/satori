@@ -1,7 +1,3 @@
-<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/hq7GXSxnYW3qEM98fqMVob9v/LoopPerfect/satori'>
-  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/hq7GXSxnYW3qEM98fqMVob9v/LoopPerfect/satori.svg' />
-</a>
-
 # Satori
 
 An HTTP library built on top of libUV.
@@ -59,7 +55,3 @@ buck run :main
 ## Examples
 
 There are many sample projects in the [examples](./examples) folder. 
-
-<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/hq7GXSxnYW3qEM98fqMVob9v/LoopPerfect/satori'>
-  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/hq7GXSxnYW3qEM98fqMVob9v/LoopPerfect/satori.svg' />
-</a>
