@@ -1,7 +1,7 @@
 cxx_test(
   name = 'managed-ptr-tests',
   srcs = [
-    'managed_ptr_tests.cpp',
+    'managedPtrTests.cpp',
   ],
   deps = [
     '//:satori',
@@ -11,7 +11,7 @@ cxx_test(
 cxx_test(
   name = 'router-tests',
   srcs = [
-    'router-tests.cpp',
+    'routerTests.cpp',
   ],
   deps = [
     '//:satori',
@@ -21,7 +21,7 @@ cxx_test(
 cxx_test(
   name = 'url-parser-tests',
   srcs = [
-    'url-parser-tests.cpp',
+    'urlParserTests.cpp',
   ],
   deps = [
     '//:satori',
