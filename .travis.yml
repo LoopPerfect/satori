@@ -26,9 +26,9 @@ before_install:
 
 script:
 - buckaroo install
-- buck build :satori
-- buck test satori/tests:inflate-deflate-tests
-- buck test satori/tests:managed-ptr-tests
-# - buck test satori/tests:router-tests
-- buck test satori/tests:url-parser-tests
-- buck test satori/tests:url-encode-tests
+- buck build :satori -c ui.superconsole=DISABLED
+- buck test satori/tests:inflate-deflate-tests -c ui.superconsole=DISABLED
+- buck test satori/tests:managed-ptr-tests -c ui.superconsole=DISABLED
+# - buck test satori/tests:router-tests -c ui.superconsole=DISABLED
+- buck test satori/tests:url-parser-tests -c ui.superconsole=DISABLED
+- buck test satori/tests:url-encode-tests -c ui.superconsole=DISABLED
