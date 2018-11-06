@@ -2,6 +2,8 @@
 
 An HTTP library built on top of libUV.
 
+[![Travis](https://img.shields.io/travis/LoopPerfect/satori.svg)](https://travis-ci.org/LoopPerfect/satori) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/LoopPerfect/satori/master/license)
+
 
 ## What is Satori?
 
