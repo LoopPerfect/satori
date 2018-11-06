@@ -17,8 +17,8 @@
       "subPath": "googletest-ec44c6c1675c25b9827aacd08c02433cccde7780"
     },
     "buck": {
-      "url": "https://raw.githubusercontent.com/nikhedonia/googletest/665327f0141d4a4fc4f2496e781dce436d742645/BUCK",
-      "sha256": "d976069f5b47fd8fc57201f47026a70dee4e47b3141ac23567b8a0c56bf9288c"
+      "url": "https://raw.githubusercontent.com/buckaroo-pm/google-googletest/8d62cdaa27d589789d6de0a2d507ded8f7946969/BUCK",
+      "sha256": "abda4caaaf855e192efddd066df0440228f35296811e4f76abf6c424d2b33f84"
     }
   },
   "nodejs/http-parser": {
@@ -39,8 +39,8 @@
       "subPath": "zlib-cacf7f1d4e3d44d871b605da3b647f07d718623f"
     },
     "buck": {
-      "url": "https://raw.githubusercontent.com/njlr/zlib/ae69f4a45134c2c37c319581e640720fee3950e0/BUCK",
-      "sha256": "2db68199820486625a47728206ac426f8ed2f8351a3c1db4d3ab813e0104d686"
+      "url": "https://raw.githubusercontent.com/njlr/zlib/734857176adb4cc1911a97c5ac8212c8de0b63b1/BUCK",
+      "sha256": "693e9061a4b047c2907f93497fc7de84ffd9573c7e89ea5781a0b72141d0d993"
     }
   },
   "loopperfect/neither": {

@@ -27,3 +27,5 @@ before_install:
 script:
 - buckaroo install
 - buck build :satori
+- buck test satori/tests:managed-ptr-tests
+- buck test satori/tests:url-parser-tests
