@@ -1,14 +1,19 @@
 # Buck
 /buck-out/
 /.buckd/
+.buckconfig.d
 .buckconfig.local
 
 # Buckaroo
 /buckaroo/
 BUCKAROO_DEPS
+buckaroo_macros.bzl
 
 # Node
 /node_modules/
 
 # Binaries
 *.dylib
+
+buckaroo-linux
+buckaroo-macos

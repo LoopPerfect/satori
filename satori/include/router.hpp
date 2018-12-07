@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include <r3.hpp>
+#include <r3/r3.hpp>
 
 namespace satori {
 

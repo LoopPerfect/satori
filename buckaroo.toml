@@ -1,0 +1,17 @@
+targets = [ "//:satori" ]
+
+[[dependency]]
+package = "github.com/buckaroo-pm/libuv"
+version = "branch=v1.x"
+
+[[dependency]]
+package = "github.com/LoopPerfect/r3"
+version = "branch=master"
+
+[[dependency]]
+package = "github.com/LoopPerfect/neither"
+version = "branch=improvement/buckaroo-redux"
+
+[[dependency]]
+package = "github.com/buckaroo-pm/nodejs-http-parser"
+version = "branch=master"

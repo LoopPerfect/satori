@@ -1,19 +1,11 @@
-[repositories]
-  libuv.libuv = buckaroo/official/libuv/libuv
-  google.gtest = buckaroo/official/google/gtest
-  nodejs.http-parser = buckaroo/official/nodejs/http-parser
-  madler.zlib = buckaroo/official/madler/zlib
-  loopperfect.neither = buckaroo/official/loopperfect/neither
-  loopperfect.r3 = buckaroo/official/loopperfect/r3
-  pcre.pcre = buckaroo/official/pcre/pcre
-
 [project]
   ignore = .git, .buckd
+
+[parser]
+  default_build_file_syntax = SKYLARK
 
 [cxx]
   should_remap_host_platform = true
   untracked_headers = warn
   untracked_headers_whitelist = /usr/include/.*, /usr/local/Cellar/llvm/.*, /usr/lib/gcc/x86_64-linux-gnu/.*
-  gtest_dep = google.gtest//:gtest
-  cxxflags = -std=c++14 -g
-
+  cxxflags = -std=c++14

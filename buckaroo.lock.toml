@@ -1,0 +1,37 @@
+manifest = "1fe4bfc4c2514244645443b105fe0ef138417d2ae683d5a5d0d456ff3f07ae12"
+
+[[dependency]]
+package = "github.com/LoopPerfect/neither"
+target = "//:neither"
+
+[[dependency]]
+package = "github.com/LoopPerfect/r3"
+target = "//:r3"
+
+[[dependency]]
+package = "github.com/buckaroo-pm/libuv"
+target = "//:uv"
+
+[[dependency]]
+package = "github.com/buckaroo-pm/nodejs-http-parser"
+target = "//:http-parser"
+
+[lock."github.com/LoopPerfect/neither"]
+version = "branch=improvement/buckaroo-redux"
+revision = "94dd48e1279c5d7cb9f365cfabd65142198ad2f5"
+
+[lock."github.com/LoopPerfect/r3"]
+version = "branch=master"
+revision = "d239b559606b8caf3fc8a6ae84c7b433a29c991f"
+
+[lock."github.com/buckaroo-pm/libuv"]
+version = "branch=v1.x"
+revision = "70ef079fdbf3f077736ba5bcf5fa2f394cc222ec"
+
+[lock."github.com/buckaroo-pm/nodejs-http-parser"]
+version = "branch=master"
+revision = "56c72e5dd036fe6ce4d85124ba93b9b35a2351c7"
+
+[lock."github.com/buckaroo-pm/pcre"]
+version = "branch=master"
+revision = "9da3b92b5fa9c78570a18273f855228f7fca6e46"
