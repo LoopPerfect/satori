@@ -119,8 +119,8 @@ struct FSRead : FS<FSRead> {
   unsigned offset = 0;
   bool reading = true;
   uv_buf_t buffer;
-  std::function<void(int, StringView)> onRead = [](auto...) {};
-  std::function<void()> onReadEnd = [](auto...) {};
+  std::function<void(int, StringView)> onRead = [](auto x, auto y) {};
+  std::function<void()> onReadEnd = []() {};
 };
 
 struct FSWrite : FS<FSWrite> {
@@ -277,7 +277,7 @@ struct FSUnlink : FS<FSUnlink> {
     });
   }
 
-  std::function<void(int)> onUnlink = [](auto...) {};
+  std::function<void(int)> onUnlink = [](auto x) {};
 };
 
 struct FSPoll : uv_fs_poll_t {
@@ -309,7 +309,7 @@ struct FSPoll : uv_fs_poll_t {
   int stop() { return uv_fs_poll_stop((uv_fs_poll_t *)this); }
 
   std::function<void(int, uv_stat_t const &, uv_stat_t const &)> onPoll =
-      [](auto...) {};
+      [](auto x, auto y, auto z) {};
 };
 
 } // namespace satori
