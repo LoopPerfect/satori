@@ -1,9 +1,13 @@
+load('//:buckaroo_macros.bzl', 'buckaroo_deps_from_package')
+
+gtest = buckaroo_deps_from_package('github.com/buckaroo-pm/google-googletest')
+
 cxx_test(
   name = 'managed-ptr-tests',
   srcs = [
     'managedPtrTests.cpp',
   ],
-  deps = [
+  deps = gtest + [
     '//:satori',
   ],
 )
@@ -13,7 +17,7 @@ cxx_test(
   srcs = [
     'routerTests.cpp',
   ],
-  deps = [
+  deps = gtest + [
     '//:satori',
   ],
 )
@@ -23,7 +27,7 @@ cxx_test(
   srcs = [
     'urlParserTests.cpp',
   ],
-  deps = [
+  deps = gtest + [
     '//:satori',
   ],
 )
@@ -33,7 +37,7 @@ cxx_test(
   srcs = [
     'urlEncodeTests.cpp',
   ],
-  deps = [
+  deps = gtest + [
     '//:satori',
   ],
 )
@@ -43,7 +47,7 @@ cxx_test(
   srcs = [
     'inflateDeflateTests.cpp',
   ],
-  deps = [
+  deps = gtest + [
     '//:satori',
   ],
 )
@@ -54,7 +58,7 @@ cxx_test(
   srcs = [
     'stringviewTests.cpp',
   ],
-  deps = [
+  deps = gtest + [
     '//:satori',
   ],
 )

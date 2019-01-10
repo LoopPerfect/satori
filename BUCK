@@ -1,5 +1,12 @@
 load('//:subdir_glob.bzl', 'subdir_glob')
-load('//:buckaroo_macros.bzl', 'buckaroo_deps')
+load('//:buckaroo_macros.bzl', 'buckaroo_deps_from_package')
+
+deps = \
+  buckaroo_deps_from_package('github.com/buckaroo-pm/libuv') + \
+  buckaroo_deps_from_package('github.com/buckaroo-pm/madler-zlib') + \
+  buckaroo_deps_from_package('github.com/buckaroo-pm/nodejs-http-parser') + \
+  buckaroo_deps_from_package('github.com/loopperfect/neither') + \
+  buckaroo_deps_from_package('github.com/loopperfect/r3')
 
 cxx_library(
   name = 'satori',
@@ -13,7 +20,7 @@ cxx_library(
   srcs = glob([
     'satori/src/**/*.cpp',
   ]),
-  deps = buckaroo_deps(),
+  deps = deps,
   licenses = [
     'LICENSE',
   ],
@@ -37,7 +44,7 @@ cxx_binary(
   srcs = [
     'satori/apps/uv_readfile.cpp',
   ],
-  deps = buckaroo_deps(),
+  deps = deps,
 )
 
 cxx_binary(
@@ -45,7 +52,7 @@ cxx_binary(
   srcs = [
     'satori/apps/uv_readfile_reuse_req.cpp',
   ],
-  deps = buckaroo_deps(),
+  deps = deps,
 )
 
 cxx_binary(
@@ -53,7 +60,7 @@ cxx_binary(
   srcs = [
     'satori/apps/satori_writefile.cpp',
   ],
-  deps = buckaroo_deps() + [
+  deps = deps + [
     ':satori',
   ],
 )
@@ -63,7 +70,7 @@ cxx_binary(
   srcs = [
     'satori/apps/satori_getrequest.cpp',
   ],
-  deps = buckaroo_deps() + [
+  deps = deps + [
     ':satori',
   ],
 )
@@ -73,7 +80,7 @@ cxx_binary(
   srcs = [
     'satori/apps/satori_utime.cpp',
   ],
-  deps = buckaroo_deps() + [
+  deps = deps + [
     ':satori',
   ],
 )
@@ -83,7 +90,7 @@ cxx_binary(
   srcs = [
     'satori/apps/satori_stat.cpp',
   ],
-  deps = buckaroo_deps() + [
+  deps = deps + [
     ':satori',
   ],
 )
@@ -93,7 +100,7 @@ cxx_binary(
   srcs = [
     'satori/apps/satori_process.cpp',
   ],
-  deps = buckaroo_deps() + [
+  deps = deps + [
     ':satori',
   ],
 )
@@ -103,7 +110,7 @@ cxx_binary(
   srcs = [
     'satori/apps/uv_process.cpp',
   ],
-  deps = buckaroo_deps(),
+  deps = deps,
 )
 
 cxx_binary(
@@ -111,7 +118,7 @@ cxx_binary(
   srcs = [
     'satori/apps/nodejs_parse_http.cpp',
   ],
-  deps = buckaroo_deps(),
+  deps = deps,
 )
 
 cxx_binary(
@@ -119,7 +126,7 @@ cxx_binary(
   srcs = [
     'satori/apps/satori_parse_http.cpp',
   ],
-  deps = [
+  deps = deps + [
     ':satori',
   ],
 )
@@ -129,7 +136,7 @@ cxx_binary(
   srcs = [
     'satori/apps/satori_filestream.cpp',
   ],
-  deps = [
+  deps = deps + [
     ':satori',
   ],
 )
@@ -139,7 +146,7 @@ cxx_binary(
   srcs = [
     'satori/apps/r3_router.cpp',
   ],
-  deps = [
+  deps = deps + [
     ':satori',
   ],
 )
@@ -149,7 +156,7 @@ cxx_binary(
   srcs = [
     'satori/apps/satori_router.cpp',
   ],
-  deps = [
+  deps = deps + [
     ':satori',
   ],
 )
@@ -159,7 +166,7 @@ cxx_binary(
   srcs = [
     'satori/apps/satori_express.cpp',
   ],
-  deps = [
+  deps = deps + [
     ':satori',
   ],
 )
@@ -169,5 +176,5 @@ cxx_binary(
   srcs = [
     'satori/apps/uv_dns.cpp',
   ],
-  deps = buckaroo_deps(),
+  deps = deps,
 )
