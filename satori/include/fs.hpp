@@ -309,7 +309,7 @@ struct FSPoll : uv_fs_poll_t {
   int stop() { return uv_fs_poll_stop((uv_fs_poll_t *)this); }
 
   std::function<void(int, uv_stat_t const &, uv_stat_t const &)> onPoll =
-      [](auto x, auto y) {};
+      [](auto x, auto y, auto z) {};
 };
 
 } // namespace satori
