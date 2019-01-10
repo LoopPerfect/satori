@@ -1,0 +1,61 @@
+manifest = "857c01fb6f1c3aa96711af96c005e1eec417b5f2dced71f03e4b3099c4c12a9b"
+
+[[dependency]]
+package = "github.com/buckaroo-pm/google-googletest"
+target = "//:googletest"
+
+[[dependency]]
+package = "github.com/buckaroo-pm/libuv"
+target = "//:uv"
+
+[[dependency]]
+package = "github.com/buckaroo-pm/madler-zlib"
+target = "//:zlib"
+
+[[dependency]]
+package = "github.com/buckaroo-pm/nodejs-http-parser"
+target = "//:http-parser"
+
+[[dependency]]
+package = "github.com/loopperfect/neither"
+target = "//:neither"
+
+[[dependency]]
+package = "github.com/loopperfect/r3"
+target = "//:r3"
+
+[lock."github.com/buckaroo-pm/google-googletest"]
+versions = [ "branch=master" ]
+revision = "cb8d2c1a2fcd344953e6c129a1a699a2c230551d"
+
+[lock."github.com/buckaroo-pm/libuv"]
+versions = [ "branch=v1.x" ]
+revision = "fc3570b7a90c0daa9a091f982a75d6b54f83cf19"
+
+[lock."github.com/buckaroo-pm/madler-zlib"]
+versions = [ "branch=master" ]
+revision = "906f727175ca6a7f8943e375467d6e461a55b68d"
+
+[lock."github.com/buckaroo-pm/nodejs-http-parser"]
+versions = [ "branch=master" ]
+revision = "a8c9a87b3a284fe7a82f9ee93c6bb29eecbc6a86"
+
+[lock."github.com/buckaroo-pm/pcre"]
+versions = [ "branch=master" ]
+revision = "9da3b92b5fa9c78570a18273f855228f7fca6e46"
+
+[lock."github.com/loopperfect/neither"]
+versions = [ "branch=master" ]
+revision = "b3fbfde65469c28d823fe35a6063b53a14825866"
+
+[lock."github.com/loopperfect/neither".lock."github.com/buckaroo-pm/google-googletest"]
+versions = [ "branch=master" ]
+revision = "cb8d2c1a2fcd344953e6c129a1a699a2c230551d"
+
+[lock."github.com/loopperfect/r3"]
+versions = [ "branch=master" ]
+revision = "a99e16d10198f5eaf7b16f6e40c6de8f1115a883"
+
+[lock."github.com/loopperfect/r3".lock."github.com/buckaroo-pm/check"]
+versions = [ "branch=master" ]
+revision = "53e84bd2ed5d98cf98cb91e781a2983d7d01425d"

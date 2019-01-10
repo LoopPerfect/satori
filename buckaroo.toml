@@ -1,0 +1,26 @@
+targets = [ "//:satori" ]
+
+[[dependency]]
+package = "github.com/buckaroo-pm/google-googletest"
+version = "branch=master"
+private = true
+
+[[dependency]]
+package = "github.com/buckaroo-pm/libuv"
+version = "branch=v1.x"
+
+[[dependency]]
+package = "github.com/buckaroo-pm/madler-zlib"
+version = "branch=master"
+
+[[dependency]]
+package = "github.com/buckaroo-pm/nodejs-http-parser"
+version = "branch=master"
+
+[[dependency]]
+package = "github.com/loopperfect/neither"
+version = "branch=master"
+
+[[dependency]]
+package = "github.com/loopperfect/r3"
+version = "branch=master"
